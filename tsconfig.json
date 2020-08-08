@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2015",
+    "module": "commonjs",
+    "allowSyntheticDefaultImports": true,
+    "allowUmdGlobalAccess": true,
+    "allowJs": true,
+    "declaration": true,
+    "declarationMap": true,
+    "declarationDir": "types",
+    "sourceMap": true,
+    "outDir": "lib",
+    "strict": true,
+    "removeComments": false
+  },
+  "include": [
+    "src"
+  ]
+}

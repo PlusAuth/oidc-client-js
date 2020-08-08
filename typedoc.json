@@ -1,0 +1,11 @@
+{
+  "out": "./docs",
+  "name": "PAOIDCClient",
+  "readme": "none",
+  "mode": "file",
+  "tsconfig": "./tsconfig.json",
+  "theme": "minimal",
+  "hideGenerator": true,
+  "stripInternal": true,
+  "listInvalidSymbolLinks": false
+}

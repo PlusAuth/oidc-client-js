@@ -1,0 +1,8 @@
+*.html
+dist
+docs
+types
+\.*
+*\.config\.*
+test
+examples/**/**

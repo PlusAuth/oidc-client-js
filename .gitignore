@@ -1,0 +1,10 @@
+node_modules
+.idea
+.vscode
+lib
+temp
+types
+coverage
+test-results
+*.log
+dist
