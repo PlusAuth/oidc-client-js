@@ -1,5 +1,7 @@
 import { SessionChecker, SessionCheckerOptions } from '../interfaces';
 
+import { createHiddenFrame } from './iframe';
+
 const DEFAULT_CHECK_INTERVAL = 2000
 
 export function createSessionCheckerFrame( options: SessionCheckerOptions ): SessionChecker{
@@ -8,13 +10,7 @@ export function createSessionCheckerFrame( options: SessionCheckerOptions ): Ses
   const idx = url.indexOf( '/', url.indexOf( '//' ) + 2 );
   const frameOrigin = url.substr( 0, idx );
 
-  const frame = window.document.createElement( 'iframe' );
-
-  frame.style.visibility = 'hidden';
-  frame.style.position = 'absolute';
-  frame.style.display = 'none';
-  frame.style.width = '0';
-  frame.style.height = '0';
+  const frame = createHiddenFrame()
 
   let timer: any
 

@@ -12,7 +12,7 @@ const openPopup = ( url: string, width = 400, height = 600 ) => {
   );
 };
 
-export const runPopup = ( url: string, options: PopupOptions ) => {
+export function runPopup( url: string, options: PopupOptions ) {
   let popup = options.popup;
 
   if ( popup ) {

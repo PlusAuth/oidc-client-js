@@ -1,17 +1,23 @@
 import { AuthenticationError, PAError } from '../errors';
 import { IFrameOptions } from '../interfaces';
 
-export const runIframe = (
+export function createHiddenFrame() {
+  const iframe = window.document.createElement('iframe');
+  iframe.style.width = '0';
+  iframe.style.height = '0';
+  iframe.style.position = 'absolute';
+  iframe.style.visibility = 'hidden';
+  iframe.style.display = 'none';
+
+  return iframe
+}
+
+export function runIframe(
   url: string,
   options: IFrameOptions
-) => {
+) {
   return new Promise<any>( ( resolve, reject ) => {
-    const iframe = window.document.createElement( 'iframe' );
-    iframe.style.width= '0';
-    iframe.style.height= '0';
-    iframe.style.position = 'absolute';
-    iframe.style.visibility = 'hidden';
-    iframe.style.display = 'none';
+    const iframe = createHiddenFrame()
 
     const removeIframe = () => {
       if ( window.document.body.contains( iframe ) ) {
@@ -45,4 +51,4 @@ export const runIframe = (
     window.document.body.appendChild( iframe );
     iframe.setAttribute( 'src', url );
   } );
-};
+}
