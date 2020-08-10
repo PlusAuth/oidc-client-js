@@ -60,7 +60,7 @@ yarn add @plusauth/plusauth-oidc-client-js
 
 ### Api Docs
 
-Please visit [here](https://plusauth.github.io/plusauth-oidc-client-js/index.html)
+Please visit [here](https://plusauth.github.io/plusauth-oidc-client-js/classes/oidcclient.html)
 
 
 ### Examples
