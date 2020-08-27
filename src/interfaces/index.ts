@@ -55,14 +55,13 @@ export interface IPlusAuthClientOptions extends Omit<AuthRequestOptions, 'reques
    * Also see {@link secondsToRefreshAccessTokenBeforeExp}
    */
   autoSilentRenew?: boolean;
-
   /**
    * Enable/Disable session monitoring.
    */
   checkSession?: boolean;
+
   client_id: string;
   client_secret?: string;
-
   /**
    * The amount of clock skew tolerated for time comparisons between the Authorization server and client in seconds.
    */
@@ -75,6 +74,7 @@ export interface IPlusAuthClientOptions extends Omit<AuthRequestOptions, 'reques
    * time to the library.
    */
   currentTimeInMillis?: () => number;
+
   endpoints?: {
     authorization_endpoint?: string,
     check_session_iframe?: string,
@@ -89,7 +89,6 @@ export interface IPlusAuthClientOptions extends Omit<AuthRequestOptions, 'reques
     userinfo_endpoint?: string
   },
   httpClient?: ( options: RequestOptions ) => Promise<any>;
-
   /**
    * Additional id token validator. By default only payload fields validated. If you need additional validations,
    * like signature validation, you should implement and provide it with this option.

@@ -2,7 +2,7 @@ import { AuthenticationError, PAError } from '../errors';
 import { IFrameOptions } from '../interfaces';
 
 export function createHiddenFrame() {
-  const iframe = window.document.createElement('iframe');
+  const iframe = window.document.createElement( 'iframe' );
   iframe.style.width = '0';
   iframe.style.height = '0';
   iframe.style.position = 'absolute';
