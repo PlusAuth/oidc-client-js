@@ -78,7 +78,8 @@ export function validateIdToken( id_token: string, nonce: string, options: IPlus
 
     validateJwt( id_token, options )
 
-    if ( !jwt.payload.sub ) {
+    // @ts-ignore
+    if ( !jwt.payload['sub'] ) {
       throw new Error( 'No Subject (sub) present in id_token' );
     }
 
@@ -147,7 +148,7 @@ export function validateJwt( jwt: string, options: JWTValidationOptions ) {
 // Retrieved from https://www.iana.org/assignments/jwt/jwt.xhtml
 export const nonUserClaims = [
   'iss',
-  'sub',
+  // 'sub',
   'aud',
   'exp',
   'nbf',
