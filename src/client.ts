@@ -567,6 +567,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
    */
   private async handleTokenResult( tokenResult: TokenResponse, authParams: AuthRequestOptions,
     finalOptions: IPlusAuthClientOptions ){
+    await this.initialize( false )
     let user: any = {}
     if ( tokenResult.id_token ){
       const payload = await validateIdToken( tokenResult.id_token, authParams.nonce!, finalOptions )
