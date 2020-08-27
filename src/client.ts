@@ -58,6 +58,8 @@ export class OIDCClient extends EventEmitter<EventTypes>{
 
   private leaderElector: LeaderElector
 
+  private initialized!: boolean;
+
   constructor( options: IPlusAuthClientOptions ) {
     super()
     if ( !isValidOrigin( options.issuer ) ){
@@ -104,6 +106,9 @@ export class OIDCClient extends EventEmitter<EventTypes>{
    * initializing. Defaults to `true`
    */
   async initialize( checkLogin = true ){
+    if ( this.initialized ){
+      return this
+    }
     if ( this.stateStore.init ){
       await this.stateStore.init()
     }
@@ -134,6 +139,8 @@ export class OIDCClient extends EventEmitter<EventTypes>{
         await this.authStore.clear()
       }
     }
+
+    this.initialized = true
 
     return this
   }
