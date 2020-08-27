@@ -1,5 +1,19 @@
-import {runIframe} from "../../src/utils";
+import {createHiddenFrame, runIframe} from "../../src/utils";
 import {PAError} from "../../src";
+
+describe('createHiddenIframe', () => {
+  it('should create hidden iframe', function () {
+    const iframe = createHiddenFrame()
+
+    expect(iframe).toBeDefined()
+
+    expect(iframe.style.width).toBe('0px')
+    expect(iframe.style.height).toBe('0px')
+    expect(iframe.style.visibility).toBe('hidden')
+    expect(iframe.style.display).toBe('none')
+  });
+
+})
 
 describe('runIframe', () => {
   const setup = (customMessage?: MessageEvent) => {
