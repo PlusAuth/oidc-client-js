@@ -82,19 +82,33 @@ export class OIDCClient extends EventEmitter<EventTypes>{
       webWorkerSupport: false
     } ), {} )
 
-    this.on( Events.USER_LOGIN, async ( authObj ) => {
-      await this.authStore.set( 'auth', authObj )
-      if ( options.checkSession && !window?.frameElement ){
-        this.monitorSession( { sub: authObj.user.sub, session_state: authObj.session_state } )
-      }
-    } )
 
-    if ( options.autoSilentRenew ){
+    if ( this.options.autoSilentRenew ){
       this._accessTokenExpireTimer = new Timer()
     }
 
     this.on( Events.USER_LOGOUT, async ()=>{
       await this.authStore.clear()
+    } )
+
+    this.on( Events.USER_LOGIN, async ( authObj ) => {
+      const { expires_in } = authObj
+      await this.authStore.set( 'auth', authObj )
+      if ( !window?.frameElement ) {
+        if ( this.options.checkSession ) {
+          this.monitorSession( { sub: authObj.user.sub, session_state: authObj.session_state } )
+        }
+
+        if ( expires_in !== undefined && this.options.autoSilentRenew ){
+          const expiration = expires_in - this.options.secondsToRefreshAccessTokenBeforeExp!
+          if ( expiration > 0 ){
+            this._accessTokenExpireTimer!.start( expiration, async ()=> {
+              await this.leaderElector.awaitLeadership()
+              await this.silentLogin()
+            } )
+          }
+        }
+      }
     } )
   }
 
@@ -572,16 +586,6 @@ export class OIDCClient extends EventEmitter<EventTypes>{
       if ( finalOptions.requestUserInfo ) {
         const userInfoResult = await this.fetchUserInfo( tokenResult.access_token )
         user = { ...user, ...userInfoResult }
-      }
-
-      if ( tokenResult.expires_in !== undefined && finalOptions.autoSilentRenew ){
-        const expiration = tokenResult.expires_in - finalOptions.secondsToRefreshAccessTokenBeforeExp!
-        if ( expiration > 0 ){
-          this._accessTokenExpireTimer!.start( expiration, async ()=> {
-            await this.leaderElector.awaitLeadership()
-            await this.silentLogin()
-          } )
-        }
       }
     }
 
