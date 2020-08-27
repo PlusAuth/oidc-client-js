@@ -267,16 +267,15 @@ export class OIDCClient extends EventEmitter<EventTypes>{
    * @param options
    */
   async logout( options: LogoutRequestOptions = {} ){
-    if ( options.localOnly ){
-      await this.authStore.clear()
-    } else {
-      const storedAuth =  await this.authStore.get( 'auth' )
+    if ( !options.localOnly ) {
+      const storedAuth = await this.authStore.get( 'auth' )
       const id_token_hint = options.id_token_hint || storedAuth?.id_token
       window.location.assign( this.createLogoutRequest( {
         ...options,
         id_token_hint
       } ) )
     }
+    await this.authStore.clear()
   }
 
   /**
