@@ -582,8 +582,6 @@ describe('oidc client', function (){
         secondsToRefreshAccessTokenBeforeExp: 20
       })
         .then( resp => {
-          // @ts-expect-error
-          expect(oidc._accessTokenExpireTimer.start).toBeCalledTimes(1)
           expect(resp).toStrictEqual({
               expires_in: 120,
               authParams: {},
@@ -599,6 +597,7 @@ describe('oidc client', function (){
 
   describe('.login()', function () {
     beforeAll(() => {
+      // @ts-ignore
       delete window.location
       // @ts-ignore
       window.location = {assign : jest.fn()}
@@ -692,6 +691,7 @@ describe('oidc client', function (){
     it('should fail if no url is passed', function (done) {
       const oidc = new OIDCClient(dummyOpts)
       const oldWindow = window.location;
+      // @ts-ignore
       delete window.location;
       oidc.loginCallback().catch( e => {
         expect(e).toBeInstanceOf(PAError)
@@ -850,6 +850,7 @@ describe('oidc client', function (){
   describe('.logout()', function () {
     const oldLocation = window.location
     beforeEach(() => {
+      // @ts-ignore
       delete window.location
       // @ts-ignore
       window.location = {assign : jest.fn()}
