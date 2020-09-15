@@ -9,9 +9,4 @@ describe('checkSessionIframe', function (){
     expect(checker).toHaveProperty('stop', expect.any(Function))
   });
 
-  it('should throw an error if url is not defined', function () {
-    // @ts-expect-error
-    const checker = createSessionCheckerFrame({ url: 'http://test.url'})
-
-  });
 })
