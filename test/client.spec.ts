@@ -700,6 +700,14 @@ describe('oidc client', function (){
       })
       window.location = oldWindow
     });
+    it('should fail if wrong url is passed', function (done) {
+      const oidc = new OIDCClient(dummyOpts)
+      oidc.loginCallback('wrongUrlformat#asdasdasd').catch( e => {
+        expect(e).toBeInstanceOf(PAError)
+        expect(e.message).toBe('Invalid callback url passed: "wrongUrlformat#asdasdasd"')
+        done()
+      })
+    });
 
     it('should exchange auth code ', function (done) {
       const authObj = { user: { sub: 'test'}}

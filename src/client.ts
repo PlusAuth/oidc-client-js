@@ -222,8 +222,11 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     let parsedUrl = null
     try {
       parsedUrl = new URL( url )
-    } catch ( e ){}
-    const responseParams = parseQueryUrl( parsedUrl?.search || url )
+    } catch ( e ){
+      return Promise.reject( new PAError( `Invalid callback url passed: "${ url }"` ) )
+    }
+
+    const responseParams = parseQueryUrl( parsedUrl?.search || parsedUrl?.hash )
     const rawStoredState = await this.loadState( responseParams.state )
     const { authParams, localState, request_type } = rawStoredState
     switch ( request_type ) {
