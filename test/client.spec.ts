@@ -683,7 +683,7 @@ describe('oidc client', function (){
   describe('.loginWithPopup()', function () {
     it('should execute popup and handle auth result', function (done) {
       const mockedRunPopup = jest.fn( async () => {
-        return { response: { state: 'test' } }
+        return { response: { state: 'test' }, state: { authParams: {}, localState: {}}}
       })
       // @ts-expect-error
       popupUtils["runPopup"] = mockedRunPopup
@@ -691,8 +691,6 @@ describe('oidc client', function (){
 
       const authResult = { user: 'x'}
 
-      // @ts-ignore
-      oidc.loadState = jest.fn(async () => ({ authParams: {}, localState: {}}))
       // @ts-ignore
       oidc.exchangeAuthorizationCode = jest.fn(async () => ({ }))
       // @ts-ignore
