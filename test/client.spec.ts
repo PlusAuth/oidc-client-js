@@ -24,6 +24,7 @@ jest.mock( 'broadcast-channel', () => {
 
 import {AuthenticationError, Events, InvalidIdTokenError, LocalStorageStateStore, OIDCClient, PAError} from "../src";
 import {Timer} from "../src/helpers/timer";
+import {deriveChallenge} from "../src/utils/jose";
 
 
 const mockedFetch = <jest.Mock> fetch
@@ -267,6 +268,38 @@ describe('oidc client', function (){
         done()
       })
     });
+
+    it('should generate nonce if response type includes "id_token"', function (done) {
+      const oidc = new OIDCClient({...dummyOpts, response_type: 'id_token'})
+      // @ts-expect-error
+      oidc.stateStore.set = jest.fn()
+
+      // @ts-expect-error
+      oidc.createAuthRequest().then( uri => {
+        expect(uri).toMatch(/\&nonce=\w+\&?/)
+        done()
+      })
+    });
+    it('should generate code_challenge if response type includes "code"', function (done) {
+      const oidc = new OIDCClient(dummyOpts)
+      // @ts-expect-error
+      oidc.stateStore.set = jest.fn()
+
+      // @ts-ignore
+      deriveChallenge = jest.fn( async () => "code_challenge")
+      // @ts-expect-error
+      oidc.createAuthRequest().then( uri => {
+        expect(uri).toMatch(/\&code_challenge=code_challenge\&/)
+        expect(uri).toMatch(/\&code_challenge_method=S256+\&?/)
+        expect(deriveChallenge).toBeCalled()
+        // @ts-ignore
+        deriveChallenge.mockRestore()
+        done()
+      }).catch(() => {
+        // @ts-ignore
+        deriveChallenge.mockRestore()
+      })
+    });
   })
 
   describe('.createLogoutRequest()', function () {
@@ -471,6 +504,33 @@ describe('oidc client', function (){
         expect(err.message).toBe('State not found')
         done()
       })
+    });
+  })
+
+  describe('.handleAuthResponse()', function () {
+    it('should handle', function (done) {
+      const oidc = new OIDCClient(dummyOpts)
+
+      // @ts-expect-error
+      oidc.handleAuthResponse({ param: 'value'}, {}, {})
+        .then( resp => {
+          expect(resp).toStrictEqual({ param: 'value'})
+          done()
+        }).catch(done.fail)
+    });
+
+    it('should exchange code', function (done) {
+      const oidc = new OIDCClient(dummyOpts)
+
+      // @ts-expect-error
+      oidc.exchangeAuthorizationCode = jest.fn(async () => ({ }))
+      // @ts-expect-error
+      oidc.handleAuthResponse({ code: 'code'}, {}, {})
+        .then( resp => {
+          // @ts-expect-error
+          expect(oidc.exchangeAuthorizationCode).toBeCalled()
+          done()
+        }).catch(done.fail)
     });
   })
 
@@ -813,6 +873,8 @@ describe('oidc client', function (){
       // @ts-expect-error
       oidc.createAuthRequest = jest.fn()
       // @ts-expect-error
+      oidc.handleAuthResponse = jest.fn()
+      // @ts-expect-error
       oidc.exchangeAuthorizationCode = jest.fn()
       // @ts-expect-error
       oidc.handleTokenResult = jest.fn( async () => authObj)
@@ -824,7 +886,7 @@ describe('oidc client', function (){
       oidc.on(Events.USER_LOGIN, onLogin )
       oidc.silentLogin().then(function () {
         // @ts-expect-error
-        expect(oidc.exchangeAuthorizationCode).toBeCalled()
+        expect(oidc.handleAuthResponse).toBeCalled()
         // @ts-expect-error
         expect(oidc.handleTokenResult).toBeCalled()
         expect(onLogin).toBeCalledWith(authObj)

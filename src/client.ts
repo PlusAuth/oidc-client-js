@@ -35,6 +35,7 @@ import {
   nonUserClaims, generateRandom, deriveChallenge, isValidOrigin,
 } from './utils';
 
+import { isResponseType } from './utils/oidc';
 import { runPopup } from './utils/popup';
 
 /**
@@ -191,13 +192,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     } )
     const { response } = await runPopup( url, popupOptions )
     const { authParams, localState } = await this.loadState( response.state )
-    const tokenResult = await this.exchangeAuthorizationCode( {
-      redirect_uri:  authParams.redirect_uri,
-      client_id:     authParams.client_id,
-      code_verifier: localState.code_verifier,
-      grant_type:    'authorization_code',
-      code:          response.code,
-    } )
+    const tokenResult = await this.handleAuthResponse( response, authParams, localState )
     const authObject = await this.handleTokenResult(
       tokenResult,
       authParams,
@@ -246,13 +241,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
         if ( responseParams.error ){
           return Promise.reject( new AuthenticationError( responseParams.error, responseParams.error_description ) )
         }
-        const tokenResult = await this.exchangeAuthorizationCode( {
-          redirect_uri:  authParams.redirect_uri,
-          client_id:     authParams.client_id,
-          code_verifier: localState.code_verifier,
-          grant_type:    'authorization_code',
-          code:          responseParams.code,
-        } )
+        const tokenResult = await this.handleAuthResponse( responseParams, authParams, localState )
         const authObject = await this.handleTokenResult(
           tokenResult,
           authParams,
@@ -336,13 +325,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
       }, localState )
 
       const { response, state } = await runIframe( authUrl, { eventOrigin: window.location.origin } )
-      tokenResult = await this.exchangeAuthorizationCode( {
-        redirect_uri:  finalOptions.redirect_uri,
-        client_id:     finalOptions.client_id,
-        code_verifier: localState.code_verifier,
-        grant_type:    'authorization_code',
-        code:          response.code,
-      } );
+      tokenResult = await this.handleAuthResponse( response, finalOptions, localState )
       storedAuth.session_state = response.session_state;
       finalState = state
     }
@@ -425,28 +408,33 @@ export class OIDCClient extends EventEmitter<EventTypes>{
 
 
     const authParams: Record<string, string | undefined> = {
-      client_id:             finalOptions.client_id,
-      state:                 generateRandom( 10 ),
-      nonce:                 generateRandom( 10 ),
-      scope:                 finalOptions.scope,
-      audience:              finalOptions.audience,
-      redirect_uri:          finalOptions.redirect_uri,
-      response_type:         finalOptions.response_type || 'code',
-      response_mode:         finalOptions.response_mode || 'query',
-      ui_locales:            finalOptions.ui_locales,
-      prompt:                finalOptions.prompt,
-      display:               finalOptions.display,
-      claims_locales:        finalOptions.claims_locales,
-      acr_values:            finalOptions.acr_values,
-      code_challenge:        await deriveChallenge( localState.code_verifier ),
-      code_challenge_method: finalOptions.code_challenge_method || 'S256',
-      registration:          finalOptions.registration,
-      login_hint:            finalOptions.login_hint,
-      id_token_hint:         finalOptions.id_token_hint,
-      web_message_uri:       finalOptions.web_message_uri,
-      web_message_target:    finalOptions.web_message_target,
+      client_id:          finalOptions.client_id,
+      state:              generateRandom( 10 ),
+      scope:              finalOptions.scope,
+      audience:           finalOptions.audience,
+      redirect_uri:       finalOptions.redirect_uri,
+      response_type:      finalOptions.response_type || 'code',
+      ui_locales:         finalOptions.ui_locales,
+      prompt:             finalOptions.prompt,
+      display:            finalOptions.display,
+      claims_locales:     finalOptions.claims_locales,
+      acr_values:         finalOptions.acr_values,
+      registration:       finalOptions.registration,
+      login_hint:         finalOptions.login_hint,
+      id_token_hint:      finalOptions.id_token_hint,
+      web_message_uri:    finalOptions.web_message_uri,
+      web_message_target: finalOptions.web_message_target,
       ...finalOptions.extraParams && finalOptions.extraParams
     };
+
+    if ( isResponseType( 'id_token', authParams.response_type ) ){
+      authParams.nonce = generateRandom( 10 )
+    }
+
+    if ( isResponseType( 'code', authParams.response_type ) ){
+      authParams.code_challenge= await deriveChallenge( localState.code_verifier )
+      authParams.code_challenge_method= finalOptions.code_challenge_method || 'S256'
+    }
 
     const now = this.options.currentTimeInMillis && this.options.currentTimeInMillis() || Date.now()
     const fragment = finalOptions.fragment ? `#${ finalOptions.fragment }` : '';
@@ -559,6 +547,28 @@ export class OIDCClient extends EventEmitter<EventTypes>{
       method:      'GET',
       requestType: 'json'
     } )
+  }
+
+  /**
+   * Handle auth request result. If there is `code` exchange it.
+   * @param response
+   * @param finalOptions
+   * @param localState
+   * @private
+   */
+  private async handleAuthResponse( response: any, finalOptions: IPlusAuthClientOptions,
+    localState: Record<string, any> = {} ){
+    if ( response.code ){
+      return this.exchangeAuthorizationCode( {
+        redirect_uri:  finalOptions.redirect_uri,
+        client_id:     finalOptions.client_id,
+        code_verifier: localState.code_verifier,
+        grant_type:    'authorization_code',
+        code:          response.code,
+      } );
+    } else {
+      return response
+    }
   }
 
   /**
