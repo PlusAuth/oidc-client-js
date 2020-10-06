@@ -1,3 +1,16 @@
+## [0.1.1](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.1.0...v0.1.1) (2020-10-06)
+
+
+### Bug Fixes
+
+* auth response params cannot be parsed if response type is fragment ([5d5284d](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/5d5284d1acd9acf4f629c91501917494fa5dd16e))
+* auth state get deleted whenever temporary state delete requested ([b165cd3](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/b165cd3c950a068de0aede92c8b5ca95f513be88))
+* code challenge is generated always ([c7d6bdb](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/c7d6bdb38da1e808d8602b0a0a8a546459e1a2f8))
+* isLoggedIn returns wrong result ([4e2343c](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/4e2343ca0d2559cf34c1abef55761db334157f46))
+* logout event is not fired on session end ([bdd75bf](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/bdd75bf66ce3ad7ab6cd4441d2050419fc414ffa))
+* nonce is not generated when openid scope exists ([6a01e86](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/6a01e86c4159ee3a951e99ddee63d1eb0cc962a6))
+* popup result is not passed to opener window ([3c63b3a](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/3c63b3a35ae9928f09e0c940709d26f5e1163771))
+
 # 0.1.0 (2020-08-27)
 
 
