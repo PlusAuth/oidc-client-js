@@ -35,7 +35,7 @@ import {
   nonUserClaims, generateRandom, deriveChallenge, isValidOrigin,
 } from './utils';
 
-import { isResponseType } from './utils/oidc';
+import { isResponseType, isScopeIncluded } from './utils/oidc';
 import { runPopup } from './utils/popup';
 
 /**
@@ -437,7 +437,8 @@ export class OIDCClient extends EventEmitter<EventTypes>{
       ...finalOptions.extraParams && finalOptions.extraParams
     };
 
-    if ( isResponseType( 'id_token', authParams.response_type ) ){
+    if ( isResponseType( 'id_token', authParams.response_type ) ||
+      isScopeIncluded( 'openid', authParams.scope ) ){
       authParams.nonce = generateRandom( 10 )
     }
 

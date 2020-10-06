@@ -271,8 +271,6 @@ describe('oidc client', function (){
 
     it('should generate nonce if response type includes "id_token"', function (done) {
       const oidc = new OIDCClient({...dummyOpts, response_type: 'id_token'})
-      // @ts-expect-error
-      oidc.stateStore.set = jest.fn()
 
       // @ts-expect-error
       oidc.createAuthRequest().then( uri => {
@@ -280,6 +278,16 @@ describe('oidc client', function (){
         done()
       })
     });
+
+    it('should generate nonce if scope includes "openid"', function (done) {
+      const oidc = new OIDCClient({...dummyOpts, response_type: 'code', scope: 'openid profile'})
+      // @ts-expect-error
+      oidc.createAuthRequest().then( uri => {
+        expect(uri).toMatch(/\&nonce=\w+\&?/)
+        done()
+      })
+    });
+
     it('should generate code_challenge if response type includes "code"', function (done) {
       const oidc = new OIDCClient(dummyOpts)
       // @ts-expect-error
