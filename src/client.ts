@@ -398,8 +398,8 @@ export class OIDCClient extends EventEmitter<EventTypes>{
    * @param localOnly Don't check provider
    */
   async isLoggedIn( localOnly = false ){
-    const localUser = !!await this.getUser()
-    if ( !localUser && !localOnly ){
+    const existsOnLocal = !!await this.getUser()
+    if ( !existsOnLocal && !localOnly ){
       try {
         await this.silentLogin()
         return true
@@ -407,7 +407,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
         return false
       }
     }
-    return true
+    return existsOnLocal
   }
 
   /**
