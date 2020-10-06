@@ -76,7 +76,7 @@ export function validateIdToken( id_token: string, nonce: string, options: IPlus
       throw new Error( `Invalid nonce in id_token: ${ jwt.payload.nonce }` );
     }
 
-    validateJwt( id_token, options )
+    validateJwt( id_token, options, true )
 
     // @ts-ignore
     if ( !jwt.payload['sub'] ) {
@@ -89,7 +89,7 @@ export function validateIdToken( id_token: string, nonce: string, options: IPlus
   }
 }
 
-export function validateJwt( jwt: string, options: JWTValidationOptions ) {
+export function validateJwt( jwt: string, options: JWTValidationOptions, isIdToken = false ) {
   // eslint-disable-next-line prefer-const
   let { clockSkew, currentTimeInMillis, issuer, audience, client_id } = options
   if ( !clockSkew ){
@@ -109,9 +109,12 @@ export function validateJwt( jwt: string, options: JWTValidationOptions ) {
   if ( !payload.aud ) {
     throw new InvalidJWTError( 'Audience (aud) was not provided' );
   }
+
+  // Audience must be equal to client_id in id_token
+  // https://openid.net/specs/openid-connect-core-1_0.html#IDToken
   if ( Array.isArray( payload.aud ) ?
-    payload.aud.indexOf( audience || client_id ) == -1 :
-    payload.aud !== ( audience || client_id )
+    payload.aud.indexOf( isIdToken ? client_id : audience || client_id ) == -1 :
+    payload.aud !== ( isIdToken ? client_id : audience || client_id )
   ) {
     throw new InvalidJWTError( `Invalid Audience (aud) in token: ${ payload.aud }` );
   }

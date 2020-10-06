@@ -461,11 +461,11 @@ describe('jose utils', function () {
     it('should fail with missing sub', function () {
       try {
         validateIdToken(createJWT({ payload: {nonce: expectedNonce}}),
-          //@ts-expect-error
           expectedNonce, {
             issuer: expectedIssuer,
             audience: expectedAudience,
             currentTimeInMillis: expectedNow,
+            client_id: expectedAudience,
             clockSkew: 0,
             issuer_metadata: { keys: [rsaKey]}})
 
@@ -479,9 +479,9 @@ describe('jose utils', function () {
     it('should pass with correct id_token', function () {
       expect(
         validateIdToken(idToken,
-          //@ts-expect-error
           expectedNonce, {
             issuer: expectedIssuer,
+            client_id: expectedAudience,
             audience: expectedAudience,
             currentTimeInMillis: expectedNow,
             clockSkew: 0,
