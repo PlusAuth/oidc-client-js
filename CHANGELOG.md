@@ -1,3 +1,10 @@
+## [0.1.2-beta.0](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.1.1...v0.1.2-beta.0) (2020-10-06)
+
+
+### Bug Fixes
+
+* audience check fails for id_token ([4e6874f](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/4e6874f1542badd354fa641b51559ec9c8d81ec2))
+
 ## [0.1.1](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.1.0...v0.1.1) (2020-10-06)
 
 
