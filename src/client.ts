@@ -191,8 +191,8 @@ export class OIDCClient extends EventEmitter<EventTypes>{
       display:       'popup',
       request_type:  'p'
     } )
-    const { response } = await runPopup( url, popupOptions )
-    const { authParams, localState } = await this.loadState( response.state )
+    const { response, state } = await runPopup( url, popupOptions )
+    const { authParams, localState } = state
     const tokenResult = await this.handleAuthResponse( response, authParams, localState )
     const authObject = await this.handleTokenResult(
       tokenResult,
@@ -225,10 +225,10 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     const responseParams = parseQueryUrl( parsedUrl?.search || parsedUrl?.hash )
     const rawStoredState = await this.loadState( responseParams.state )
     const { authParams, localState, request_type } = rawStoredState
+    url = url || window.location.href;
     switch ( request_type ) {
       case 's':
         if ( window?.frameElement ) {
-          url = url || window.location.href;
           if ( url ) {
             window.parent.postMessage( {
               type:     'authorization_response',
@@ -236,6 +236,15 @@ export class OIDCClient extends EventEmitter<EventTypes>{
               state:    rawStoredState
             }, `${ location.protocol }//${ location.host }` );
           }
+        }
+        return
+      case 'p':
+        if ( window.opener && url ){
+          window.opener.postMessage( {
+            type:     'authorization_response',
+            response: responseParams,
+            state:    rawStoredState
+          }, `${ location.protocol }//${ location.host }` );
         }
         return
       default:
