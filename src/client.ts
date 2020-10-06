@@ -79,6 +79,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     this.http = this.options.httpClient || request
     this.stateStore = this.options.stateStore || new LocalStorageStateStore( 'pa_oidc.state' )
     this.authStore = this.options.authStore || new LocalStorageStateStore( 'pa_oidc.auth' )
+    // TODO: use another solution to decrease bundle size
     this.leaderElector = createLeaderElection( new BroadcastChannel( 'pa_oidc_client', {
       webWorkerSupport: false
     } ), {} )
