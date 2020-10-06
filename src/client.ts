@@ -673,14 +673,19 @@ export class OIDCClient extends EventEmitter<EventTypes>{
 
     if ( !this.sessionCheckerFrame ){
       const sessionCheckCallback = async ()=>{
-        await this.silentLogin( {}, {} )
-        const storedAuth = await this.authStore.get( 'auth' )
-        if ( storedAuth ){
-          if ( storedAuth?.user.sub === sub ){
-            this.sessionCheckerFrame!.start( storedAuth.session_state )
+        try {
+          await this.silentLogin( {}, {} )
+          const storedAuth = await this.authStore.get( 'auth' )
+          if ( storedAuth ){
+            if ( storedAuth?.user.sub === sub ){
+              this.sessionCheckerFrame!.start( storedAuth.session_state )
+            }
+          } else {
+            this.emit( Events.USER_LOGOUT, null )
           }
-        } else {
+        } catch ( e ) {
           this.emit( Events.USER_LOGOUT, null )
+          return
         }
       }
 
