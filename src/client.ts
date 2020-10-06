@@ -76,8 +76,8 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     } )
 
     this.http = this.options.httpClient || request
-    this.stateStore = this.options.stateStore || new LocalStorageStateStore()
-    this.authStore = this.options.authStore || new LocalStorageStateStore()
+    this.stateStore = this.options.stateStore || new LocalStorageStateStore( 'pa_oidc.state' )
+    this.authStore = this.options.authStore || new LocalStorageStateStore( 'pa_oidc.auth' )
     this.leaderElector = createLeaderElection( new BroadcastChannel( 'pa_oidc_client', {
       webWorkerSupport: false
     } ), {} )
