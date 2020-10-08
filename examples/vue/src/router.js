@@ -61,8 +61,8 @@ const router = new VueRouter({
 router.beforeEach( async (to, from, next) => {
   if(to.meta.auth){
     if (await auth.isLoggedIn(true)){
-      const scopes = await auth.getScope()
-      if(scopes.split(' ').includes(to.meta.auth)){
+      const scopes = await auth.getScopes()
+      if(scopes.includes(to.meta.auth)){
         return next()
       }else{
         return next({ name: 'Unauthorized'})

@@ -2,7 +2,7 @@
   <div class="user-profile-container">
     <pre><strong>User Profile:</strong> <code>{{ JSON.stringify(user, null, 2) }}</code></pre>
     <pre><strong>Access Token:</strong> <code>{{accessToken}}</code></pre>
-    <pre><strong>Scopes:</strong> <code>{{scope}}</code></pre>
+    <pre><strong>Scopes:</strong> <code>{{scopes}}</code></pre>
   </div>
 </template >
 
@@ -13,12 +13,12 @@ export default {
     return {
       user: null,
       accessToken: null,
-      scope: null,
+      scopes: null,
     }
   },
   async created(){
     this.accessToken = await this.$auth.getAccessToken()
-    this.scope = await this.$auth.getScope()
+    this.scopes = await this.$auth.getScopes()
     this.user = await this.$auth.getUser()
   }
 }
