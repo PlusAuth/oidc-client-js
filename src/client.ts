@@ -9,11 +9,14 @@ import {
   PAError
 } from './errors';
 
+import { EventEmitter } from './helpers';
 import {
-  EventEmitter,
+  InMemoryStateStore,
   LocalStorageStateStore,
   StateStore,
-} from './helpers';
+} from './helpers/state_manager';
+
+
 
 import { Timer } from './helpers/timer';
 import {

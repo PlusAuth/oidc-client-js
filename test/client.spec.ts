@@ -22,7 +22,15 @@ jest.mock( 'broadcast-channel', () => {
 })
 
 
-import {AuthenticationError, Events, InvalidIdTokenError, LocalStorageStateStore, OIDCClient, PAError} from "../src";
+import {
+  AuthenticationError,
+  Events,
+  InMemoryStateStore,
+  InvalidIdTokenError,
+  LocalStorageStateStore,
+  OIDCClient,
+  PAError
+} from "../src";
 import {Timer} from "../src/helpers/timer";
 import {deriveChallenge} from "../src/utils/jose";
 
