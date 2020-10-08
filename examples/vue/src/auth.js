@@ -8,7 +8,8 @@ const auth= new OIDCClient({
   autoSilentRenew: true,
   checkSession: true,
   requestUserInfo: true,
-  scope: 'openid profile secure'
+  scope: 'openid profile secure',
+  silent_redirect_uri: 'http://localhost:8080/silent-renew.html'
 })
 
 export default auth
