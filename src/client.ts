@@ -112,7 +112,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     } )
 
     this.on( Events.USER_LOGIN, async ( authObj ) => {
-      const { expires_in, user, scope, access_token, id_token, refresh_token } = authObj
+      const { expires_in, user, scope, access_token, id_token, refresh_token, session_state } = authObj
       await this.authStore.set( 'auth', authObj )
 
       this.user = user
@@ -122,12 +122,12 @@ export class OIDCClient extends EventEmitter<EventTypes>{
       this.refreshToken = refresh_token
       if ( !window?.frameElement ) {
         if ( this.options.checkSession ) {
-          this.monitorSession( { sub: authObj.user.sub, session_state: authObj.session_state } )
+          this.monitorSession( { sub: user.sub || user.id, session_state } )
         }
 
         if ( expires_in !== undefined && this.options.autoSilentRenew ){
           const expiration = Number( expires_in ) - this.options.secondsToRefreshAccessTokenBeforeExp!
-          if ( expiration > 0 ){
+          if ( expiration >= 0 ){
             this._accessTokenExpireTimer!.start( expiration, async ()=> {
               await this.leaderElector.awaitLeadership()
               await this.silentLogin()
