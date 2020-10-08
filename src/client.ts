@@ -319,10 +319,17 @@ export class OIDCClient extends EventEmitter<EventTypes>{
    * @param localState
    */
   async silentLogin( options: AuthRequestOptions = {}, localState: Record<string, any> = {} ){
-    const storedAuth = await this.authStore.get( 'auth' ) || {}
-    const finalOptions = Object.assign( {}, this.options, options )
     let tokenResult: any;
     let finalState: any = {}
+
+    const storedAuth = await this.authStore.get( 'auth' ) || {}
+
+    const finalOptions = Object.assign( {}, this.options, options )
+
+    if ( finalOptions.silent_redirect_uri ){
+      finalOptions.redirect_uri = finalOptions.silent_redirect_uri
+    }
+
     if ( this.options.useRefreshToken && storedAuth?.refresh_token ){
       tokenResult = await this.exchangeRefreshToken( {
         ...finalOptions,

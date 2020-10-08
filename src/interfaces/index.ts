@@ -61,6 +61,7 @@ export interface IPlusAuthClientOptions extends Omit<AuthRequestOptions, 'reques
   checkSession?: boolean;
 
   client_id: string;
+
   client_secret?: string;
   /**
    * The amount of clock skew tolerated for time comparisons between the Authorization server and client in seconds.
@@ -88,6 +89,7 @@ export interface IPlusAuthClientOptions extends Omit<AuthRequestOptions, 'reques
     token_endpoint?: string,
     userinfo_endpoint?: string
   },
+
   httpClient?: ( options: RequestOptions ) => Promise<any>;
   /**
    * Additional id token validator. By default only payload fields validated. If you need additional validations,
@@ -109,6 +111,8 @@ export interface IPlusAuthClientOptions extends Omit<AuthRequestOptions, 'reques
    * The number of seconds before an access token is to expire to renew it automatically. Related to {@link autoSilentRenew}
    */
   secondsToRefreshAccessTokenBeforeExp?: number;
+
+  silent_redirect_uri?: string;
 
   /**
    * Custom state store. See {@link StateStore}
