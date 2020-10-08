@@ -1,3 +1,19 @@
+# [0.2.0](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.1.2-beta.0...v0.2.0) (2020-10-08)
+
+
+### Bug Fixes
+
+* handle cases where expires_in is string ([8b6c71e](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/8b6c71eb15ac84b65ceee4a7ecd21a93afafb098))
+
+
+### Features
+
+* add instance variables for direct access ([62b7794](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/62b77942be84a0260929d1c22d32086b886b5ef1))
+* check for userinfo endpoint before fetching userinfo ([9479068](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/9479068bb8f382062c1f52e38271ae08ebec51ee))
+* in memory state store ([5e40a00](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/5e40a00f7f5b257192f245b398042d8af748f843))
+* silent_redirect_uri support ([3dc7a9f](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/3dc7a9f95021ecf0367a97a0b4ecebd970b13ce1))
+* use in memory storage for auth store ([9f3f820](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/9f3f8204a4b44582ee5bc01f26c7d0244e5f534e))
+
 ## [0.1.2-beta.0](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.1.1...v0.1.2-beta.0) (2020-10-06)
 
 

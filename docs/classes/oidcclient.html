@@ -54,6 +54,9 @@
 				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
 					<a href="oidcclient.html#_accesstokenexpiretimer" class="tsd-kind-icon">_access<wbr>Token<wbr>Expire<wbr>Timer</a>
 				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+					<a href="oidcclient.html#accesstoken" class="tsd-kind-icon">access<wbr>Token</a>
+				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
 					<a href="oidcclient.html#authstore" class="tsd-kind-icon">auth<wbr>Store</a>
 				</li>
@@ -62,6 +65,9 @@
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
 					<a href="oidcclient.html#http" class="tsd-kind-icon">http</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+					<a href="oidcclient.html#idtoken" class="tsd-kind-icon">id<wbr>Token</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
 					<a href="oidcclient.html#initialized" class="tsd-kind-icon">initialized</a>
@@ -72,11 +78,20 @@
 				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
 					<a href="oidcclient.html#options" class="tsd-kind-icon">options</a>
 				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+					<a href="oidcclient.html#refreshtoken" class="tsd-kind-icon">refresh<wbr>Token</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+					<a href="oidcclient.html#scopes" class="tsd-kind-icon">scopes</a>
+				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
 					<a href="oidcclient.html#sessioncheckerframe" class="tsd-kind-icon">session<wbr>Checker<wbr>Frame</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
 					<a href="oidcclient.html#statestore" class="tsd-kind-icon">state<wbr>Store</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+					<a href="oidcclient.html#user" class="tsd-kind-icon">user</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-external">
 					<a href="oidcclient.html#createauthrequest" class="tsd-kind-icon">create<wbr>Auth<wbr>Request</a>
@@ -201,14 +216,19 @@
 						<h3>Properties</h3>
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="oidcclient.html#_accesstokenexpiretimer" class="tsd-kind-icon">_access<wbr>Token<wbr>Expire<wbr>Timer</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="oidcclient.html#accesstoken" class="tsd-kind-icon">access<wbr>Token</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="oidcclient.html#authstore" class="tsd-kind-icon">auth<wbr>Store</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="oidcclient.html#callbacks" class="tsd-kind-icon">callbacks</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="oidcclient.html#http" class="tsd-kind-icon">http</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="oidcclient.html#idtoken" class="tsd-kind-icon">id<wbr>Token</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="oidcclient.html#initialized" class="tsd-kind-icon">initialized</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="oidcclient.html#leaderelector" class="tsd-kind-icon">leader<wbr>Elector</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="oidcclient.html#options" class="tsd-kind-icon">options</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="oidcclient.html#refreshtoken" class="tsd-kind-icon">refresh<wbr>Token</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="oidcclient.html#scopes" class="tsd-kind-icon">scopes</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="oidcclient.html#sessioncheckerframe" class="tsd-kind-icon">session<wbr>Checker<wbr>Frame</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="oidcclient.html#statestore" class="tsd-kind-icon">state<wbr>Store</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="oidcclient.html#user" class="tsd-kind-icon">user</a></li>
 						</ul>
 					</section>
 					<section class="tsd-index-section tsd-is-external">
@@ -259,7 +279,7 @@
 						<aside class="tsd-sources">
 							<p>Overrides <a href="eventemitter.html">EventEmitter</a>.<a href="eventemitter.html#constructor">constructor</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/client.ts#L62">src/client.ts:62</a></li>
+								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L75">src/client.ts:75</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -281,7 +301,17 @@
 				<div class="tsd-signature tsd-kind-icon">_access<wbr>Token<wbr>Expire<wbr>Timer<span class="tsd-signature-symbol">:</span> <a href="timer.html" class="tsd-signature-type">Timer</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/client.ts#L58">src/client.ts:58</a></li>
+						<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L71">src/client.ts:71</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+				<a name="accesstoken" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagOptional">Optional</span> access<wbr>Token</h3>
+				<div class="tsd-signature tsd-kind-icon">access<wbr>Token<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L57">src/client.ts:57</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -291,7 +321,7 @@
 				<div class="tsd-signature tsd-kind-icon">auth<wbr>Store<span class="tsd-signature-symbol">:</span> <a href="statestore.html" class="tsd-signature-type">StateStore</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/client.ts#L54">src/client.ts:54</a></li>
+						<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L67">src/client.ts:67</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -302,7 +332,7 @@
 				<aside class="tsd-sources">
 					<p>Inherited from <a href="eventemitter.html">EventEmitter</a>.<a href="eventemitter.html#callbacks">callbacks</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/helpers/event_emitter.ts#L4">src/helpers/event_emitter.ts:4</a></li>
+						<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/helpers/event_emitter.ts#L4">src/helpers/event_emitter.ts:4</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -312,7 +342,7 @@
 				<div class="tsd-signature tsd-kind-icon">http<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><a href="../interfaces/requestoptions.html" class="tsd-signature-type">RequestOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/client.ts#L50">src/client.ts:50</a></li>
+						<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L63">src/client.ts:63</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
@@ -337,13 +367,23 @@
 					</ul>
 				</div>
 			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+				<a name="idtoken" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagOptional">Optional</span> id<wbr>Token</h3>
+				<div class="tsd-signature tsd-kind-icon">id<wbr>Token<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L61">src/client.ts:61</a></li>
+					</ul>
+				</aside>
+			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
 				<a name="initialized" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagPrivate">Private</span> initialized</h3>
 				<div class="tsd-signature tsd-kind-icon">initialized<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/client.ts#L62">src/client.ts:62</a></li>
+						<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L75">src/client.ts:75</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -353,7 +393,7 @@
 				<div class="tsd-signature tsd-kind-icon">leader<wbr>Elector<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">LeaderElector</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/client.ts#L60">src/client.ts:60</a></li>
+						<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L73">src/client.ts:73</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -363,7 +403,27 @@
 				<div class="tsd-signature tsd-kind-icon">options<span class="tsd-signature-symbol">:</span> <a href="../interfaces/iplusauthclientoptions.html" class="tsd-signature-type">IPlusAuthClientOptions</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/client.ts#L48">src/client.ts:48</a></li>
+						<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L51">src/client.ts:51</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+				<a name="refreshtoken" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagOptional">Optional</span> refresh<wbr>Token</h3>
+				<div class="tsd-signature tsd-kind-icon">refresh<wbr>Token<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L59">src/client.ts:59</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+				<a name="scopes" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagOptional">Optional</span> scopes</h3>
+				<div class="tsd-signature tsd-kind-icon">scopes<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L55">src/client.ts:55</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -373,7 +433,7 @@
 				<div class="tsd-signature tsd-kind-icon">session<wbr>Checker<wbr>Frame<span class="tsd-signature-symbol">:</span> <a href="../index.html#sessionchecker" class="tsd-signature-type">SessionChecker</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/client.ts#L56">src/client.ts:56</a></li>
+						<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L69">src/client.ts:69</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -383,7 +443,17 @@
 				<div class="tsd-signature tsd-kind-icon">state<wbr>Store<span class="tsd-signature-symbol">:</span> <a href="statestore.html" class="tsd-signature-type">StateStore</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/client.ts#L52">src/client.ts:52</a></li>
+						<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L65">src/client.ts:65</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+				<a name="user" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagOptional">Optional</span> user</h3>
+				<div class="tsd-signature tsd-kind-icon">user<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L53">src/client.ts:53</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -400,7 +470,7 @@
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/client.ts#L413">src/client.ts:413</a></li>
+								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L444">src/client.ts:444</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -431,7 +501,7 @@
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/client.ts#L474">src/client.ts:474</a></li>
+								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L505">src/client.ts:505</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -460,7 +530,7 @@
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="eventemitter.html">EventEmitter</a>.<a href="eventemitter.html#emit">emit</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/helpers/event_emitter.ts#L59">src/helpers/event_emitter.ts:59</a></li>
+								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/helpers/event_emitter.ts#L59">src/helpers/event_emitter.ts:59</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -486,7 +556,7 @@
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/client.ts#L489">src/client.ts:489</a></li>
+								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L520">src/client.ts:520</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -514,7 +584,7 @@
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/client.ts#L527">src/client.ts:527</a></li>
+								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L558">src/client.ts:558</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -542,7 +612,7 @@
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/client.ts#L554">src/client.ts:554</a></li>
+								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L585">src/client.ts:585</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -564,7 +634,7 @@
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/client.ts#L646">src/client.ts:646</a></li>
+								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L677">src/client.ts:677</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -592,7 +662,7 @@
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/client.ts#L352">src/client.ts:352</a></li>
+								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L383">src/client.ts:383</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -614,7 +684,7 @@
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/client.ts#L367">src/client.ts:367</a></li>
+								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L398">src/client.ts:398</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -636,7 +706,7 @@
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/client.ts#L360">src/client.ts:360</a></li>
+								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L391">src/client.ts:391</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -658,7 +728,7 @@
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/client.ts#L375">src/client.ts:375</a></li>
+								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L406">src/client.ts:406</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -680,7 +750,7 @@
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/client.ts#L383">src/client.ts:383</a></li>
+								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L414">src/client.ts:414</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -702,7 +772,7 @@
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/client.ts#L570">src/client.ts:570</a></li>
+								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L601">src/client.ts:601</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -736,7 +806,7 @@
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/client.ts#L592">src/client.ts:592</a></li>
+								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L623">src/client.ts:623</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -770,7 +840,7 @@
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/client.ts#L124">src/client.ts:124</a></li>
+								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L148">src/client.ts:148</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -803,7 +873,7 @@
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/client.ts#L393">src/client.ts:393</a></li>
+								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L424">src/client.ts:424</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -835,7 +905,7 @@
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/client.ts#L630">src/client.ts:630</a></li>
+								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L661">src/client.ts:661</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -863,7 +933,7 @@
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/client.ts#L172">src/client.ts:172</a></li>
+								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L196">src/client.ts:196</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -898,7 +968,7 @@
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/client.ts#L214">src/client.ts:214</a></li>
+								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L238">src/client.ts:238</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -931,7 +1001,7 @@
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/client.ts#L187">src/client.ts:187</a></li>
+								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L211">src/client.ts:211</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -968,7 +1038,7 @@
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/client.ts#L271">src/client.ts:271</a></li>
+								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L295">src/client.ts:295</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -999,7 +1069,7 @@
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/client.ts#L666">src/client.ts:666</a></li>
+								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L695">src/client.ts:695</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1043,7 +1113,7 @@
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="eventemitter.html">EventEmitter</a>.<a href="eventemitter.html#off">off</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/helpers/event_emitter.ts#L26">src/helpers/event_emitter.ts:26</a></li>
+								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/helpers/event_emitter.ts#L26">src/helpers/event_emitter.ts:26</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1070,7 +1140,7 @@
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="eventemitter.html">EventEmitter</a>.<a href="eventemitter.html#on">on</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/helpers/event_emitter.ts#L20">src/helpers/event_emitter.ts:20</a></li>
+								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/helpers/event_emitter.ts#L20">src/helpers/event_emitter.ts:20</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1115,7 +1185,7 @@
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="eventemitter.html">EventEmitter</a>.<a href="eventemitter.html#once">once</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/helpers/event_emitter.ts#L10">src/helpers/event_emitter.ts:10</a></li>
+								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/helpers/event_emitter.ts#L10">src/helpers/event_emitter.ts:10</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1159,7 +1229,7 @@
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/client.ts#L289">src/client.ts:289</a></li>
+								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L313">src/client.ts:313</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1202,7 +1272,7 @@
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/64f8b24/src/client.ts#L318">src/client.ts:318</a></li>
+								<li>Defined in <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/blob/38833c5/src/client.ts#L342">src/client.ts:342</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
