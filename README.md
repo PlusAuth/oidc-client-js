@@ -33,6 +33,7 @@ OpenID Connect (OIDC) and OAuth2 library for browser based JavaScript applicatio
 
 ### Table of Contents
 - [Installation](#installation)
+- [Documentation](#documentation)
 - [Api Docs](#api-docs)
 - [Examples](#examples)
 
@@ -57,6 +58,9 @@ or [yarn](https://yarnpkg.com):
 ```sh
 yarn add @plusauth/plusauth-oidc-client-js
 ```
+
+### Documentation
+Documentation is served on PlusAuth documentation site. You can reach it from [here](https://docs.plusauth.com/tools/oidc-client-js)
 
 ### Api Docs
 
