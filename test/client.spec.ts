@@ -110,7 +110,7 @@ describe('oidc client', function (){
       const oidc = new OIDCClient(dummyOpts)
 
       // @ts-expect-error
-      expect(oidc.authStore).toBeInstanceOf(LocalStorageStateStore)
+      expect(oidc.authStore).toBeInstanceOf(InMemoryStateStore)
       // @ts-expect-error
       expect(oidc.stateStore).toBeInstanceOf(LocalStorageStateStore)
 
@@ -624,7 +624,9 @@ describe('oidc client', function (){
     });
 
     it('should fetch user info when "requestUserInfo" = true', function (done) {
-      const oidc = new OIDCClient(dummyOpts)
+      const oidc = new OIDCClient({...dummyOpts, endpoints: {
+          userinfo_endpoint: 'user_info_endpoint'
+        }})
       // @ts-expect-error
       oidc.fetchUserInfo = jest.fn().mockReturnValue({ sub: 'test'})
       // @ts-expect-error
@@ -723,7 +725,7 @@ describe('oidc client', function (){
     const mockedStart = jest.fn()
     const mockedStop= jest.fn()
     const oidcOpts = {
-     ...dummyOpts,
+      ...dummyOpts,
       endpoints: {
         check_session_iframe: "http://example.com/example"
       }
