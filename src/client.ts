@@ -404,7 +404,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
    * Retrieve logged in user's scopes if it exists.
    */
   async getScope(){
-    return ( await this.authStore.get( 'auth' ) )?.scope
+    return ( await this.authStore.get( 'auth' ) )?.scope?.split( ' ' )
   }
 
 
