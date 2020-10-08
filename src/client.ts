@@ -50,6 +50,16 @@ import { runPopup } from './utils/popup';
 export class OIDCClient extends EventEmitter<EventTypes>{
   options: IPlusAuthClientOptions
 
+  user?: any;
+
+  scopes?: string[];
+
+  accessToken?: string;
+
+  refreshToken?: string;
+
+  idToken?: string;
+
   private readonly http: ( options: RequestOptions ) => Promise<any>;
 
   private stateStore: StateStore
@@ -93,12 +103,23 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     }
 
     this.on( Events.USER_LOGOUT, async ()=>{
+      this.user = undefined
+      this.scopes = undefined;
+      this.accessToken = undefined
+      this.idToken = undefined
+      this.refreshToken = undefined
       await this.authStore.clear()
     } )
 
     this.on( Events.USER_LOGIN, async ( authObj ) => {
-      const { expires_in } = authObj
+      const { expires_in, user, scope, access_token, id_token, refresh_token } = authObj
       await this.authStore.set( 'auth', authObj )
+
+      this.user = user
+      this.scopes = scope?.split( ' ' );
+      this.accessToken = access_token
+      this.idToken = id_token
+      this.refreshToken = refresh_token
       if ( !window?.frameElement ) {
         if ( this.options.checkSession ) {
           this.monitorSession( { sub: authObj.user.sub, session_state: authObj.session_state } )
