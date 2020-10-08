@@ -1,3 +1,10 @@
+# [0.3.0](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.2.0...v0.3.0) (2020-10-08)
+
+
+### Features
+
+* return scope list from getScope ([6647ac9](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/6647ac9c1f98b3c0b9b3db7f3edc6687c196b3a5))
+
 # [0.2.0](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.1.2-beta.0...v0.2.0) (2020-10-08)
 
 
