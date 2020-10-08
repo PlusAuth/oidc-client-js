@@ -105,7 +105,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
         }
 
         if ( expires_in !== undefined && this.options.autoSilentRenew ){
-          const expiration = expires_in - this.options.secondsToRefreshAccessTokenBeforeExp!
+          const expiration = Number( expires_in ) - this.options.secondsToRefreshAccessTokenBeforeExp!
           if ( expiration > 0 ){
             this._accessTokenExpireTimer!.start( expiration, async ()=> {
               await this.leaderElector.awaitLeadership()
