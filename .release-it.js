@@ -1,20 +1,20 @@
 module.exports = {
   hooks:{
-   "before:init": ["npm run lint", "npm test", "npm run docs"],
-    "after:bump": "npm run build",
+    "before:init": ["npm run lint", "npm test"],
+    "after:bump": ["npm run docs", "npm run build"],
   },
-  "git": {
+  git: {
     "commitMessage": "chore: release v${version}",
     "requireCleanWorkingDir": true,
     "tagAnnotation": "Release v${version}",
     "tagName": "v${version}"
   },
-  "github": {
+  github: {
     "release": true,
     "draft": true,
     "releaseName": "v${version}"
   },
-  "plugins": {
+  plugins: {
     "@release-it/conventional-changelog": {
       "preset": "angular",
       "infile": "CHANGELOG.md"
