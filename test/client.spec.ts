@@ -122,6 +122,62 @@ describe('oidc client', function (){
       expect(oidc._accessTokenExpireTimer).toBeInstanceOf(Timer)
     });
 
+
+    it('should set/clear direct variables on login/logout', function (done) {
+      const oidc = new OIDCClient(dummyOpts)
+      const authObj = { expires_in: 'e', user: 'u', scope: 's', access_token: 'at', id_token:'it', refresh_token:'rt' }
+      oidc.emit('user_login', authObj)
+      setTimeout(()=>{
+        expect(oidc.user).toBeTruthy()
+        expect(oidc.accessToken).toBeTruthy()
+        expect(oidc.idToken).toBeTruthy()
+        expect(oidc.scopes).toBeTruthy()
+        expect(oidc.refreshToken).toBeTruthy()
+
+        oidc.emit('user_logout')
+
+        setTimeout( () => {
+          expect(oidc.user).toBeFalsy()
+          expect(oidc.accessToken).toBeFalsy()
+          expect(oidc.idToken).toBeFalsy()
+          expect(oidc.scopes).toBeFalsy()
+          expect(oidc.refreshToken).toBeFalsy()
+          done()
+        })
+      })
+    });
+
+    it('should start accessTokenRefresh timer when "autoSilentRenew" = true', function (done) {
+      const oidc = new OIDCClient({...dummyOpts,
+      autoSilentRenew: true,
+        secondsToRefreshAccessTokenBeforeExp: 120
+      })
+
+      // @ts-ignore
+      oidc.leaderElector = {
+        awaitLeadership: jest.fn()
+      }
+      oidc.silentLogin = jest.fn( async () => {
+        return Promise.resolve()
+      })
+      // @ts-ignore
+      oidc._accessTokenExpireTimer = {
+        start: jest.fn((exp, cb)=> {
+          cb()
+        })
+      }
+
+      oidc.emit('user_login', {access_token: 'dummyToken', expires_in: 120, user: {}})
+      setTimeout(() => {
+        //@ts-expect-error
+        expect(oidc._accessTokenExpireTimer.start).toBeCalled()
+        //@ts-expect-error
+        expect(oidc.leaderElector.awaitLeadership).toBeCalled()
+        expect(oidc.silentLogin).toBeCalled()
+        done()
+      })
+    });
+
   })
 
   describe('[getters]', function (){
@@ -149,6 +205,26 @@ describe('oidc client', function (){
   })
 
   describe('.initialize()', function (){
+    it('should return initialized instance if it is already initialized', function (done) {
+      const oidc = new OIDCClient({ issuer: 'http://test.com', client_id: 'test'})
+      // @ts-expect-error
+      expect(oidc.initialized).toBeFalsy()
+      // @ts-expect-error
+      oidc.fetchFromIssuer = jest.fn(async ()=> ({}))
+
+      oidc.initialize(false).then( client => {
+        // @ts-expect-error
+        expect(oidc.initialized).toBe(true)
+
+        oidc.initialize(false).then( newClient => {
+          // @ts-expect-error
+          expect(oidc.fetchFromIssuer).toBeCalledTimes(1)
+          done()
+        }).catch(done.fail)
+      }).catch(done.fail)
+
+    });
+
     it('should fetch issuer metadata when endpoints not provided', function (done) {
       const oidc = new OIDCClient({ issuer: 'http://test.com', client_id: 'test'})
       // @ts-expect-error
@@ -646,31 +722,6 @@ describe('oidc client', function (){
           done()
         }).catch(done.fail)
     });
-    it('should start accessTokenRefresh timer when "autoSilentRenew" = true', function (done) {
-      const oidc = new OIDCClient(dummyOpts)
-      // @ts-ignore
-      oidc._accessTokenExpireTimer = {
-        start: jest.fn()
-      }
-      // @ts-expect-error
-      oidc.fetchUserInfo = jest.fn().mockReturnValue({ sub: 'test'})
-      // @ts-expect-error
-      oidc.handleTokenResult({access_token: 'dummyToken', expires_in: 120}, {}, {
-        autoSilentRenew: true,
-        secondsToRefreshAccessTokenBeforeExp: 20
-      })
-        .then( resp => {
-          expect(resp).toStrictEqual({
-              expires_in: 120,
-              authParams: {},
-              access_token: "dummyToken",
-              scope: undefined,
-              user: {}
-            }
-          )
-          done()
-        }).catch(done.fail)
-    });
   })
 
   describe('.login()', function () {
@@ -846,6 +897,31 @@ describe('oidc client', function (){
           done()
         })
     });
+
+    it('should notify parent if it is called from popup', function (done) {
+      Object.defineProperty(window, 'opener', {
+        value: {}
+      });
+
+      const oidc = new OIDCClient(dummyOpts)
+
+      const state = { authParams:{}, localState:{}, request_type: 'p' }
+      // @ts-expect-error
+      oidc.loadState = jest.fn(async () => state)
+
+      window.opener.postMessage = jest.fn()
+      oidc.loginCallback('http://example.com?code=1q2w3e4r&state=123456')
+        .then(()=>{
+          // @ts-expect-error
+          expect(oidc.loadState).toBeCalledWith('123456')
+          expect(window.opener.postMessage).toBeCalledWith({
+            type:     'authorization_response',
+            response: { code: '1q2w3e4r', state: '123456'},
+            state
+          }, window.location.protocol + "//" + window.location.host)
+          done()
+        })
+    });
   })
 
   describe('.silentLogin()', function () {
@@ -872,6 +948,40 @@ describe('oidc client', function (){
         expect(onLogin).toBeCalledWith(authObj)
         done()
       })
+    });
+
+    it('should use silent_redirect_uri as redirect_uri if passed', function (done) {
+      const mockedRunIFrame = jest.fn( async () => {
+        return { response: { state: 'test' }, state: {} }
+      })
+      // @ts-expect-error
+      iframeUtils["runIframe"] = mockedRunIFrame
+      const oidc = new OIDCClient({...dummyOpts, silent_redirect_uri: 'silent_redirect_uri', redirect_uri: 'redirect_uri'})
+
+      const authObj = { user: { sub: 'test'}}
+      // @ts-expect-error
+      oidc.createAuthRequest = jest.fn( (opts) => {
+        expect(opts!.redirect_uri).toBe('silent_redirect_uri')
+        return
+      })
+      // @ts-expect-error
+      oidc.exchangeRefreshToken = jest.fn()
+      // @ts-expect-error
+      oidc.handleTokenResult = jest.fn( async () => authObj)
+
+      // @ts-expect-error
+      oidc.authStore.set('auth', { })
+
+      const onLogin = jest.fn()
+      oidc.on(Events.USER_LOGIN, onLogin )
+      oidc.silentLogin().then(function () {
+        // @ts-expect-error
+        expect(oidc.createAuthRequest).toBeCalled()
+        // @ts-expect-error
+        expect(oidc.handleTokenResult).toBeCalled()
+        expect(onLogin).toBeCalledWith(authObj)
+        done()
+      }).catch(done.fail)
     });
 
 
