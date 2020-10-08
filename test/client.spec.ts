@@ -131,7 +131,7 @@ describe('oidc client', function (){
         'getAccessToken',
         'getRefreshToken',
         'getIdToken',
-        'getScope',
+        'getScopes',
         'getUser',
       ]
       const oidc = new OIDCClient(dummyOpts) as any
