@@ -617,7 +617,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     }
 
     if ( tokenResult.access_token ) {
-      if ( finalOptions.requestUserInfo ) {
+      if ( finalOptions.requestUserInfo && this.options.endpoints?.userinfo_endpoint ) {
         const userInfoResult = await this.fetchUserInfo( tokenResult.access_token )
         user = { ...user, ...userInfoResult }
       }
@@ -658,10 +658,8 @@ export class OIDCClient extends EventEmitter<EventTypes>{
       method:      'GET',
       url:         `${ this.options.endpoints!.userinfo_endpoint }`,
       requestType: 'json',
-      ...accessToken && {
-        headers: {
-          'Authorization': `Bearer ${ accessToken }`
-        }
+      headers:     {
+        'Authorization': `Bearer ${ accessToken }`
       }
     } )
   }
