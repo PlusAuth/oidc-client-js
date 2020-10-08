@@ -1,4 +1,8 @@
 module.exports = {
+  hooks:{
+   "before:init": ["npm run lint", "npm test", "npm run docs"],
+    "after:bump": "npm run build",
+  },
   "git": {
     "commitMessage": "chore: release v${version}",
     "requireCleanWorkingDir": true,
