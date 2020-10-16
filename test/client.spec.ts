@@ -244,7 +244,7 @@ describe('oidc client', function (){
           'check_session_iframe': 'dummyCheck',
           'jwks_uri': 'dummyUri',
         })
-        expect(oidc.options.issuer_metadata).toHaveProperty('additional_opt', 'additional')
+        expect(oidc.issuer_metadata).toHaveProperty('additional_opt', 'additional')
         done()
       }).catch(done.fail)
     });

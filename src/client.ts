@@ -60,6 +60,8 @@ export class OIDCClient extends EventEmitter<EventTypes>{
 
   idToken?: string;
 
+  issuer_metadata?: Record<string, any>;
+
   private readonly http: ( options: RequestOptions ) => Promise<any>;
 
   private stateStore: StateStore
@@ -158,14 +160,11 @@ export class OIDCClient extends EventEmitter<EventTypes>{
 
     if ( !this.options.endpoints ){
       this.options.endpoints = {} as any
-      this.options.issuer_metadata = {} as any
-      const oidcConfig = await this.fetchFromIssuer()
-      for ( const prop of Object.keys( oidcConfig ) ) {
+      this.issuer_metadata = await this.fetchFromIssuer()
+      for ( const prop of Object.keys( this.issuer_metadata! ) ) {
         if ( prop.endsWith( '_endpoint' ) || prop.indexOf( '_session' ) !== -1 || prop.indexOf( '_uri' ) !== -1 ) {
           // @ts-ignore
           this.options.endpoints[prop as string] = oidcConfig[prop];
-        } else {
-          this.options.issuer_metadata[prop as string] = oidcConfig[prop]
         }
       }
     }

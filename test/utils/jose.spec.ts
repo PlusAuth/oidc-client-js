@@ -428,7 +428,7 @@ describe('jose utils', function () {
       const jwtWithoutPayload = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InIxTGtiQm8zOTI1UmIyWkZGckt5VTNNVmV4OVQyODE3S3gwdmJpNmlfS2MifQ..Yg_fGFInWZLGRA-Bjz9rThskwLhVScUhYnolZF6eOScubh0hZ02ewE8iC0-cnT6ZBFe4M7DWPimXifrS2uo__N5JJzVUOyE0nwVlDYJh2cqtAUGZ2lCaz4AXftdZ4FkQeugeGa9wiYnyZhFJKYDpqEPl4Ignv6ZbwSioLNKAFp8Q5P2WZOd1CTxhKjQ-Ctc3qHtD1nzsKwlR4sBKT6GXVC_SHa_tUnBJ4b-r4Xyf0TTzghKeE2eJnKCi3nduBV7ZybRCPBYQ2rZWI8GcZgpGCDOpnMP77XPHsc5bncB9Dh7lhwRje8hFtJ0SWHTOaSLF34NN1sa-S6PkXdCSnFDWog'
       try {
         //@ts-expect-error
-        validateIdToken(jwtWithoutPayload, 'nonce', { issuer_metadata: { keys: {}}} )
+        validateIdToken(jwtWithoutPayload, 'nonce', { } )
 
       }catch (e) {
         expect(e).toBeInstanceOf(InvalidIdTokenError)
@@ -439,7 +439,7 @@ describe('jose utils', function () {
     it('should fail with wrong id_token', function () {
       try {
         //@ts-expect-error
-        validateIdToken('somestring', 'nonce', { issuer_metadata: { keys: {}}} )
+        validateIdToken('somestring', 'nonce', { } )
       }catch (e) {
         expect(e).toBeInstanceOf(InvalidIdTokenError)
         expect(e.message).toBe('Failed to parse jwt')
@@ -449,7 +449,7 @@ describe('jose utils', function () {
     it('should fail with invalid nonce', function () {
       try {
         //@ts-expect-error
-        validateIdToken(idToken, 'wrongNone', { issuer_metadata: { keys: {}}} )
+        validateIdToken(idToken, 'wrongNone', { } )
 
       }catch (e) {
         expect(e).toBeInstanceOf(InvalidIdTokenError)
@@ -467,7 +467,7 @@ describe('jose utils', function () {
             currentTimeInMillis: expectedNow,
             client_id: expectedAudience,
             clockSkew: 0,
-            issuer_metadata: { keys: [rsaKey]}})
+        })
 
       }catch (e) {
         expect(e).toBeInstanceOf(InvalidIdTokenError)
@@ -485,7 +485,7 @@ describe('jose utils', function () {
             audience: expectedAudience,
             currentTimeInMillis: expectedNow,
             clockSkew: 0,
-            issuer_metadata: { keys: [rsaKey]}})
+        })
       ).toBeDefined()
 
     });

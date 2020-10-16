@@ -99,7 +99,6 @@ export interface IPlusAuthClientOptions extends Omit<AuthRequestOptions, 'reques
    */
   idTokenValidator?: ( idToken: string ) => Promise<boolean>;
   issuer: string;
-  issuer_metadata?: any,
   /**
    * Fetch user profile by using [UserInfo
    * Request](https://openid.net/specs/openid-connect-core-1_0.html#UserInfoRequest) after successful authorization.
