@@ -1,3 +1,5 @@
+# [0.4.0](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.3.0...v0.4.0) (2020-10-16)
+
 # [0.3.0](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.2.0...v0.3.0) (2020-10-08)
 
 
