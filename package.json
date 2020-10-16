@@ -29,6 +29,24 @@
       "@commitlint/config-conventional"
     ],
     "rules": {
+      "type-enum":[
+        2,
+        "always",
+        [
+          "build",
+          "ci",
+          "chore",
+          "dev",
+          "docs",
+          "feat",
+          "fix",
+          "perf",
+          "refactor",
+          "revert",
+          "test",
+          "types"
+        ]
+      ],
       "header-max-length": [
         0,
         "always",
