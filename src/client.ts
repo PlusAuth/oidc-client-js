@@ -20,7 +20,7 @@ import {
 
 import { Timer } from './helpers/timer';
 import {
-  AuthRequestOptions,
+  AuthRequestOptions, IEndpointConfiguration,
   IPlusAuthClientOptions,
   LogoutRequestOptions, PopupOptions, RevokeOptions, SessionChecker,
   SessionMonitorOptions,
@@ -163,8 +163,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
       this.issuer_metadata = await this.fetchFromIssuer()
       for ( const prop of Object.keys( this.issuer_metadata! ) ) {
         if ( prop.endsWith( '_endpoint' ) || prop.indexOf( '_session' ) !== -1 || prop.indexOf( '_uri' ) !== -1 ) {
-          // @ts-ignore
-          this.options.endpoints[prop as string] = oidcConfig[prop];
+          this.options.endpoints![prop as keyof IEndpointConfiguration] = this.issuer_metadata![prop];
         }
       }
     }

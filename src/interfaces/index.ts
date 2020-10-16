@@ -45,6 +45,20 @@ export interface LogoutRequestOptions {
   post_logout_redirect_uri?: string;
 }
 
+export interface IEndpointConfiguration {
+  authorization_endpoint?: string,
+  check_session_iframe?: string,
+  device_authorization_endpoint?: string,
+  end_session_endpoint?: string,
+  introspection_endpoint?: string,
+  jwks_uri?: string;
+  mfa_endpoint?: string,
+  registration_endpoint?: string,
+  revocation_endpoint?: string,
+  token_endpoint?: string,
+  userinfo_endpoint?: string
+}
+
 export interface IPlusAuthClientOptions extends Omit<AuthRequestOptions, 'request_type'>,
   Omit<LogoutRequestOptions, 'localOnly'> {
   authStore?: StateStore;
@@ -76,19 +90,7 @@ export interface IPlusAuthClientOptions extends Omit<AuthRequestOptions, 'reques
    */
   currentTimeInMillis?: () => number;
 
-  endpoints?: {
-    authorization_endpoint?: string,
-    check_session_iframe?: string,
-    device_authorization_endpoint?: string,
-    end_session_endpoint?: string,
-    introspection_endpoint?: string,
-    jwks_uri?: string;
-    mfa_endpoint?: string,
-    registration_endpoint?: string,
-    revocation_endpoint?: string,
-    token_endpoint?: string,
-    userinfo_endpoint?: string
-  },
+  endpoints?: IEndpointConfiguration,
 
   httpClient?: ( options: RequestOptions ) => Promise<any>;
   /**
