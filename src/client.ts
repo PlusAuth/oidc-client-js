@@ -132,7 +132,12 @@ export class OIDCClient extends EventEmitter<EventTypes>{
           if ( expiration >= 0 ){
             this._accessTokenExpireTimer!.start( expiration, async ()=> {
               await this.leaderElector.awaitLeadership()
-              await this.silentLogin()
+              try {
+                await this.silentLogin()
+                this.emit( Events.SILENT_RENEW_SUCCESS, null )
+              } catch ( e ) {
+                this.emit( Events.SILENT_RENEW_ERROR, e )
+              }
             } )
           }
         }
@@ -699,7 +704,12 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     }
 
     if ( !this.sessionCheckerFrame ){
-      const sessionCheckCallback = async ()=>{
+      const sessionCheckCallback = async ( err: any )=>{
+        if ( err ){
+          this.emit( Events.SESSION_ERROR, err )
+        } else {
+          this.emit( Events.SESSION_CHANGE )
+        }
         try {
           await this.silentLogin( {}, {} )
           const storedAuth = await this.authStore.get( 'auth' )
@@ -711,7 +721,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
             this.emit( Events.USER_LOGOUT, null )
           }
         } catch ( e ) {
-          this.emit( Events.USER_LOGOUT, null )
+          this.emit( Events.SILENT_RENEW_ERROR, e )
           return
         }
       }

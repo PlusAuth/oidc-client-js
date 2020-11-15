@@ -50,6 +50,7 @@ export function createSessionCheckerFrame( options: SessionCheckerOptions ): Ses
     if ( e.origin === frameOrigin && e.source === frame.contentWindow ) {
       if ( e.data === 'error' ) {
         stop();
+        callback( e.data );
       } else if ( e.data === 'changed' ) {
         stop();
         callback();
