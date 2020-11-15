@@ -1,3 +1,15 @@
+# [0.6.0](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.5.0...v0.6.0) (2020-11-15)
+
+
+### Bug Fixes
+
+* silent login executed on session check error ([4771d7d](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/4771d7d1a4980c22d1196fa281a43dc73ad83f13))
+
+
+### Features
+
+* add initialize check on silent login ([b95d74a](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/b95d74a06ae0498d9f853782731209ac46f0191a))
+
 # [0.5.0](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.4.0...v0.5.0) (2020-11-15)
 
 
