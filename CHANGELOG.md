@@ -1,3 +1,10 @@
+## [0.6.1](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.6.0...v0.6.1) (2020-11-15)
+
+
+### Bug Fixes
+
+* silent login is called twice on initialize ([e9035d0](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/e9035d008e3599a428b263e6830c3dd924b1d89f))
+
 # [0.6.0](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.5.0...v0.6.0) (2020-11-15)
 
 
