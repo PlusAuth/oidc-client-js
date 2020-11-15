@@ -1,3 +1,10 @@
+## [0.6.2](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.6.1...v0.6.2) (2020-11-15)
+
+
+### Bug Fixes
+
+* prevent multiple calls of initialize from sending oidc info request ([e2c7bbf](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/e2c7bbfb285f14a47557b5a3e8792c1f4bb0edfc))
+
 ## [0.6.1](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.6.0...v0.6.1) (2020-11-15)
 
 
