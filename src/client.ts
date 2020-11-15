@@ -76,6 +76,8 @@ export class OIDCClient extends EventEmitter<EventTypes>{
 
   private initialized!: boolean;
 
+  private __initializePromise!: Promise<any>;
+
   constructor( options: IPlusAuthClientOptions ) {
     super()
     if ( !isValidOrigin( options.issuer ) ){
@@ -152,28 +154,35 @@ export class OIDCClient extends EventEmitter<EventTypes>{
    * @param checkLogin Make this `false` if you don't want to check user authorization status in provider while
    * initializing. Defaults to `true`
    */
-  async initialize( checkLogin = true ){
+  async initialize( checkLogin = true ): Promise<OIDCClient>{
     if ( this.initialized ){
       return this
     }
-    if ( this.stateStore.init ){
-      await this.stateStore.init()
-    }
-    if ( this.authStore.init ){
-      await this.authStore.init()
-    }
 
-    if ( !this.options.endpoints ){
-      this.options.endpoints = {} as any
-      this.issuer_metadata = await this.fetchFromIssuer()
-      for ( const prop of Object.keys( this.issuer_metadata! ) ) {
-        if ( prop.endsWith( '_endpoint' ) || prop.indexOf( '_session' ) !== -1 || prop.indexOf( '_uri' ) !== -1 ) {
-          this.options.endpoints![prop as keyof IEndpointConfiguration] = this.issuer_metadata![prop];
+    if ( this.__initializePromise ){
+      await this.__initializePromise
+    } else {
+      this.__initializePromise = new Promise( async ( resolve ) => {
+        if ( this.stateStore.init ){
+          await this.stateStore.init()
         }
-      }
-    }
+        if ( this.authStore.init ){
+          await this.authStore.init()
+        }
 
-    this.initialized = true
+        if ( !this.options.endpoints ){
+          this.issuer_metadata = await this.fetchFromIssuer()
+          this.options.endpoints = {} as any
+          for ( const prop of Object.keys( this.issuer_metadata! ) ) {
+            if ( prop.endsWith( '_endpoint' ) || prop.indexOf( '_session' ) !== -1 || prop.indexOf( '_uri' ) !== -1 ) {
+              this.options.endpoints![prop as keyof IEndpointConfiguration] = this.issuer_metadata![prop];
+            }
+          }
+        }
+        this.initialized = true
+        resolve( this )
+      } )
+    }
 
     if ( checkLogin ){
       try {
@@ -185,7 +194,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
       }
     }
 
-    return this
+    return this.__initializePromise
   }
 
   /**
@@ -343,6 +352,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
    * @param localState
    */
   async silentLogin( options: AuthRequestOptions = {}, localState: Record<string, any> = {} ){
+    console.log( 'silent login called' )
     await this.initialize( false )
     let tokenResult: any;
     let finalState: any = {}
