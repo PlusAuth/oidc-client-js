@@ -1,3 +1,10 @@
+# [0.5.0](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.4.0...v0.5.0) (2020-11-15)
+
+
+### Features
+
+* add corresponding events for silent renew and session checker ([974cb53](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/974cb53ff21e4351ded88f02fbf16d90a5cc4f5e))
+
 # [0.4.0](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.3.0...v0.4.0) (2020-10-16)
 
 # [0.3.0](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.2.0...v0.3.0) (2020-10-08)
