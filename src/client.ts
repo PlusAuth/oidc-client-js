@@ -343,6 +343,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
    * @param localState
    */
   async silentLogin( options: AuthRequestOptions = {}, localState: Record<string, any> = {} ){
+    await this.initialize( false )
     let tokenResult: any;
     let finalState: any = {}
 
