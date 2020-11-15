@@ -709,20 +709,20 @@ export class OIDCClient extends EventEmitter<EventTypes>{
           this.emit( Events.SESSION_ERROR, err )
         } else {
           this.emit( Events.SESSION_CHANGE )
-        }
-        try {
-          await this.silentLogin( {}, {} )
-          const storedAuth = await this.authStore.get( 'auth' )
-          if ( storedAuth ){
-            if ( storedAuth?.user.sub === sub ){
-              this.sessionCheckerFrame!.start( storedAuth.session_state )
+          try {
+            await this.silentLogin( {}, {} )
+            const storedAuth = await this.authStore.get( 'auth' )
+            if ( storedAuth ){
+              if ( storedAuth?.user.sub === sub ){
+                this.sessionCheckerFrame!.start( storedAuth.session_state )
+              }
+            } else {
+              this.emit( Events.USER_LOGOUT, null )
             }
-          } else {
-            this.emit( Events.USER_LOGOUT, null )
+          } catch ( e ) {
+            this.emit( Events.SILENT_RENEW_ERROR, e )
+            return
           }
-        } catch ( e ) {
-          this.emit( Events.SILENT_RENEW_ERROR, e )
-          return
         }
       }
 
