@@ -173,6 +173,8 @@ export class OIDCClient extends EventEmitter<EventTypes>{
       }
     }
 
+    this.initialized = true
+
     if ( checkLogin ){
       try {
         if ( !window?.frameElement ){
@@ -182,8 +184,6 @@ export class OIDCClient extends EventEmitter<EventTypes>{
         await this.authStore.clear()
       }
     }
-
-    this.initialized = true
 
     return this
   }
