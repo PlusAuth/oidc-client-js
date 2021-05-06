@@ -172,11 +172,13 @@ export interface RevokeOptions{
 
 export interface TokenResponse {
   access_token?: string;
+  error?: string;
+  error_description?: string,
   expires_in?: number;
   id_token?: string;
   refresh_token?: string;
   scope?: string;
-  session_state?: string
+  session_state?: string;
 }
 
 export interface JWTValidationOptions {
