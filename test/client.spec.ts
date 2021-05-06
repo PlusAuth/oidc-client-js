@@ -249,6 +249,38 @@ describe('oidc client', function (){
       }).catch(done.fail)
     });
 
+    it('should fail when metadata loading fails', function (done) {
+      const oidc = new OIDCClient({ issuer: 'http://test.com', client_id: 'test'})
+      // @ts-expect-error
+      expect(oidc.initialized).toBeFalsy()
+      // @ts-expect-error
+      oidc.fetchFromIssuer = jest.fn(async ()=> { throw new OIDCClientError('failed')})
+
+      oidc.initialize(false).then( client => {
+        done.fail()
+      }).catch((err) => {
+        expect(err).toBeInstanceOf(OIDCClientError)
+        expect(err).toHaveProperty('error', 'failed')
+        done()
+      })
+    });
+
+    it('should fail with generic error', function (done) {
+      const oidc = new OIDCClient({ issuer: 'http://test.com', client_id: 'test'})
+      // @ts-expect-error
+      expect(oidc.initialized).toBeFalsy()
+      // @ts-expect-error
+      oidc.fetchFromIssuer = jest.fn(async ()=> { throw new Error('fails')})
+
+      oidc.initialize(false).then( client => {
+        done.fail()
+      }).catch((err) => {
+        expect(err).toBeInstanceOf(OIDCClientError)
+        expect(err).toHaveProperty('error', 'fails')
+        done()
+      })
+    });
+
     it('should initialize stores', function (done) {
       // @ts-ignore
       const mockedModule = jest.genMockFromModule('../src').LocalStorageStateStore as any
@@ -515,6 +547,21 @@ describe('oidc client', function (){
       // @ts-expect-error
       oidc.fetchFromIssuer().then(() => {
         expect(mockedFetch).toBeCalledTimes(1)
+      })
+    });
+
+    it('should fail with generic error', function (done) {
+      const oidc = new OIDCClient(dummyOpts)
+      // @ts-expect-error
+      oidc.http = jest.fn(async ()=> { throw new Error('fails')})
+      // @ts-expect-error
+      oidc.fetchFromIssuer().then(() => {
+        done.fail()
+      }).catch(err => {
+        expect(err).toBeInstanceOf(OIDCClientError)
+        expect(err).toHaveProperty('error', 'Loading metadata failed')
+        expect(err).toHaveProperty('error_description', 'fails')
+        done()
       })
     });
   })

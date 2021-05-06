@@ -1,7 +1,14 @@
 export class OIDCClientError extends Error {
-  error?: string;
+  error: string;
 
   error_description?: string;
+
+  public constructor( error: string, error_description?: string ) {
+    super( `${ error }${ error_description && ` - ${ error_description }` || '' }` );
+    this.name = 'OIDCClientError'
+    this.error = error
+    this.error_description = error_description
+  }
 }
 
 export class AuthenticationError extends OIDCClientError {
@@ -10,10 +17,8 @@ export class AuthenticationError extends OIDCClientError {
   error_uri?: string;
 
   constructor( error: string, error_description?: string, state?: string, error_uri?: string ) {
-    super( error_description || error );
-    this.name = error_description ? error : 'AuthenticationError'
-    this.error = error
-    this.error_description = error_description
+    super( error, error_description );
+    this.name = 'AuthenticationError'
     this.state = state;
     this.error_uri = error_uri;
   }

@@ -8,4 +8,4 @@ app.use(router)
 app.config.globalProperties.$auth = auth
 auth.initialize().then( () => {
   app.mount('#app')
-})
+}).catch(console.error)

@@ -162,25 +162,34 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     if ( this.__initializePromise ){
       await this.__initializePromise
     } else {
-      this.__initializePromise = new Promise( async ( resolve ) => {
-        if ( this.stateStore.init ){
-          await this.stateStore.init()
-        }
-        if ( this.authStore.init ){
-          await this.authStore.init()
-        }
+      this.__initializePromise = new Promise( async ( resolve, reject ) => {
+        try {
+          if ( this.stateStore.init ){
+            await this.stateStore.init()
+          }
+          if ( this.authStore.init ){
+            await this.authStore.init()
+          }
 
-        if ( !this.options.endpoints ){
-          this.issuer_metadata = await this.fetchFromIssuer()
-          this.options.endpoints = {} as any
-          for ( const prop of Object.keys( this.issuer_metadata! ) ) {
-            if ( prop.endsWith( '_endpoint' ) || prop.indexOf( '_session' ) !== -1 || prop.indexOf( '_uri' ) !== -1 ) {
-              this.options.endpoints![prop as keyof IEndpointConfiguration] = this.issuer_metadata![prop];
+          if ( !this.options.endpoints ){
+            this.issuer_metadata = await this.fetchFromIssuer()
+            const endpoints = {} as any
+            for ( const prop of Object.keys( this.issuer_metadata ) ) {
+              if ( prop.endsWith( '_endpoint' ) || prop.indexOf( '_session' ) > -1 || prop.indexOf( '_uri' ) > -1 ) {
+                endpoints[prop as keyof IEndpointConfiguration] = this.issuer_metadata[prop];
+              }
             }
+            this.options.endpoints = endpoints
+          }
+          this.initialized = true
+          resolve( this )
+        } catch ( e ) {
+          if ( e instanceof OIDCClientError ){
+            reject( e )
+          } else {
+            reject( new OIDCClientError( e.message ) )
           }
         }
-        this.initialized = true
-        resolve( this )
       } )
     }
 
@@ -595,13 +604,17 @@ export class OIDCClient extends EventEmitter<EventTypes>{
   /**
    * Fetch OIDC configuration from the issuer.
    */
-  private async fetchFromIssuer(){
-    const requestUrl = `${ this.options.issuer }/.well-known/openid-configuration`
-    return this.http( {
-      url:         requestUrl,
-      method:      'GET',
-      requestType: 'json'
-    } )
+  private async fetchFromIssuer(): Promise<Record<string, any> | never>{
+    try {
+      const requestUrl = `${ this.options.issuer }/.well-known/openid-configuration`
+      return await this.http( {
+        url:         requestUrl,
+        method:      'GET',
+        requestType: 'json'
+      } )
+    } catch ( e ) {
+      throw new OIDCClientError( 'Loading metadata failed', e.message )
+    }
   }
 
   /**
