@@ -19,7 +19,7 @@ export function createSessionCheckerFrame( options: SessionCheckerOptions ): Ses
       window.document.body.appendChild( frame );
       window.addEventListener( 'message', iframeEventHandler, false );
       frame.onload = () => {
-        resolve()
+        resolve( null )
       }
     } )
   }
