@@ -1,3 +1,15 @@
+# [0.7.0](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.6.3...v0.7.0) (2021-05-06)
+
+
+### Bug Fixes
+
+* errors in token requests are not thrown ([310b41d](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/310b41df84d5667ccf5105520af080964bd08920))
+
+
+### Features
+
+* throw fetch errors on initialize ([9c8c41a](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/9c8c41a0212000a28979b69c3432f97ecf46dcf4))
+
 ## [0.6.3](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.6.2...v0.6.3) (2020-11-15)
 
 ## [0.6.2](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.6.1...v0.6.2) (2020-11-15)
