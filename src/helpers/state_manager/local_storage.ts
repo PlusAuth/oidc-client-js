@@ -6,7 +6,7 @@ export class LocalStorageStateStore extends StateStore {
   }
 
   get( key: string ) {
-    return new Promise<Record<string, any> | null>( ( resolve, reject ) => {
+    return new Promise<Record<string, any> | null>( ( resolve ) => {
       const value = window.localStorage.getItem( this.prefix + key );
       if ( value ) {
         resolve( JSON.parse( value ) );
@@ -17,40 +17,41 @@ export class LocalStorageStateStore extends StateStore {
   }
 
   set( key: string, value: Record<string, any> ) {
-    return new Promise<void>( ( resolve, reject ) => {
+    return new Promise<void>( ( resolve ) => {
       window.localStorage.setItem( this.prefix + key, JSON.stringify( value ) );
       resolve();
     } );
   }
 
   del( key: string ) {
-    return new Promise<void>( ( resolve, reject ) => {
+    return new Promise<void>( ( resolve ) => {
       window.localStorage.removeItem( this.prefix + key );
       resolve();
     } );
   }
 
   clear( before?: number ): Promise<void> {
-    return new Promise<void>( ( resolve, reject ) => {
+    return new Promise<void>( ( resolve ) => {
       let i;
-      const arr: string[] = []; // Array to hold the keys
+      const storedKeys: string[] = [];
       for ( i = 0; i < window.localStorage.length; i++ ) {
         const key = window.localStorage.key( i )
+        // items only created by oidc client
         if ( key?.substring( 0, this.prefix.length ) == this.prefix ) {
-          arr.push( key );
+          storedKeys.push( key );
         }
       }
-      for ( i = 0; i < arr.length; i++ ) {
+      for ( i = 0; i < storedKeys.length; i++ ) {
         if ( before ) {
           try {
-            const storedItem = JSON.parse( window.localStorage.getItem( arr[i] )! )
+            const storedItem = JSON.parse( window.localStorage.getItem( storedKeys[i] )! )
             if ( storedItem.created_at < before ) {
-              window.localStorage.removeItem( arr[i] )
+              window.localStorage.removeItem( storedKeys[i] )
             }
           } catch ( e ) {
           }
         } else {
-          window.localStorage.removeItem( arr[i] )
+          window.localStorage.removeItem( storedKeys[i] )
         }
       }
       resolve();
