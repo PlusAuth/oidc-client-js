@@ -22,7 +22,8 @@
   "dependencies": {
     "base64-js": "^1.5.1",
     "broadcast-channel": "^3.5.3",
-    "isomorphic-unfetch": "^3.1.0"
+    "isomorphic-unfetch": "^3.1.0",
+    "typedoc-plugin-merge-modules": "^2.0.0"
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.13.0",

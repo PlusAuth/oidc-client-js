@@ -15,5 +15,23 @@
   },
   "include": [
     "src"
-  ]
+  ],
+  "typedocOptions": {
+    "out": "./docs",
+    "name": "PAOIDCClient",
+    "readme": "none",
+    "categorizeByGroup": false,
+    "entryPoints": [
+      "src/index.ts",
+      "src/api"
+    ],
+    "hideGenerator": true,
+    "listInvalidSymbolLinks": false,
+    "excludeProtected": true,
+    "excludePrivate": true,
+    "plugin": [
+      "typedoc-plugin-merge-modules"
+    ],
+    "theme": "minimal"
+  }
 }

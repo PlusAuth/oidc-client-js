@@ -4988,7 +4988,7 @@ human-signals@^2.1.0:
   resolved "https://registry.yarnpkg.com/human-signals/-/human-signals-2.1.0.tgz#dc91fcba42e4d06e4abaed33b3e7a3c02f514ea0"
   integrity sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==
 
-husky@6:
+husky@^6.0.0:
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/husky/-/husky-6.0.0.tgz#810f11869adf51604c32ea577edbc377d7f9319e"
   integrity sha512-SQS2gDTB7tBN486QSoKPKQItZw97BMOd+Kdb6ghfpBc0yXyzrddI0oDV5MkDAbuB4X2mO3/nj60TRMcYxwzZeQ==
@@ -9405,6 +9405,11 @@ typedoc-default-themes@^0.12.10:
   version "0.12.10"
   resolved "https://registry.yarnpkg.com/typedoc-default-themes/-/typedoc-default-themes-0.12.10.tgz#614c4222fe642657f37693ea62cad4dafeddf843"
   integrity sha512-fIS001cAYHkyQPidWXmHuhs8usjP5XVJjWB8oZGqkTowZaz3v7g3KDZeeqE82FBrmkAnIBOY3jgy7lnPnqATbA==
+
+typedoc-plugin-merge-modules@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/typedoc-plugin-merge-modules/-/typedoc-plugin-merge-modules-2.0.0.tgz#781c5add8533b0a8910e96d77fceb3dc950f953c"
+  integrity sha512-FaBcBkF5jIb1kigrR3iej+4SFjFCha6Zu2cNNFU2ibAaGtcgUFigkU70ZcR5l+a63MqZDiHPfU1/uUPofTzxlw==
 
 typedoc@^0.20.36:
   version "0.20.36"
