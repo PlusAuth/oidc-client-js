@@ -6,7 +6,7 @@ import { Events, EventTypes } from './constants';
 
 import {
   AuthenticationError, InvalidIdTokenError,
-  PAError
+  OIDCClientError
 } from './errors';
 
 import { EventEmitter } from './helpers';
@@ -81,7 +81,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
   constructor( options: IPlusAuthClientOptions ) {
     super()
     if ( !isValidOrigin( options.issuer ) ){
-      throw new PAError( '"issuer" must be a valid uri.' )
+      throw new OIDCClientError( '"issuer" must be a valid uri.' )
     }
 
     this.options = Object.assign( {
@@ -249,13 +249,13 @@ export class OIDCClient extends EventEmitter<EventTypes>{
    */
   async loginCallback( url: string= window?.location?.href ){
     if ( !url ){
-      return Promise.reject( new PAError( 'Url must be passed to handle login redirect' ) )
+      return Promise.reject( new OIDCClientError( 'Url must be passed to handle login redirect' ) )
     }
     let parsedUrl = null
     try {
       parsedUrl = new URL( url )
     } catch ( e ){
-      return Promise.reject( new PAError( `Invalid callback url passed: "${ url }"` ) )
+      return Promise.reject( new OIDCClientError( `Invalid callback url passed: "${ url }"` ) )
     }
 
     const responseParams = parseQueryUrl( parsedUrl?.search || parsedUrl?.hash )
@@ -324,7 +324,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
    */
   async revokeToken( token: string, type: TokenType = 'access_token', options: RevokeOptions = {} ){
     if ( !this.options.endpoints!.revocation_endpoint ){
-      return Promise.reject( new PAError( '"revocation_endpoint" doesn\'t exist' ) )
+      return Promise.reject( new OIDCClientError( '"revocation_endpoint" doesn\'t exist' ) )
     }
     const finalOptions = {
       client_id:       options.client_id || this.options.client_id,

@@ -1,5 +1,5 @@
 import {createHiddenFrame, runIframe} from "../../src/utils";
-import {PAError} from "../../src";
+import {OIDCClientError} from "../../src";
 
 describe('createHiddenIframe', () => {
   it('should create hidden iframe', function () {
@@ -75,7 +75,7 @@ describe('runIframe', () => {
         jest.useFakeTimers();
         const promise = runIframe(url, {eventOrigin: origin});
         jest.runAllTimers();
-        await expect(promise).rejects.toThrow(PAError);
+        await expect(promise).rejects.toThrow(OIDCClientError);
         expect(window.document.body.removeChild).toHaveBeenCalledWith(iframe);
       });
     });
@@ -120,7 +120,7 @@ describe('runIframe', () => {
 
     const { iframe, url } = setup(message);
     jest.useFakeTimers();
-    await expect(runIframe(url, {eventOrigin: origin})).rejects.toThrow(PAError);
+    await expect(runIframe(url, {eventOrigin: origin})).rejects.toThrow(OIDCClientError);
     jest.runAllTimers();
     // @ts-ignore
     expect(message.source.close).toHaveBeenCalled();
@@ -133,7 +133,7 @@ describe('runIframe', () => {
     jest.useFakeTimers();
     const promise = runIframe(url, {eventOrigin: origin, timeout: timeout});
     jest.runTimersToTime(timeout);
-    await expect(promise).rejects.toThrow(PAError);
+    await expect(promise).rejects.toThrow(OIDCClientError);
     expect(window.document.body.removeChild).toHaveBeenCalledWith(iframe);
   });
 });

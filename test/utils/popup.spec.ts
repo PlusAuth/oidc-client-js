@@ -1,5 +1,5 @@
 import {runPopup} from "../../src/utils/popup";
-import {PAError} from "../../src";
+import {OIDCClientError} from "../../src";
 
 describe('runPopup', () => {
   const TIMEOUT_ERROR = {
@@ -40,7 +40,7 @@ describe('runPopup', () => {
           }, 10);
           jest.useFakeTimers();
           // @ts-ignore
-          await expect(runPopup(url, { popup })).rejects.toThrow(PAError);
+          await expect(runPopup(url, { popup })).rejects.toThrow(OIDCClientError);
           jest.useRealTimers();
         });
       }
@@ -80,7 +80,7 @@ describe('runPopup', () => {
     const { popup, url } = setup(message);
 
     // @ts-ignore
-    await expect(runPopup(url, { popup })).rejects.toThrow(PAError);
+    await expect(runPopup(url, { popup })).rejects.toThrow(OIDCClientError);
 
     expect(popup.location.href).toBe(url);
     expect(popup.close).toHaveBeenCalled();
@@ -108,7 +108,7 @@ describe('runPopup', () => {
         // @ts-ignore
         popup
       })
-    ).rejects.toThrow(PAError);
+    ).rejects.toThrow(OIDCClientError);
 
     jest.useRealTimers();
   });
@@ -128,7 +128,7 @@ describe('runPopup', () => {
     jest.useFakeTimers();
 
     // @ts-ignore
-    await expect(runPopup(url, { popup })).rejects.toThrow(PAError);
+    await expect(runPopup(url, { popup })).rejects.toThrow(OIDCClientError);
 
     jest.useRealTimers();
   });

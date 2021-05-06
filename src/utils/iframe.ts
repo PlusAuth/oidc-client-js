@@ -1,4 +1,4 @@
-import { AuthenticationError, PAError } from '../errors';
+import { AuthenticationError, OIDCClientError } from '../errors';
 import { IFrameOptions } from '../interfaces';
 
 export function createHiddenFrame() {
@@ -26,7 +26,7 @@ export function runIframe(
     };
 
     const timeoutSetTimeoutId = setTimeout( () => {
-      reject( new PAError( 'Timed out' ) );
+      reject( new OIDCClientError( 'Timed out' ) );
       removeIframe();
     }, options.timeout || 60 * 1000 );
 

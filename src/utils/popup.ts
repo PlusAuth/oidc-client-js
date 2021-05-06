@@ -1,4 +1,4 @@
-import { PAError } from '../errors';
+import { OIDCClientError } from '../errors';
 import { PopupOptions } from '../interfaces';
 
 const openPopup = ( url: string, width = 400, height = 600 ) => {
@@ -28,14 +28,14 @@ export function runPopup( url: string, options: PopupOptions ) {
 
   return new Promise<any>( ( resolve, reject ) => {
     const timeoutId = setTimeout( () => {
-      reject( new PAError( 'Timed out' ) );
+      reject( new OIDCClientError( 'Timed out' ) );
     }, options.timeout || 60 * 1000 );
     window.addEventListener( 'message', e => {
       if ( !e.data || e.data.type !== 'authorization_response' ) return;
       clearTimeout( timeoutId );
       popup!.close();
       e.data.error || e.data.response?.error
-        ? reject( new PAError( e.data ) )
+        ? reject( new OIDCClientError( e.data ) )
         : resolve( e.data );
     } );
   } );

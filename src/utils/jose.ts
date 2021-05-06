@@ -1,4 +1,4 @@
-import { InvalidIdTokenError, InvalidJWTError, PAError } from '../errors';
+import { InvalidIdTokenError, InvalidJWTError, OIDCClientError } from '../errors';
 import { IPlusAuthClientOptions, JWTValidationOptions, ParsedJWT } from '../interfaces';
 
 import { urlSafe } from './url';
@@ -35,7 +35,7 @@ export function generateRandom( length: number ){
 
 export function deriveChallenge( code: string ): Promise<string>{
   if ( code.length < 43 || code.length > 128 ) {
-    return Promise.reject( new PAError( `Invalid code length: ${ code.length }` ) );
+    return Promise.reject( new OIDCClientError( `Invalid code length: ${ code.length }` ) );
   }
 
   return new Promise( ( resolve, reject ) => {
@@ -66,7 +66,7 @@ export function parseJwt( jwt: string ): ParsedJWT {
 
 export function validateIdToken( id_token: string, nonce: string, options: IPlusAuthClientOptions ) {
   if ( !nonce ) {
-    throw new PAError( 'No nonce on state' );
+    throw new OIDCClientError( 'No nonce on state' );
   }
 
   try {

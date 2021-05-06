@@ -29,7 +29,7 @@ import {
   InvalidIdTokenError,
   LocalStorageStateStore,
   OIDCClient,
-  PAError
+  OIDCClientError
 } from "../src";
 import {Timer} from "../src/helpers/timer";
 import {deriveChallenge} from "../src/utils/jose";
@@ -85,7 +85,7 @@ describe('oidc client', function (){
           new OIDCClient({issuer, client_id: ''})
           done.fail('should fail with: ' + issuer)
         }catch (e) {
-          expect(e).toBeInstanceOf(PAError)
+          expect(e).toBeInstanceOf(OIDCClientError)
           expect(e.message).toBe('"issuer" must be a valid uri.')
         }
       })
@@ -546,7 +546,7 @@ describe('oidc client', function (){
       oidc.revokeToken('token')
         .then(done.fail.bind(null, 'should not succeed'))
         .catch((err)=> {
-          expect(err).toBeInstanceOf(PAError)
+          expect(err).toBeInstanceOf(OIDCClientError)
           expect(err.message).toBe('"revocation_endpoint" doesn\'t exist')
           done()
         })
@@ -821,7 +821,7 @@ describe('oidc client', function (){
       // @ts-ignore
       delete window.location;
       oidc.loginCallback().catch( e => {
-        expect(e).toBeInstanceOf(PAError)
+        expect(e).toBeInstanceOf(OIDCClientError)
         expect(e.message).toBe('Url must be passed to handle login redirect')
         done()
       })
@@ -830,7 +830,7 @@ describe('oidc client', function (){
     it('should fail if wrong url is passed', function (done) {
       const oidc = new OIDCClient(dummyOpts)
       oidc.loginCallback('wrongUrlformat#asdasdasd').catch( e => {
-        expect(e).toBeInstanceOf(PAError)
+        expect(e).toBeInstanceOf(OIDCClientError)
         expect(e.message).toBe('Invalid callback url passed: "wrongUrlformat#asdasdasd"')
         done()
       })

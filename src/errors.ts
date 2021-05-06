@@ -1,10 +1,10 @@
-export class PAError extends Error {
+export class OIDCClientError extends Error {
   error?: string;
 
   error_description?: string;
 }
 
-export class AuthenticationError extends PAError {
+export class AuthenticationError extends OIDCClientError {
   state?: string;
 
   error_uri?: string;
@@ -19,7 +19,7 @@ export class AuthenticationError extends PAError {
   }
 }
 
-export class InvalidJWTError extends PAError {
+export class InvalidJWTError extends OIDCClientError {
   constructor( details: string ) {
     super( details );
     this.name = 'InvalidJWTError'

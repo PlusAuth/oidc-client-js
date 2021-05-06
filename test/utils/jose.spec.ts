@@ -1,5 +1,5 @@
 import {deriveChallenge, generateRandom, parseJwt, validateIdToken, validateJwt} from "../../src/utils";
-import {InvalidIdTokenError, InvalidJWTError, PAError} from "../../src";
+import {InvalidIdTokenError, InvalidJWTError, OIDCClientError} from "../../src";
 
 import {Algorithm, sign} from 'jsonwebtoken'
 import * as fs from "fs";
@@ -419,7 +419,7 @@ describe('jose utils', function () {
         // @ts-expect-error
         validateIdToken('token', null, {} )
       }catch (e) {
-        expect(e).toBeInstanceOf(PAError)
+        expect(e).toBeInstanceOf(OIDCClientError)
         expect(e.message).toBe('No nonce on state')
       }
     });
