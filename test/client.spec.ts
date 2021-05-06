@@ -722,6 +722,18 @@ describe('oidc client', function (){
           done()
         }).catch(done.fail)
     });
+
+    it('should fail on error response', function (done) {
+      const oidc = new OIDCClient(dummyOpts)
+
+      // @ts-expect-error
+      oidc.handleTokenResult({error: 'error', error_description: 'invalid_client'}, {}, {})
+        .then(()=>done.fail).catch( err => {
+        expect(err).toBeInstanceOf(AuthenticationError)
+        expect(err).toMatchObject({error: 'error', error_description: 'invalid_client'})
+        done()
+      })
+    });
   })
 
   describe('.login()', function () {
