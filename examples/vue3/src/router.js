@@ -1,6 +1,7 @@
 import * as VueRouter from 'vue-router'
 import Home from './views/Home.vue'
 import AuthCallback from './views/AuthCallback.vue'
+import SilentRenew from "./views/SilentRenew.vue";
 import UserProfile from "./views/UserProfile.vue";
 import Secured from "./views/Secured.vue";
 import Public from "./views/Public.vue";
@@ -37,6 +38,11 @@ const routes = [
     path: '/callback',
     name: 'AuthCallback',
     component: AuthCallback
+  },
+  {
+    path: '/silent-renew.html',
+    name: 'SilentRenew',
+    component: SilentRenew
   },
   {
     path: '/401',

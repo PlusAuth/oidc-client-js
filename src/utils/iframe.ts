@@ -50,5 +50,16 @@ export function runIframe(
     window.addEventListener( 'message', iframeEventHandler, false );
     window.document.body.appendChild( iframe );
     iframe.setAttribute( 'src', url );
+    const frameLoadCount = 0
+    let firstURL: string
+    iframe.onload = function (){
+      if ( frameLoadCount === 0 ) {
+        firstURL = iframe.getAttribute( 'src' ) as string;
+      } else {
+        if ( firstURL !== iframe.getAttribute( 'src' ) ) {
+          reject()
+        }
+      }
+    }
   } );
 }

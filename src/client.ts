@@ -669,7 +669,9 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     if ( tokenResult.access_token ) {
       if ( finalOptions.requestUserInfo && this.options.endpoints?.userinfo_endpoint ) {
         const userInfoResult = await this.fetchUserInfo( tokenResult.access_token )
-        user = { ...user, ...userInfoResult }
+        if ( !userInfoResult.error ){
+          user = { ...user, ...userInfoResult }
+        }
       }
     }
 
@@ -728,11 +730,10 @@ export class OIDCClient extends EventEmitter<EventTypes>{
       console.warn( '"check_session_iframe" endpoint missing or session management is not supported by provider' )
       return
     }
-
     if ( !this.sessionCheckerFrame ){
       const sessionCheckCallback = async ( err: any )=>{
         if ( err ){
-          this.emit( Events.SESSION_ERROR, err )
+          this.emit( Events.USER_LOGOUT )
         } else {
           this.emit( Events.SESSION_CHANGE )
           try {
@@ -746,7 +747,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
               this.emit( Events.USER_LOGOUT, null )
             }
           } catch ( e ) {
-            this.emit( Events.SILENT_RENEW_ERROR, e )
+            this.emit( Events.USER_LOGOUT )
             return
           }
         }

@@ -4,6 +4,7 @@
 
     <div class="profile-box">
       <template  v-if="!user" >
+        <button @click="$auth.login({extraParams: { invitePid: Math.random()}, prompt: 'signup'})" class="login-btn" title="Login with Popup">Signup</button>
         <button @click="$auth.loginWithPopup()" class="login-btn" title="Login with Popup">Login with
           Popup</button>
         <button @click="$auth.login()" class="login-btn" title="Login"> Login </button>
