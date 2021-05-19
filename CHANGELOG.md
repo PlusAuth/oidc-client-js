@@ -1,3 +1,10 @@
+# [0.8.0](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.7.0...v0.8.0) (2021-05-19)
+
+
+### Features
+
+* emit user logout on session change ([0c9ba2c](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/0c9ba2cc95e8a9b9ef6628c1681ba127ee578f54))
+
 # [0.7.0](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.6.3...v0.7.0) (2021-05-06)
 
 
