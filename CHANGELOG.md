@@ -1,3 +1,15 @@
+# [0.9.0](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.8.0...v0.9.0) (2021-05-26)
+
+
+### Bug Fixes
+
+* popup mode not resolving error ([fa9c213](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/fa9c213a11ff7a02dcf928e32baa2c569a844157))
+
+
+### Features
+
+* conform rfc4648 (jwt b64 url) ([3d42976](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/3d429765d5dfef887d7bcb10834f4fef54c7283e))
+
 # [0.8.0](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.7.0...v0.8.0) (2021-05-19)
 
 
