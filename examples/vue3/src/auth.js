@@ -11,7 +11,6 @@ const auth= new OIDCClient({
   checkSession: true,
   requestUserInfo: true,
   scope: 'openid profile secure read:user write:user',
-  audience: 'https://api.plusauth.com:3000/api/',
   silent_redirect_uri: 'http://localhost:3001/silent-renew.html'
 })
 
