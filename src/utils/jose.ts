@@ -48,6 +48,17 @@ export function deriveChallenge( code: string ): Promise<string>{
       } );
   } );
 }
+// https://datatracker.ietf.org/doc/html/rfc4648#section-5
+export const urlDecodeB64 = ( input: string ) => decodeURIComponent(
+  atob( input.replace( /_/g, '/' ).replace( /-/g, '+' ) )
+    .split( '' )
+    .map( c => {
+      return `%${ `00${ c.charCodeAt( 0 ).toString( 16 ) }`.slice( -2 ) }`;
+    } )
+    .join( '' )
+);
+
+
 
 export function parseJwt( jwt: string ): ParsedJWT {
   try {
@@ -56,8 +67,8 @@ export function parseJwt( jwt: string ): ParsedJWT {
       throw new Error( 'Wrong JWT format' )
     }
     return {
-      header:  JSON.parse( atob( parts[0] ) ),
-      payload: JSON.parse( atob( parts[1] ) )
+      header:  JSON.parse( urlDecodeB64( parts[0] ) ),
+      payload: JSON.parse( urlDecodeB64( parts[1] ) )
     }
   } catch ( e ){
     throw new InvalidJWTError( 'Failed to parse jwt' )
