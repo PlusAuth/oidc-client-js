@@ -34,8 +34,8 @@ export function runPopup( url: string, options: PopupOptions ) {
       if ( !e.data || e.data.type !== 'authorization_response' ) return;
       clearTimeout( timeoutId );
       popup!.close();
-      e.data.error || e.data.response?.error
-        ? reject( new OIDCClientError( e.data ) )
+      const data = e.data.response || e.data
+      data.error ? reject( new OIDCClientError( data.error, data.error_description ) )
         : resolve( e.data );
     } );
   } );
