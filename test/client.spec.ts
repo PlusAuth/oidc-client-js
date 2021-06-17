@@ -760,7 +760,7 @@ describe('oidc client', function (){
         .then( resp => {
           // @ts-expect-error
           expect(oidc.fetchUserInfo).toBeCalledWith('dummyToken')
-          expect(resp).toStrictEqual({
+          expect(resp).toEqual({
               authParams: {},
               access_token: "dummyToken",
               scope: undefined,
