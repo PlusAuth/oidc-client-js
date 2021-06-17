@@ -134,8 +134,8 @@ export function validateJwt( jwt: string, options: JWTValidationOptions, isIdTok
     throw new InvalidJWTError( `Invalid Authorized Party (azp) in token: ${ payload.azp }` );
   }
 
-  const lowerNow = now + clockSkew;
-  const upperNow = now - clockSkew;
+  const lowerNow = Math.ceil( now + clockSkew );
+  const upperNow = Math.floor( now - clockSkew );
 
   if ( !payload.iat ) {
     throw new InvalidJWTError( 'Issued At (iat) was not provided' );
