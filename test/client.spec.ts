@@ -187,6 +187,7 @@ describe('oidc client', function (){
         'getAccessToken',
         'getRefreshToken',
         'getIdToken',
+        'getIdTokenRaw',
         'getScopes',
         'getUser',
       ]
