@@ -374,6 +374,8 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     }
 
     if ( this.options.useRefreshToken && storedAuth?.refresh_token ){
+      // TODO: deep merge
+      finalState.authParams = Object.assign( {}, storedAuth?.authParams || {}, finalState.authParams || {} )
       tokenResult = await this.exchangeRefreshToken( {
         ...finalOptions,
         refresh_token: storedAuth.refresh_token,
@@ -660,6 +662,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     if ( tokenResult.error ){
       throw new AuthenticationError( tokenResult.error, tokenResult.error_description )
     }
+    let parsedIDToken: any;
     if ( tokenResult.id_token ){
       parsedIDToken = await validateIdToken( tokenResult.id_token, authParams.nonce!, finalOptions )
       if ( finalOptions.idTokenValidator && !await finalOptions.idTokenValidator( tokenResult.id_token ) ){
