@@ -1,3 +1,16 @@
+# [0.10.0](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.9.0...v0.10.0) (2021-06-17)
+
+
+### Bug Fixes
+
+* latest auth params are not passed to silent login with refresh_token ([13edacf](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/13edacfe71b832626dcfa9d46965b437db4aa04c))
+* token issued time validations fails with decimal time ([710e6db](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/710e6dbb08d62a98be8b4f71d23b1229146823aa))
+
+
+### Features
+
+* separate methods for parsed and raw id token retrieval ([6e6ca13](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/6e6ca137a87b6b51f7bdd9689e6ba17922a00a5b))
+
 # [0.9.0](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.8.0...v0.9.0) (2021-05-26)
 
 
