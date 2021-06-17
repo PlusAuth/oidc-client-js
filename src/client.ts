@@ -417,14 +417,14 @@ export class OIDCClient extends EventEmitter<EventTypes>{
   }
 
   /**
-   * Retrieve logged in user's id token if it exists.
+   * Retrieve logged in user's parsed id token if it exists.
    */
   async getIdToken(){
     return ( await this.authStore.get( 'auth' ) )?.id_token
   }
 
   /**
-   * Retrieve logged in user's id token if it exists.
+   * Retrieve logged in user's id token in raw format if it exists.
    */
   async getIdTokenRaw(){
     return ( await this.authStore.get( 'auth' ) )?.id_token_raw
