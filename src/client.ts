@@ -421,6 +421,13 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     return ( await this.authStore.get( 'auth' ) )?.id_token
   }
 
+  /**
+   * Retrieve logged in user's id token if it exists.
+   */
+  async getIdTokenRaw(){
+    return ( await this.authStore.get( 'auth' ) )?.id_token_raw
+  }
+
 
   /**
    * Retrieve logged in user's scopes if it exists.
@@ -654,14 +661,13 @@ export class OIDCClient extends EventEmitter<EventTypes>{
       throw new AuthenticationError( tokenResult.error, tokenResult.error_description )
     }
     if ( tokenResult.id_token ){
-      const payload = await validateIdToken( tokenResult.id_token, authParams.nonce!, finalOptions )
+      parsedIDToken = await validateIdToken( tokenResult.id_token, authParams.nonce!, finalOptions )
       if ( finalOptions.idTokenValidator && !await finalOptions.idTokenValidator( tokenResult.id_token ) ){
         return Promise.reject( new InvalidIdTokenError( 'Id Token validation failed' ) )
       }
-      Object.keys( payload ).forEach( key => {
+      Object.keys( parsedIDToken ).forEach( key => {
         if ( !nonUserClaims.includes( key as any ) ){
-          // @ts-ignore
-          user[key] = payload[key]
+          user[key] = parsedIDToken[key]
         }
       } )
     }
@@ -679,7 +685,9 @@ export class OIDCClient extends EventEmitter<EventTypes>{
       authParams,
       user,
       ...tokenResult,
-      scope: tokenResult.scope || authParams.scope,
+      id_token:     parsedIDToken,
+      id_token_raw: tokenResult.id_token,
+      scope:        tokenResult.scope || authParams.scope,
     }
   }
 
