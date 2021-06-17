@@ -694,7 +694,7 @@ describe('oidc client', function (){
       // @ts-expect-error
       oidc.handleTokenResult({}, {}, {})
         .then( resp => {
-          expect(resp).toStrictEqual({ authParams: {}, scope: undefined, user: {} })
+          expect(resp).toEqual({ authParams: {}, scope: undefined, user: {} })
           done()
         }).catch(done.fail)
     });
@@ -705,8 +705,13 @@ describe('oidc client', function (){
       oidc.handleTokenResult({id_token: 'test'}, {}, {})
         .then( resp => {
           expect(mockedValidator).toBeCalled()
-          expect(resp).toStrictEqual({ authParams: {},
-              "id_token": "test",
+          expect(resp).toEqual({
+              authParams: {},
+              id_token_raw: "test",
+              id_token: {
+                "first_name": "first",
+                "nonce": "nonUserClaim",
+              },
               scope: undefined,
               user: {
                 first_name: 'first'
@@ -736,7 +741,7 @@ describe('oidc client', function (){
       // @ts-expect-error
       oidc.handleTokenResult({access_token: 'test'}, {}, {})
         .then( resp => {
-          expect(resp).toStrictEqual({
+          expect(resp).toEqual({
               authParams: {},
               access_token: "test",
               scope: undefined,
