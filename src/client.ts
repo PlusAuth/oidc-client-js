@@ -316,7 +316,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
   async logout( options: LogoutRequestOptions = {} ){
     if ( !options.localOnly ) {
       const storedAuth = await this.authStore.get( 'auth' )
-      const id_token_hint = options.id_token_hint || storedAuth?.id_token
+      const id_token_hint = options.id_token_hint || storedAuth?.id_token_raw
       window.location.assign( this.createLogoutRequest( {
         ...options,
         id_token_hint
