@@ -1,3 +1,10 @@
+## [0.10.1](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.10.0...v0.10.1) (2021-06-28)
+
+
+### Bug Fixes
+
+* logout does not use id token raw ([edd97e7](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/edd97e712d9ebc27964aadb93efbd4c473c9541f))
+
 # [0.10.0](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.9.0...v0.10.0) (2021-06-17)
 
 
