@@ -6,6 +6,9 @@ export function isValidIssuer( issuer: string ){
     if ( !['http:', 'https:'].includes( url.protocol ) ){
       return false
     }
+    if ( url.search !== '' || url.hash !== '' ){
+      return false
+    }
     return true
   } catch ( e ){
     return false

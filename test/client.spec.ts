@@ -77,9 +77,13 @@ describe('oidc client', function (){
       const invalidIssuers = [
         "ftp://something",
         "something.co",
+        "something.co?test=search",
+        "something.co#hashquery",
         "something.co:9999",
-        "http:www.example.com",
-        "http://www.example.com\\",
+        "something.co:9999?test=search",
+        "something.co:9999#hashquery",
+        "http://www.example.com?test=search",
+        "http://www.example.com#hashquery",
       ]
       invalidIssuers.forEach(issuer=> {
         try {
