@@ -35,7 +35,7 @@ import {
   parseQueryUrl,
   validateIdToken,
   createSessionCheckerFrame,
-  nonUserClaims, generateRandom, deriveChallenge, isValidOrigin,
+  nonUserClaims, generateRandom, deriveChallenge, isValidIssuer,
 } from './utils';
 
 import { isResponseType, isScopeIncluded } from './utils/oidc';
@@ -80,7 +80,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
 
   constructor( options: IPlusAuthClientOptions ) {
     super()
-    if ( !isValidOrigin( options.issuer ) ){
+    if ( !isValidIssuer( options.issuer ) ){
       throw new OIDCClientError( '"issuer" must be a valid uri.' )
     }
 

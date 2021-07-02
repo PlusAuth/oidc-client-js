@@ -51,11 +51,10 @@ describe('oidc client', function (){
 
     it('should accept valid issuer', function (done) {
       const validIssuers = [
+        'http://openid.net/specs/connect/1.0/issuer',
+        'http://localhost:45543/specs/connect/1.0/issuer',
         'http://example.co:8000',
-        'example.co:8000',
-        'example.co',
-        'example.com',
-        'example.org',
+        'http://localhost:45543',
         'https://example.org',
         'https://a.b.example.com',
         'https://example.co',
@@ -77,6 +76,8 @@ describe('oidc client', function (){
     it('should fail with invalid issuers', function (done) {
       const invalidIssuers = [
         "ftp://something",
+        "something.co",
+        "something.co:9999",
         "http:www.example.com",
         "http://www.example.com\\",
       ]

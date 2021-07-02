@@ -1,8 +1,15 @@
 import { fromByteArray } from 'base64-js';
 
-export function isValidOrigin( origin: string ){
-  // eslint-disable-next-line max-len
-  return /^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(\:\d+)?(\/[-a-z\d%_.~+@]*)?$/.test( origin )
+export function isValidIssuer( issuer: string ){
+  try {
+    const url = new URL( issuer )
+    if ( !['http:', 'https:'].includes( url.protocol ) ){
+      return false
+    }
+    return true
+  } catch ( e ){
+    return false
+  }
 }
 export function buildEncodedQueryString( obj?: Record<string, string | number | undefined | null>,
                                          appendable = true, ) {
