@@ -97,7 +97,7 @@ describe('runPopup', () => {
      * then rolling back to real timers
      */
     setTimeout(() => {
-      jest.runTimersToTime(seconds * 1000);
+      jest.advanceTimersByTime(seconds * 1000);
     }, 10);
 
     jest.useFakeTimers();
@@ -122,7 +122,7 @@ describe('runPopup', () => {
      * then rolling back to real timers
      */
     setTimeout(() => {
-      jest.runTimersToTime(60 * 1000);
+      jest.advanceTimersByTime(60 * 1000);
     }, 10);
 
     jest.useFakeTimers();

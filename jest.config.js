@@ -1,5 +1,6 @@
 
 module.exports = {
+  testEnvironment: "jsdom",
   rootDir: './',
   moduleFileExtensions: ['ts', 'js'],
   coveragePathIgnorePatterns: [

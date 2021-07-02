@@ -511,7 +511,7 @@ describe('oidc client', function (){
       const oidc = new OIDCClient(dummyOpts)
       // @ts-expect-error
       oidc.exchangeRefreshToken({})
-        .then(done.fail.bind(null, 'should not succeed'))
+        .then(() => done.fail('should not succeed'))
         .catch( err => {
           expect(err).toBeInstanceOf(Error)
           expect(err.message).toBe('"refresh_token" is required')
@@ -525,7 +525,7 @@ describe('oidc client', function (){
       const oidc = new OIDCClient({issuer: 'http://test.com/'})
       // @ts-expect-error
       oidc.exchangeRefreshToken({refresh_token: 'test'})
-        .then(done.fail.bind(null, 'should not succeed'))
+        .then(() => done.fail('should not succeed'))
         .catch( err => {
           expect(err).toBeInstanceOf(Error)
           expect(err.message).toBe('"client_id" is required')
@@ -597,7 +597,7 @@ describe('oidc client', function (){
     it('should fail without "revocation_endpoint"', function (done) {
       const oidc = new OIDCClient(dummyOpts)
       oidc.revokeToken('token')
-        .then(done.fail.bind(null, 'should not succeed'))
+        .then(() => done.fail('should not succeed'))
         .catch((err)=> {
           expect(err).toBeInstanceOf(OIDCClientError)
           expect(err.message).toBe('"revocation_endpoint" doesn\'t exist')
@@ -732,7 +732,7 @@ describe('oidc client', function (){
       const oidc = new OIDCClient(dummyOpts)
       // @ts-expect-error
       oidc.handleTokenResult({id_token: 'test'}, {}, {idTokenValidator: customValidator})
-        .then(done.fail.bind(null, 'should not succeed'))
+        .then(() => done.fail('should not succeed'))
         .catch(err => {
           expect(mockedValidator).toBeCalled()
           expect(customValidator).toBeCalled()
@@ -979,12 +979,12 @@ describe('oidc client', function (){
       // @ts-expect-error
       oidc.loadState = jest.fn(async () => state)
 
-      window.opener.postMessage = jest.fn()
+      window.opener!.postMessage = jest.fn()
       oidc.loginCallback('http://example.com?code=1q2w3e4r&state=123456')
         .then(()=>{
           // @ts-expect-error
           expect(oidc.loadState).toBeCalledWith('123456')
-          expect(window.opener.postMessage).toBeCalledWith({
+          expect(window.opener!.postMessage).toBeCalledWith({
             type:     'authorization_response',
             response: { code: '1q2w3e4r', state: '123456'},
             state

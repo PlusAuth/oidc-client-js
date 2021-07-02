@@ -132,7 +132,7 @@ describe('runIframe', () => {
     const timeout = 10 * 1000;
     jest.useFakeTimers();
     const promise = runIframe(url, {eventOrigin: origin, timeout: timeout});
-    jest.runTimersToTime(timeout);
+    jest.advanceTimersByTime(timeout);
     await expect(promise).rejects.toThrow(OIDCClientError);
     expect(window.document.body.removeChild).toHaveBeenCalledWith(iframe);
   });
