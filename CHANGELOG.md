@@ -1,3 +1,15 @@
+## [0.10.2](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.10.1...v0.10.2) (2021-07-02)
+
+
+### Bug Fixes
+
+* incorrect issuer uri validation ([aae260a](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/aae260ad86b8c9182a85fe431537d76c066cb87b)), closes [#2](https://github.com/PlusAuth/plusauth-oidc-client-js/issues/2)
+
+
+### Features
+
+* include search and hash params check in issuer validation ([30dca0d](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/30dca0dcfb60133ff62cefd18a79cb0abef66372))
+
 ## [0.10.1](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.10.0...v0.10.1) (2021-06-28)
 
 
