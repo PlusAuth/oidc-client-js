@@ -193,7 +193,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
       } )
     }
 
-    if ( checkLogin ){
+    if ( checkLogin && this.initialized ){
       try {
         if ( !window?.frameElement ){
           await this.silentLogin()
