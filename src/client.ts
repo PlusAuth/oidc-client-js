@@ -192,6 +192,9 @@ export class OIDCClient extends EventEmitter<EventTypes>{
         }
       } )
     }
+    if ( !this.initialized && !!this.__initializePromise ){
+      await this.__initializePromise
+    }
 
     if ( checkLogin && this.initialized ){
       try {
