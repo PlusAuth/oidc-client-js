@@ -9,8 +9,9 @@ const auth= new OIDCClient({
   post_logout_redirect_uri: 'http://localhost:3001',
   autoSilentRenew: true,
   checkSession: true,
+  audience: 'https://test.com',
   requestUserInfo: true,
-  scope: 'openid profile secure read:user write:user',
+  scope: 'openid profile secure read:user write:user af:admin:secret admin af:user:test af:workflow:test',
   silent_redirect_uri: 'http://localhost:3001/silent-renew.html'
 })
 
