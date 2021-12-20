@@ -65,7 +65,7 @@ Documentation is served on PlusAuth documentation site. You can reach it from [h
 
 ### Api Docs
 
-Please visit [here](https://plusauth.github.io/plusauth-oidc-client-js/classes/oidcclient.html)
+Please visit [here](https://plusauth.github.io/plusauth-oidc-client-js/classes/OIDCClient.html)
 
 
 ### Examples
