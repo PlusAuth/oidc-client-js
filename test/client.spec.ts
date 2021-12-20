@@ -3,7 +3,6 @@ import * as joseUtils from '../src/utils/jose'
 import * as popupUtils from '../src/utils/popup'
 import * as iframeUtils from '../src/utils/iframe'
 import * as checkSessionUtils from '../src/utils/check_session_iframe'
-import {TabUtils} from "../src/utils/tab_utils";
 
 jest.mock('isomorphic-unfetch', () => {
   return {
@@ -147,12 +146,14 @@ describe('oidc client', function (){
     });
 
     it('should start accessTokenRefresh timer when "autoSilentRenew" = true', function (done) {
-      const origFn =TabUtils.CallOnce
-      TabUtils.CallOnce = jest.fn((ss ,fn) => fn())
       const oidc = new OIDCClient({...dummyOpts,
       autoSilentRenew: true,
         secondsToRefreshAccessTokenBeforeExp: 120
       })
+      // @ts-expect-error
+      const origFn = oidc.synchronizer.CallOnce
+      // @ts-expect-error
+      oidc.synchronizer.CallOnce = jest.fn((ss ,fn) => fn())
 
       oidc.silentLogin = jest.fn( async () => {
         return Promise.resolve()
@@ -169,10 +170,12 @@ describe('oidc client', function (){
       setTimeout(() => {
         //@ts-expect-error
         expect(oidc._accessTokenExpireTimer.start).toBeCalled()
-        expect(TabUtils.CallOnce).toBeCalled()
+        // @ts-expect-error
+        expect(oidc.synchronizer.CallOnce).toBeCalled()
         expect(oidc.silentLogin).toBeCalled()
         done()
-        TabUtils.CallOnce = origFn
+        // @ts-expect-error
+        oidc.synchronizer.CallOnce = origFn
       })
     });
 

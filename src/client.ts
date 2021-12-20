@@ -61,6 +61,8 @@ export class OIDCClient extends EventEmitter<EventTypes>{
 
   private readonly http: ( options: RequestOptions ) => Promise<any>;
 
+  private synchronizer: TabUtils;
+
   private stateStore: StateStore
 
   private authStore: StateStore;
@@ -78,6 +80,8 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     if ( !isValidIssuer( options.issuer ) ){
       throw new OIDCClientError( '"issuer" must be a valid uri.' )
     }
+
+    this.synchronizer = new TabUtils( btoa( options.issuer ) )
 
     this.options = Object.assign( {
       secondsToRefreshAccessTokenBeforeExp: 60,
@@ -106,7 +110,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
       await this.authStore.clear()
     } )
 
-    TabUtils.OnBroadcastMessage( Events.USER_LOGIN, this.onUserLogin.bind( this ) )
+    this.synchronizer.OnBroadcastMessage( Events.USER_LOGIN, this.onUserLogin.bind( this ) )
   }
 
   /**
@@ -207,7 +211,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
       Object.assign( {}, this.options, authParams )
     )
     authObject.session_state= response.session_state;
-    TabUtils.BroadcastMessageToAllTabs( Events.USER_LOGIN, authObject )
+    this.synchronizer.BroadcastMessageToAllTabs( Events.USER_LOGIN, authObject )
     return localState
   }
 
@@ -265,7 +269,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
           Object.assign( {}, this.options, authParams )
         )
         authObject.session_state= responseParams.session_state;
-        TabUtils.BroadcastMessageToAllTabs( Events.USER_LOGIN, authObject )
+        this.synchronizer.BroadcastMessageToAllTabs( Events.USER_LOGIN, authObject )
         return localState
     }
   }
@@ -359,7 +363,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
 
     const authObject = await this.handleTokenResult( tokenResult, finalState.authParams, finalOptions )
     authObject.session_state = storedAuth.session_state
-    TabUtils.BroadcastMessageToAllTabs( Events.USER_LOGIN, authObject )
+    this.synchronizer.BroadcastMessageToAllTabs( Events.USER_LOGIN, authObject )
     return finalState.localState
   }
 
@@ -760,7 +764,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
         const expiration = Number( expires_in ) - this.options.secondsToRefreshAccessTokenBeforeExp!
         if ( expiration >= 0 ){
           this._accessTokenExpireTimer!.start( expiration, async ()=> {
-            TabUtils.CallOnce( 'silent-login', async () => {
+            this.synchronizer.CallOnce( 'silent-login', async () => {
               try {
                 await this.silentLogin()
                 this.emit( Events.SILENT_RENEW_SUCCESS, null )
