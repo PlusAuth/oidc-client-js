@@ -5,15 +5,18 @@ describe("timer", function () {
   const nowFn = () => now
 
   beforeEach(()=>{
-    jest.useFakeTimers();
+    jest.useFakeTimers('legacy');
   })
+
   afterEach(()=>{
     jest.clearAllTimers()
     jest.resetAllMocks()
   })
+
   afterAll(() => {
     jest.useRealTimers()
   })
+
   describe("[constructor]", function () {
 
     it("should work", function () {
@@ -108,7 +111,7 @@ describe("timer", function () {
       expect(clearIntervalSpy).not.toBeCalled()
 
       timer.stop()
-      jest.runTimersToTime(10000)
+      jest.advanceTimersByTime(10000)
       expect(cb).not.toBeCalled()
     });
 

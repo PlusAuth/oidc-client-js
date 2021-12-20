@@ -3,6 +3,8 @@ import * as joseUtils from '../src/utils/jose'
 import * as popupUtils from '../src/utils/popup'
 import * as iframeUtils from '../src/utils/iframe'
 import * as checkSessionUtils from '../src/utils/check_session_iframe'
+import {TabUtils} from "../src/utils/tab_utils";
+
 jest.mock('isomorphic-unfetch', () => {
   return {
     default: jest.fn().mockReturnValue(new Promise(resolve => {
@@ -12,13 +14,17 @@ jest.mock('isomorphic-unfetch', () => {
     }))
   }
 });
-jest.mock( 'broadcast-channel', () => {
-  return {
-    createLeaderElection: jest.fn(),
-    BroadcastChannel: class {
 
-    }
-  }
+jest.mock( '../src/utils/tab_utils', () => {
+  const originalModule = jest.requireActual('../src/utils/tab_utils');
+  return {
+    __esModule: true,
+    default: jest.fn(() => 'mocked baz'),
+    TabUtils: {
+      ...originalModule.TabUtils,
+      CallOnce: jest.fn((lockname: string, fn: () => void) => { fn() })
+    },
+  };
 })
 
 
@@ -158,10 +164,6 @@ describe('oidc client', function (){
         secondsToRefreshAccessTokenBeforeExp: 120
       })
 
-      // @ts-ignore
-      oidc.leaderElector = {
-        awaitLeadership: jest.fn()
-      }
       oidc.silentLogin = jest.fn( async () => {
         return Promise.resolve()
       })
@@ -176,8 +178,7 @@ describe('oidc client', function (){
       setTimeout(() => {
         //@ts-expect-error
         expect(oidc._accessTokenExpireTimer.start).toBeCalled()
-        //@ts-expect-error
-        expect(oidc.leaderElector.awaitLeadership).toBeCalled()
+        expect(TabUtils.CallOnce).toBeCalled()
         expect(oidc.silentLogin).toBeCalled()
         done()
       })
@@ -458,7 +459,7 @@ describe('oidc client', function (){
       const oidc = new OIDCClient(dummyOpts)
       // @ts-expect-error
       oidc.exchangeAuthorizationCode({})
-        .then(done.fail.bind(null, 'should not succeed'))
+        .then(done.bind(null, 'should not succeed'))
         .catch( err => {
           expect(err).toBeInstanceOf(Error)
           expect(err.message).toBe('"code" is required')
@@ -470,7 +471,7 @@ describe('oidc client', function (){
       const oidc = new OIDCClient(dummyOpts)
       // @ts-expect-error
       oidc.exchangeAuthorizationCode({code: 'test'})
-        .then(done.fail.bind(null, 'should not succeed'))
+        .then(done.bind(null, 'should not succeed'))
         .catch( err => {
           expect(err).toBeInstanceOf(Error)
           expect(err.message).toBe('"redirect_uri" is required')
@@ -482,7 +483,7 @@ describe('oidc client', function (){
       const oidc = new OIDCClient(dummyOpts)
       // @ts-expect-error
       oidc.exchangeAuthorizationCode({code: 'test', redirect_uri: 'test'})
-        .then(done.fail.bind(null, 'should not succeed'))
+        .then(done.bind(null, 'should not succeed'))
         .catch( err => {
           expect(err).toBeInstanceOf(Error)
           expect(err.message).toBe('"code_verifier" is required')
@@ -495,7 +496,7 @@ describe('oidc client', function (){
       const oidc = new OIDCClient({issuer: 'http://test.com/'})
       // @ts-expect-error
       oidc.exchangeAuthorizationCode({code: 'test', redirect_uri: 'test', code_verifier: 'test'})
-        .then(done.fail.bind(null, 'should not succeed'))
+        .then(done.bind(null, 'should not succeed'))
         .catch( err => {
           expect(err).toBeInstanceOf(Error)
           expect(err.message).toBe('"client_id" is required')
@@ -511,7 +512,7 @@ describe('oidc client', function (){
         .then(()=>{
           expect(mockedFetch).toBeCalledTimes(1)
           done()
-        }).catch(done.fail)
+        }).catch(done)
     });
 
   })
@@ -522,7 +523,7 @@ describe('oidc client', function (){
       const oidc = new OIDCClient(dummyOpts)
       // @ts-expect-error
       oidc.exchangeRefreshToken({})
-        .then(() => done.fail('should not succeed'))
+        .then(() => done('should not succeed'))
         .catch( err => {
           expect(err).toBeInstanceOf(Error)
           expect(err.message).toBe('"refresh_token" is required')
@@ -536,7 +537,7 @@ describe('oidc client', function (){
       const oidc = new OIDCClient({issuer: 'http://test.com/'})
       // @ts-expect-error
       oidc.exchangeRefreshToken({refresh_token: 'test'})
-        .then(() => done.fail('should not succeed'))
+        .then(() => done('should not succeed'))
         .catch( err => {
           expect(err).toBeInstanceOf(Error)
           expect(err.message).toBe('"client_id" is required')
@@ -552,7 +553,7 @@ describe('oidc client', function (){
         .then(()=>{
           expect(mockedFetch).toBeCalledTimes(1)
           done()
-        }).catch(done.fail)
+        }).catch(done)
     });
 
   })
@@ -573,7 +574,7 @@ describe('oidc client', function (){
       oidc.http = jest.fn(async ()=> { throw new Error('fails')})
       // @ts-expect-error
       oidc.fetchFromIssuer().then(() => {
-        done.fail()
+        done('should not succeed')
       }).catch(err => {
         expect(err).toBeInstanceOf(OIDCClientError)
         expect(err).toHaveProperty('error', 'Loading metadata failed')
@@ -602,13 +603,13 @@ describe('oidc client', function (){
       oidc.revokeToken('token').then(() => {
         expect(mockedFetch).toBeCalledTimes(1)
         done()
-      }).catch(done.fail)
+      }).catch(done)
     });
 
     it('should fail without "revocation_endpoint"', function (done) {
       const oidc = new OIDCClient(dummyOpts)
       oidc.revokeToken('token')
-        .then(() => done.fail('should not succeed'))
+        .then(() => done('should not succeed'))
         .catch((err)=> {
           expect(err).toBeInstanceOf(OIDCClientError)
           expect(err.message).toBe('"revocation_endpoint" doesn\'t exist')
@@ -640,7 +641,7 @@ describe('oidc client', function (){
         expect(mockedGet).toBeCalled()
         expect(mockedDel).toBeCalled()
         done()
-      }).catch(done.fail)
+      }).catch(done)
     });
 
     it('should fail if state does not exist', function (done) {
@@ -654,7 +655,7 @@ describe('oidc client', function (){
       })
 
       // @ts-expect-error
-      oidc.loadState('notExists').then(done.fail).catch( (err)=>{
+      oidc.loadState('notExists').then(done).catch( (err)=>{
         expect(mockedGet).toBeCalled()
         expect(err).toBeInstanceOf(AuthenticationError)
         expect(err.message).toBe('State not found')
@@ -672,7 +673,7 @@ describe('oidc client', function (){
         .then( resp => {
           expect(resp).toStrictEqual({ param: 'value'})
           done()
-        }).catch(done.fail)
+        }).catch(done)
     });
 
     it('should exchange code', function (done) {
@@ -686,7 +687,7 @@ describe('oidc client', function (){
           // @ts-expect-error
           expect(oidc.exchangeAuthorizationCode).toBeCalled()
           done()
-        }).catch(done.fail)
+        }).catch(done)
     });
   })
 
@@ -712,7 +713,7 @@ describe('oidc client', function (){
         .then( resp => {
           expect(resp).toEqual({ authParams: {}, scope: undefined, user: {} })
           done()
-        }).catch(done.fail)
+        }).catch(done)
     });
 
     it('should handle "id_token"', function (done) {
@@ -735,7 +736,7 @@ describe('oidc client', function (){
             }
           )
           done()
-        }).catch(done.fail)
+        }).catch(done)
     });
 
     it('should call custom "idTokenValidator"', function (done) {
@@ -743,7 +744,7 @@ describe('oidc client', function (){
       const oidc = new OIDCClient(dummyOpts)
       // @ts-expect-error
       oidc.handleTokenResult({id_token: 'test'}, {}, {idTokenValidator: customValidator})
-        .then(() => done.fail('should not succeed'))
+        .then(() => done('should not succeed'))
         .catch(err => {
           expect(mockedValidator).toBeCalled()
           expect(customValidator).toBeCalled()
@@ -765,7 +766,7 @@ describe('oidc client', function (){
             }
           )
           done()
-        }).catch(done.fail)
+        }).catch(done)
     });
 
     it('should fetch user info when "requestUserInfo" = true', function (done) {
@@ -789,7 +790,7 @@ describe('oidc client', function (){
             }
           )
           done()
-        }).catch(done.fail)
+        }).catch(done)
     });
 
     it('should fail on error response', function (done) {
@@ -797,7 +798,7 @@ describe('oidc client', function (){
 
       // @ts-expect-error
       oidc.handleTokenResult({error: 'error', error_description: 'invalid_client'}, {}, {})
-        .then(()=>done.fail).catch( err => {
+        .then(()=>done).catch( err => {
         expect(err).toBeInstanceOf(AuthenticationError)
         expect(err).toMatchObject({error: 'error', error_description: 'invalid_client'})
         done()
@@ -1062,7 +1063,7 @@ describe('oidc client', function (){
         expect(oidc.handleTokenResult).toBeCalled()
         expect(onLogin).toBeCalledWith(authObj)
         done()
-      }).catch(done.fail)
+      }).catch(done)
     });
 
 

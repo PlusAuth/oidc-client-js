@@ -507,7 +507,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     const now = this.options.currentTimeInMillis && this.options.currentTimeInMillis() || Date.now()
     const fragment = finalOptions.fragment ? `#${ finalOptions.fragment }` : '';
     const authParamsString = buildEncodedQueryString( authParams )
-    const url = `${ this.options.endpoints!.authorization_endpoint }${ authParamsString }${ fragment }`
+    const url = `${ this.options.endpoints.authorization_endpoint }${ authParamsString }${ fragment }`
 
     // clear 1 day old state entries
     this.stateStore.clear( now - 86400000 )
