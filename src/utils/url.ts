@@ -17,7 +17,7 @@ export function isValidIssuer( issuer: string ){
 export function buildEncodedQueryString( obj?: Record<string, string | number | undefined | null>,
                                          appendable = true, ) {
   if ( !obj ) return '';
-  const ret = [];
+  const ret: string[] = [];
   for ( const d in obj ) {
     if ( obj.hasOwnProperty( d ) && obj[d] ) {
       ret.push( `${ encodeURIComponent( d ) }=${ encodeURIComponent( obj[d]! ) }` );

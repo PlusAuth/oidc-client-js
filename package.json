@@ -14,7 +14,7 @@
     "test": "jest --forceExit",
     "test:coverage": "jest --coverage --forceExit",
     "build": "bili",
-    "docs": "typedoc src/index.ts",
+    "docs": "typedoc --tsconfig tsconfig-doc.json src/index.ts",
     "lint": "eslint . --ext .ts --fix --quiet",
     "release": "cross-env GITHUB_TOKEN=$GITHUB_TOKEN release-it",
     "prepare": "husky install"

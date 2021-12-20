@@ -252,14 +252,14 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     if ( !url ){
       return Promise.reject( new OIDCClientError( 'Url must be passed to handle login redirect' ) )
     }
-    let parsedUrl = null
+    let parsedUrl: URL;
     try {
       parsedUrl = new URL( url )
     } catch ( e ){
       return Promise.reject( new OIDCClientError( `Invalid callback url passed: "${ url }"` ) )
     }
 
-    const responseParams = parseQueryUrl( parsedUrl?.search || parsedUrl?.hash )
+    const responseParams = parseQueryUrl( parsedUrl.search || parsedUrl.hash )
     const rawStoredState = await this.loadState( responseParams.state )
     const { authParams, localState, request_type } = rawStoredState
     url = url || window.location.href;
