@@ -1,7 +1,7 @@
 module.exports = {
   "*.ts": (filenames) => {
     return [
-      "npm run lint",
+      "eslint --fix",
       `git add ${filenames.join(' ')}`
     ];
   },
