@@ -37,6 +37,10 @@ export class TabUtils {
   }
 
   static BroadcastMessageToAllTabs( messageId: string, eventData: any ): void{
+    //now we also need to manually execute handler in the current tab too, because current tab does not get 'storage' events
+    try { handlers[messageId]( eventData ); } //"try" in case handler not found
+    catch ( x ) { }
+
     if ( !window.localStorage ) return; //no local storage. old browser
 
     const data = {
@@ -47,15 +51,12 @@ export class TabUtils {
     //this triggers 'storage' event for all other tabs except the current tab
     localStorage.setItem( `${ keyPrefix }event${ messageId }`, JSON.stringify( data ) );
 
-    //now we also need to manually execute handler in the current tab too, because current tab does not get 'storage' events
-    try { handlers[messageId]( eventData ); } //"try" in case handler not found
-    catch ( x ) { }
-
     //cleanup
     setTimeout( () => { localStorage.removeItem( `${ keyPrefix }event${ messageId }` ); }, 3000 );
   }
 
   static OnBroadcastMessage( messageId: string, fn: ( data: any ) => void ): void{
+    handlers[messageId] = fn;
     if ( !window.localStorage ) return; //no local storage. old browser
 
     //first register a handler for "storage" event that we trigger above
@@ -65,8 +66,5 @@ export class TabUtils {
       const messageData = JSON.parse( ev.newValue );
       fn( messageData.data );
     } );
-
-    //second, add callback function to the local array so we can access it directly
-    handlers[messageId] = fn;
   }
 }
