@@ -15,19 +15,6 @@ jest.mock('isomorphic-unfetch', () => {
   }
 });
 
-jest.mock( '../src/utils/tab_utils', () => {
-  const originalModule = jest.requireActual('../src/utils/tab_utils');
-  return {
-    __esModule: true,
-    default: jest.fn(() => 'mocked baz'),
-    TabUtils: {
-      ...originalModule.TabUtils,
-      CallOnce: jest.fn((lockname: string, fn: () => void) => { fn() })
-    },
-  };
-})
-
-
 import {
   AuthenticationError,
   Events,
@@ -73,7 +60,7 @@ describe('oidc client', function (){
         try {
           new OIDCClient({issuer, client_id: ''})
         }catch (e) {
-          done.fail(e +' : ' + issuer)
+          done(e +' : ' + issuer)
         }
       })
       done()
@@ -94,7 +81,7 @@ describe('oidc client', function (){
       invalidIssuers.forEach(issuer=> {
         try {
           new OIDCClient({issuer, client_id: ''})
-          done.fail('should fail with: ' + issuer)
+          done('should fail with: ' + issuer)
         }catch (e) {
           expect(e).toBeInstanceOf(OIDCClientError)
           expect(e.message).toBe('"issuer" must be a valid uri.')
@@ -137,7 +124,8 @@ describe('oidc client', function (){
     it('should set/clear direct variables on login/logout', function (done) {
       const oidc = new OIDCClient(dummyOpts)
       const authObj = { expires_in: 'e', user: 'u', scope: 's', access_token: 'at', id_token:'it', refresh_token:'rt' }
-      oidc.emit('user_login', authObj)
+      // @ts-expect-error
+      oidc.onUserLogin(authObj)
       setTimeout(()=>{
         expect(oidc.user).toBeTruthy()
         expect(oidc.accessToken).toBeTruthy()
@@ -159,6 +147,8 @@ describe('oidc client', function (){
     });
 
     it('should start accessTokenRefresh timer when "autoSilentRenew" = true', function (done) {
+      const origFn =TabUtils.CallOnce
+      TabUtils.CallOnce = jest.fn((ss ,fn) => fn())
       const oidc = new OIDCClient({...dummyOpts,
       autoSilentRenew: true,
         secondsToRefreshAccessTokenBeforeExp: 120
@@ -174,13 +164,15 @@ describe('oidc client', function (){
         })
       }
 
-      oidc.emit('user_login', {access_token: 'dummyToken', expires_in: 120, user: {}})
+      // @ts-expect-error
+      oidc.onUserLogin({access_token: 'dummyToken', expires_in: 120, user: {}})
       setTimeout(() => {
         //@ts-expect-error
         expect(oidc._accessTokenExpireTimer.start).toBeCalled()
         expect(TabUtils.CallOnce).toBeCalled()
         expect(oidc.silentLogin).toBeCalled()
         done()
+        TabUtils.CallOnce = origFn
       })
     });
 
@@ -206,7 +198,7 @@ describe('oidc client', function (){
       }) ).then(()=>{
         expect(oidc.authStore.get).toBeCalledTimes(getters.length)
         done()
-      }).catch(done.fail)
+      }).catch(done)
 
     });
   })
@@ -227,8 +219,8 @@ describe('oidc client', function (){
           // @ts-expect-error
           expect(oidc.fetchFromIssuer).toBeCalledTimes(1)
           done()
-        }).catch(done.fail)
-      }).catch(done.fail)
+        }).catch(done)
+      }).catch(done)
 
     });
 
@@ -253,7 +245,7 @@ describe('oidc client', function (){
         })
         expect(oidc.issuer_metadata).toHaveProperty('additional_opt', 'additional')
         done()
-      }).catch(done.fail)
+      }).catch(done)
     });
 
     it('should fail when metadata loading fails', function (done) {
@@ -264,7 +256,7 @@ describe('oidc client', function (){
       oidc.fetchFromIssuer = jest.fn(async ()=> { throw new OIDCClientError('failed')})
 
       oidc.initialize(false).then( client => {
-        done.fail()
+        done('should fail')
       }).catch((err) => {
         expect(err).toBeInstanceOf(OIDCClientError)
         expect(err).toHaveProperty('error', 'failed')
@@ -280,7 +272,7 @@ describe('oidc client', function (){
       oidc.fetchFromIssuer = jest.fn(async ()=> { throw new Error('fails')})
 
       oidc.initialize(false).then( client => {
-        done.fail()
+        done('should fail')
       }).catch((err) => {
         expect(err).toBeInstanceOf(OIDCClientError)
         expect(err).toHaveProperty('error', 'fails')
@@ -302,7 +294,7 @@ describe('oidc client', function (){
         .then(value => {
           expect(mockStore.init).toBeCalledTimes(2)
           done()
-        }).catch(done.fail)
+        }).catch(done)
     });
 
     it('should silentLogin if `checkLogin` true', function (done) {
@@ -314,7 +306,7 @@ describe('oidc client', function (){
         .then(() => {
           expect(oidc.silentLogin).toBeCalled()
           done()
-        }).catch(done.fail)
+        }).catch(done)
     });
     it('should clear authStore if login check fails', function (done) {
       const oidc = new OIDCClient(dummyOpts)
@@ -329,7 +321,7 @@ describe('oidc client', function (){
           // @ts-expect-error
           expect(oidc.authStore.clear).toBeCalled()
           done()
-        }).catch(done.fail)
+        }).catch(done)
     });
   })
 
@@ -342,7 +334,7 @@ describe('oidc client', function (){
         expect(oidc.getUser).toBeCalled()
         expect(value).toBe(true)
         done()
-      }).catch(done.fail)
+      }).catch(done)
     });
 
     it('should silent login if local user does not exist', function (done) {
@@ -354,7 +346,7 @@ describe('oidc client', function (){
         expect(oidc.silentLogin).toBeCalled()
         expect(value).toBe(true)
         done()
-      }).catch(done.fail)
+      }).catch(done)
     });
 
     it('should return false when silent login fails', function (done) {
@@ -366,7 +358,7 @@ describe('oidc client', function (){
         expect(oidc.silentLogin).toBeCalled()
         expect(value).toBe(false)
         done()
-      }).catch(done.fail)
+      }).catch(done)
     });
   })
 

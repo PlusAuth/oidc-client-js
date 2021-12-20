@@ -106,37 +106,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
       await this.authStore.clear()
     } )
 
-    this.on( Events.USER_LOGIN, async ( authObj ) => {
-      const { expires_in, user, scope, access_token, id_token, refresh_token, session_state } = authObj
-      await this.authStore.set( 'auth', authObj )
-
-      this.user = user
-      this.scopes = scope?.split( ' ' );
-      this.accessToken = access_token
-      this.idToken = id_token
-      this.refreshToken = refresh_token
-      if ( !window?.frameElement ) {
-        if ( this.options.checkSession ) {
-          this.monitorSession( { sub: user.sub || user.id, session_state } )
-        }
-
-        if ( expires_in !== undefined && this.options.autoSilentRenew ){
-          const expiration = Number( expires_in ) - this.options.secondsToRefreshAccessTokenBeforeExp!
-          if ( expiration >= 0 ){
-            this._accessTokenExpireTimer!.start( expiration, async ()=> {
-              TabUtils.CallOnce( 'silent-login', async () => {
-                try {
-                  await this.silentLogin()
-                  this.emit( Events.SILENT_RENEW_SUCCESS, null )
-                } catch ( e ) {
-                  this.emit( Events.SILENT_RENEW_ERROR, e )
-                }
-              } )
-            } )
-          }
-        }
-      }
-    } )
+    TabUtils.OnBroadcastMessage( Events.USER_LOGIN, this.onUserLogin.bind( this ) )
   }
 
   /**
@@ -194,9 +164,6 @@ export class OIDCClient extends EventEmitter<EventTypes>{
         }
       } )
     }
-    if ( !this.initialized && !!this.__initializePromise ){
-      await this.__initializePromise
-    }
 
     return this.__initializePromise
   }
@@ -240,7 +207,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
       Object.assign( {}, this.options, authParams )
     )
     authObject.session_state= response.session_state;
-    this.emit( Events.USER_LOGIN, authObject )
+    TabUtils.BroadcastMessageToAllTabs( Events.USER_LOGIN, authObject )
     return localState
   }
 
@@ -298,7 +265,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
           Object.assign( {}, this.options, authParams )
         )
         authObject.session_state= responseParams.session_state;
-        this.emit( Events.USER_LOGIN, authObject )
+        TabUtils.BroadcastMessageToAllTabs( Events.USER_LOGIN, authObject )
         return localState
     }
   }
@@ -392,7 +359,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
 
     const authObject = await this.handleTokenResult( tokenResult, finalState.authParams, finalOptions )
     authObject.session_state = storedAuth.session_state
-    this.emit( Events.USER_LOGIN, authObject )
+    TabUtils.BroadcastMessageToAllTabs( Events.USER_LOGIN, authObject )
     return finalState.localState
   }
 
@@ -771,5 +738,39 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     }
 
     this.sessionCheckerFrame.start( session_state )
+  }
+
+  private async onUserLogin( authObj: any ){
+    const { expires_in, user, scope, access_token, id_token, refresh_token, session_state } = authObj
+    await this.authStore.set( 'auth', authObj )
+
+    this.user = user
+    this.scopes = scope?.split( ' ' );
+    this.accessToken = access_token
+    this.idToken = id_token
+    this.refreshToken = refresh_token
+
+    this.emit( Events.USER_LOGIN, authObj )
+    if ( !window?.frameElement ) {
+      if ( this.options.checkSession ) {
+        this.monitorSession( { sub: user.sub || user.id, session_state } )
+      }
+
+      if ( expires_in !== undefined && this.options.autoSilentRenew ){
+        const expiration = Number( expires_in ) - this.options.secondsToRefreshAccessTokenBeforeExp!
+        if ( expiration >= 0 ){
+          this._accessTokenExpireTimer!.start( expiration, async ()=> {
+            TabUtils.CallOnce( 'silent-login', async () => {
+              try {
+                await this.silentLogin()
+                this.emit( Events.SILENT_RENEW_SUCCESS, null )
+              } catch ( e ) {
+                this.emit( Events.SILENT_RENEW_ERROR, e )
+              }
+            } )
+          } )
+        }
+      }
+    }
   }
 }

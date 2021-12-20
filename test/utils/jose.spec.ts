@@ -68,7 +68,7 @@ describe('jose utils', function () {
 
   it('should fail if code length is not in accepted range', function (done) {
     deriveChallenge(new Array(11).join('a'))
-      .then(done.fail)
+      .then(done.bind(null, 'should fail'))
       .catch( (e) => {
         expect(e.message).toBe(`Invalid code length: 10`)
         done()
@@ -82,7 +82,7 @@ describe('jose utils', function () {
       .then(value => {
         expect(value).toBe("MM2_1QPyiAvVfPjvMOuJUXU7CbDFDeUZtDK74EbtMGw")
         done()
-      }).catch(done.fail)
+      }).catch(done)
   });
   describe("parseJwt", function () {
 
