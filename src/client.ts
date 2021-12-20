@@ -152,7 +152,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     }
 
     if ( this.__initializePromise ){
-      await this.__initializePromise
+      return this.__initializePromise
     } else {
       this.__initializePromise = new Promise( async ( resolve, reject ) => {
         try {
@@ -174,6 +174,16 @@ export class OIDCClient extends EventEmitter<EventTypes>{
             this.options.endpoints = endpoints
           }
           this.initialized = true
+
+          if ( checkLogin ){
+            try {
+              if ( !window?.frameElement ){
+                await this.silentLogin()
+              }
+            } catch ( e ) {
+              await this.authStore.clear()
+            }
+          }
           resolve( this )
         } catch ( e ) {
           if ( e instanceof OIDCClientError ){
@@ -183,16 +193,6 @@ export class OIDCClient extends EventEmitter<EventTypes>{
           }
         }
       } )
-    }
-
-    if ( checkLogin && this.initialized ){
-      try {
-        if ( !window?.frameElement ){
-          await this.silentLogin()
-        }
-      } catch ( e ) {
-        await this.authStore.clear()
-      }
     }
 
     return this.__initializePromise
