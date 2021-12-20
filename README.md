@@ -30,6 +30,7 @@ OpenID Connect (OIDC) and OAuth2 library for browser based JavaScript applicatio
 - [PKCE](https://tools.ietf.org/html/rfc7636)
 - JWT payload validation
 - Can be used with any OpenID Connect provider
+- Cross tab login synchronization
 
 ### Table of Contents
 - [Installation](#installation)
