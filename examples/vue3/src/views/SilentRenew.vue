@@ -3,7 +3,7 @@
 </template >
 
 <script >
-import {OIDCClient} from "../../../../";
+import {OIDCClient} from "../../../../src/index";
 
 export default {
   name: "SilentRenew",

@@ -7,5 +7,6 @@ const app = createApp(App)
 app.use(router)
 app.config.globalProperties.$auth = auth
 auth.initialize().then( () => {
+}).catch(console.error).finally(() => {
   app.mount('#app')
-}).catch(console.error)
+})
