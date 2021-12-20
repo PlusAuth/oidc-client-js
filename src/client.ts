@@ -1,7 +1,3 @@
-import { createLeaderElection, BroadcastChannel } from 'broadcast-channel';
-
-import { LeaderElector } from 'broadcast-channel/types/leader-election';
-
 import { Events, EventTypes } from './constants';
 
 import {
@@ -9,12 +5,12 @@ import {
   OIDCClientError
 } from './errors';
 
-import { EventEmitter } from './helpers';
 import {
+  EventEmitter,
   InMemoryStateStore,
   LocalStorageStateStore,
   StateStore,
-} from './helpers/state_manager';
+} from './helpers';
 
 
 
@@ -40,6 +36,7 @@ import {
 
 import { isResponseType, isScopeIncluded } from './utils/oidc';
 import { runPopup } from './utils/popup';
+import { TabUtils } from './utils/tab_utils';
 
 /**
  * `OIDCClient` provides methods for interacting with OIDC/OAuth2 authorization server. Those methods are signing a
@@ -96,10 +93,6 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     this.http = this.options.httpClient || request
     this.stateStore = this.options.stateStore || new LocalStorageStateStore( 'pa_oidc.state.' )
     this.authStore = this.options.authStore || new InMemoryStateStore()
-    // TODO: use another solution to decrease bundle size
-    this.leaderElector = createLeaderElection( new BroadcastChannel( 'pa_oidc_client', {
-      webWorkerSupport: false
-    } ), {} )
 
 
     if ( this.options.autoSilentRenew ){
@@ -133,13 +126,14 @@ export class OIDCClient extends EventEmitter<EventTypes>{
           const expiration = Number( expires_in ) - this.options.secondsToRefreshAccessTokenBeforeExp!
           if ( expiration >= 0 ){
             this._accessTokenExpireTimer!.start( expiration, async ()=> {
-              await this.leaderElector.awaitLeadership()
-              try {
-                await this.silentLogin()
-                this.emit( Events.SILENT_RENEW_SUCCESS, null )
-              } catch ( e ) {
-                this.emit( Events.SILENT_RENEW_ERROR, e )
-              }
+              TabUtils.CallOnce( 'silent-login', async () => {
+                try {
+                  await this.silentLogin()
+                  this.emit( Events.SILENT_RENEW_SUCCESS, null )
+                } catch ( e ) {
+                  this.emit( Events.SILENT_RENEW_ERROR, e )
+                }
+              } )
             } )
           }
         }
