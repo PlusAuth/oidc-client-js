@@ -468,6 +468,9 @@ export class OIDCClient extends EventEmitter<EventTypes>{
    */
   private async createAuthRequest( options: Partial<AuthRequestOptions> = {},
     localState: Record<string, any> = {} ): Promise<string>{
+    if ( !this.options.endpoints?.authorization_endpoint ){
+      throw new OIDCClientError( 'authorization endpoint does not exist' )
+    }
     // TODO: deep merge for extra params
     const finalOptions = Object.assign( {}, this.options, options )
     localState.code_verifier = generateRandom( 72 )

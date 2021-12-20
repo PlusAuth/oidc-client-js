@@ -370,6 +370,17 @@ describe('oidc client', function (){
   })
 
   describe('.createAuthRequest()', function () {
+    it('should fail without authorization endpoint uri', function (done) {
+      const oidc = new OIDCClient({ ...dummyOpts, endpoints: {} })
+      // @ts-expect-error
+      oidc.createAuthRequest().then( uri => {
+        done('should fail')
+      }).catch( err => {
+        expect(err).toBeInstanceOf(OIDCClientError)
+        expect(err.message).toBe('authorization endpoint does not exist')
+        done()
+      })
+    });
     it('should build uri', function (done) {
       const oidc = new OIDCClient(dummyOpts)
       // @ts-expect-error
