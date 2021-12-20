@@ -89,6 +89,9 @@
       ]
     }
   },
+  "lint-staged": {
+    "*.ts": "eslint --fix"
+  },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
     "access": "public"
