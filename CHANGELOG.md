@@ -1,3 +1,22 @@
+# [0.11.0](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.10.2...v0.11.0) (2021-12-20)
+
+
+### Bug Fixes
+
+* initialization promise is not waited correctly ([4712244](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/47122444b4c6c1b3b02df2412d35f73ba2647710))
+* login synchronizing across tabs is not per issuer ([906206e](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/906206ece683a8ea54e5cdd7ab1b4bc4d428dbc4))
+* on login listener fails without localstorage ([daa9a1e](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/daa9a1e0f2896e832d75631928b591415428f958))
+* session is not checked on init ([c504798](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/c504798fd577b598a00c1db8633bc085f0889b3d))
+
+
+### Features
+
+* allow changing session checking interval ([a626bb6](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/a626bb6343741983dc873c19378f561ce55993a8))
+* check login only on initialization ([4834080](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/4834080c5caaebd123581d58f76f588339f73bac))
+* cross tab login synchronization ([d7710e1](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/d7710e1ff45de038f935e874e403cee43968b3e7))
+* throw error when auth endpoint is missing ([b9fbb2f](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/b9fbb2ff510f8fc9e37e3f3b5a29148ff9436278))
+* use tab utils instead of broadcast-channel ([1397dca](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/1397dcaeaf0d014c9227f4000ca521cc2138aa9c))
+
 ## [0.10.2](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.10.1...v0.10.2) (2021-07-02)
 
 
