@@ -69,8 +69,6 @@ export class OIDCClient extends EventEmitter<EventTypes>{
 
   private _accessTokenExpireTimer?: Timer;
 
-  private leaderElector: LeaderElector
-
   private initialized!: boolean;
 
   private __initializePromise!: Promise<any>;
