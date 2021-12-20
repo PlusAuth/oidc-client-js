@@ -194,6 +194,9 @@ export class OIDCClient extends EventEmitter<EventTypes>{
         }
       } )
     }
+    if ( !this.initialized && !!this.__initializePromise ){
+      await this.__initializePromise
+    }
 
     return this.__initializePromise
   }
