@@ -762,9 +762,10 @@ export class OIDCClient extends EventEmitter<EventTypes>{
       }
 
       this.sessionCheckerFrame = createSessionCheckerFrame( {
-        url:       endpoints.check_session_iframe,
-        client_id: client_id,
-        callback:  sessionCheckCallback
+        url:           endpoints.check_session_iframe,
+        client_id:     client_id,
+        callback:      sessionCheckCallback,
+        checkInterval: this.options.checkSessionInterval,
       } )
     }
 

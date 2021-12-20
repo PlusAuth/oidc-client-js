@@ -74,6 +74,11 @@ export interface IPlusAuthClientOptions extends Omit<AuthRequestOptions, 'reques
    */
   checkSession?: boolean;
 
+  /**
+   * Session checking interval in milliseconds. Defaults to 2000
+   */
+  checkSessionInterval?: number;
+
   client_id: string;
 
   client_secret?: string;
