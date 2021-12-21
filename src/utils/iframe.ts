@@ -10,7 +10,7 @@ export function createHiddenFrame() {
   iframe.style.display = 'none';
 
   iframe.title = '__pa_helper__hidden'
-  iframe.ariaHidden='true'
+  iframe.ariaHidden = 'true'
 
   return iframe
 }
@@ -55,7 +55,7 @@ export function runIframe(
     iframe.setAttribute( 'src', url );
     const frameLoadCount = 0
     let firstURL: string
-    iframe.onload = function (){
+    iframe.onload = function () {
       if ( frameLoadCount === 0 ) {
         firstURL = iframe.getAttribute( 'src' ) as string;
       } else {
