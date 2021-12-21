@@ -9,6 +9,9 @@ export function createHiddenFrame() {
   iframe.style.visibility = 'hidden';
   iframe.style.display = 'none';
 
+  iframe.title = '__pa_helper__hidden'
+  iframe.ariaHidden='true'
+
   return iframe
 }
 
