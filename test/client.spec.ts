@@ -32,7 +32,11 @@ const mockedFetch = <jest.Mock> fetch
 const dummyOpts = {
   issuer: 'https://test.plusauth.com/',
   client_id: 'test',
-  endpoints: { authorization_endpoint: 'dummy_auth'}
+  endpoints: {
+    authorization_endpoint: 'dummy_auth',
+    token_endpoint: 'dummy_token',
+    end_session_endpoint: 'dummy_end_session',
+  }
 }
 describe('oidc client', function (){
   afterEach(() => {
@@ -230,23 +234,11 @@ describe('oidc client', function (){
     it('should fetch issuer metadata when endpoints not provided', function (done) {
       const oidc = new OIDCClient({ issuer: 'http://test.com', client_id: 'test'})
       // @ts-expect-error
-      oidc.fetchFromIssuer = jest.fn(async ()=> ({
-        'authorization_endpoint': 'dummy',
-        'check_session_iframe': 'dummyCheck',
-        'jwks_uri': 'dummyUri',
-        'additional_opt': 'additional'
-      }))
+      oidc.fetchFromIssuer = jest.fn(async ()=> ({}))
 
       oidc.initialize(false).then(()=>{
         // @ts-expect-error
         expect(oidc.fetchFromIssuer).toBeCalled()
-
-        expect(oidc.options.endpoints).toEqual({
-          'authorization_endpoint': 'dummy',
-          'check_session_iframe': 'dummyCheck',
-          'jwks_uri': 'dummyUri',
-        })
-        expect(oidc.issuer_metadata).toHaveProperty('additional_opt', 'additional')
         done()
       }).catch(done)
     });
@@ -366,14 +358,17 @@ describe('oidc client', function (){
   })
 
   describe('.createAuthRequest()', function () {
-    it('should fail without authorization endpoint uri', function (done) {
+    it('should try to fetch authorization endpoint uri', function (done) {
       const oidc = new OIDCClient({ ...dummyOpts, endpoints: {} })
       // @ts-expect-error
-      oidc.createAuthRequest().then( uri => {
-        done('should fail')
-      }).catch( err => {
-        expect(err).toBeInstanceOf(OIDCClientError)
-        expect(err.message).toBe('authorization endpoint does not exist')
+      oidc.fetchFromIssuer = jest.fn(()=> {
+        oidc.options.endpoints = dummyOpts.endpoints
+      })
+
+      // @ts-expect-error
+      oidc.createAuthRequest().then(() => {
+        // @ts-expect-error
+        expect(oidc.fetchFromIssuer).toBeCalledTimes(1)
         done()
       })
     });
@@ -440,10 +435,10 @@ describe('oidc client', function (){
   })
 
   describe('.createLogoutRequest()', function () {
-    it('should build uri', function () {
+    it('should build uri', async function () {
       const oidc = new OIDCClient(dummyOpts)
       // @ts-expect-error
-      const uri = oidc.createLogoutRequest()
+      const uri = await oidc.createLogoutRequest()
       expect(typeof uri).toBe("string")
     });
   })

@@ -59,7 +59,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
 
   issuer_metadata?: Record<string, any>;
 
-  private readonly http: ( options: RequestOptions ) => Promise<any>;
+  private readonly http: ( options: RequestOptions ) => Promise<any> | never;
 
   private synchronizer: TabUtils;
 
@@ -120,7 +120,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
    * @param checkLogin Make this `false` if you don't want to check user authorization status in provider while
    * initializing. Defaults to `true`
    */
-  async initialize( checkLogin = true ): Promise<OIDCClient>{
+  async initialize( checkLogin = true ): Promise<OIDCClient> | never {
     if ( this.initialized ){
       return this
     }
@@ -137,15 +137,8 @@ export class OIDCClient extends EventEmitter<EventTypes>{
             await this.authStore.init()
           }
 
-          if ( !this.options.endpoints ){
-            this.issuer_metadata = await this.fetchFromIssuer()
-            const endpoints = {} as any
-            for ( const prop of Object.keys( this.issuer_metadata ) ) {
-              if ( prop.endsWith( '_endpoint' ) || prop.indexOf( '_session' ) > -1 || prop.indexOf( '_uri' ) > -1 ) {
-                endpoints[prop as keyof IEndpointConfiguration] = this.issuer_metadata[prop];
-              }
-            }
-            this.options.endpoints = endpoints
+          if ( !this.options.endpoints || Object.keys( this.options.endpoints ).length === 0 ){
+            await this.fetchFromIssuer()
           }
           this.initialized = true
 
@@ -283,7 +276,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     if ( !options.localOnly ) {
       const storedAuth = await this.authStore.get( 'auth' )
       const id_token_hint = options.id_token_hint || storedAuth?.id_token_raw
-      window.location.assign( this.createLogoutRequest( {
+      window.location.assign( await this.createLogoutRequest( {
         ...options,
         id_token_hint
       } ) )
@@ -441,7 +434,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
   private async createAuthRequest( options: Partial<AuthRequestOptions> = {},
     localState: Record<string, any> = {} ): Promise<string>{
     if ( !this.options.endpoints?.authorization_endpoint ){
-      throw new OIDCClientError( 'authorization endpoint does not exist' )
+      await this.initialize( false )
     }
     // TODO: deep merge for extra params
     const finalOptions = Object.assign( {}, this.options, options )
@@ -481,7 +474,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     const now = this.options.currentTimeInMillis && this.options.currentTimeInMillis() || Date.now()
     const fragment = finalOptions.fragment ? `#${ finalOptions.fragment }` : '';
     const authParamsString = buildEncodedQueryString( authParams )
-    const url = `${ this.options.endpoints.authorization_endpoint }${ authParamsString }${ fragment }`
+    const url = `${ this.options.endpoints!.authorization_endpoint }${ authParamsString }${ fragment }`
 
     // clear 1 day old state entries
     this.stateStore.clear( now - 86400000 )
@@ -502,7 +495,10 @@ export class OIDCClient extends EventEmitter<EventTypes>{
    * @param options
    * @private
    */
-  private createLogoutRequest( options: LogoutRequestOptions = {} ){
+  private async createLogoutRequest( options: LogoutRequestOptions = {} ){
+    if ( !this.options.endpoints?.end_session_endpoint ){
+      await this.fetchFromIssuer();
+    }
     const finalOptions = Object.assign( {}, this.options, options )
     const logoutParams = {
       id_token_hint:            finalOptions.id_token_hint,
@@ -518,6 +514,9 @@ export class OIDCClient extends EventEmitter<EventTypes>{
    * @private
    */
   private async exchangeAuthorizationCode( options: TokenRequestOption ){
+    if ( !this.options.endpoints?.token_endpoint ){
+      await this.fetchFromIssuer();
+    }
     const extraTokenHeaders = options.extraTokenHeaders
     options = Object.assign( {}, options, options.extraTokenParams || {} );
 
@@ -556,6 +555,9 @@ export class OIDCClient extends EventEmitter<EventTypes>{
    * @private
    */
   private async exchangeRefreshToken( options: Partial<TokenRequestOption> ) {
+    if ( !this.options.endpoints?.token_endpoint ){
+      await this.fetchFromIssuer();
+    }
     const extraTokenHeaders = options.extraTokenHeaders
     options = Object.assign( {}, options, options.extraTokenParams || {} );
 
@@ -582,14 +584,23 @@ export class OIDCClient extends EventEmitter<EventTypes>{
   /**
    * Fetch OIDC configuration from the issuer.
    */
-  private async fetchFromIssuer(): Promise<Record<string, any> | never>{
+  private async fetchFromIssuer(): Promise<Record<string, any>>{
     try {
       const requestUrl = `${ this.options.issuer }/.well-known/openid-configuration`
-      return await this.http( {
+      const response = await this.http( {
         url:         requestUrl,
         method:      'GET',
         requestType: 'json'
       } )
+      this.issuer_metadata = response as Record<string, any>
+      const endpoints = {} as any
+      for ( const prop of Object.keys( this.issuer_metadata ) ) {
+        if ( prop.endsWith( '_endpoint' ) || prop.indexOf( '_session' ) > -1 || prop.indexOf( '_uri' ) > -1 ) {
+          endpoints[prop as keyof IEndpointConfiguration] = this.issuer_metadata[prop];
+        }
+      }
+      this.options.endpoints = endpoints
+      return this.issuer_metadata;
     } catch ( e ) {
       throw new OIDCClientError( 'Loading metadata failed', e.message )
     }
