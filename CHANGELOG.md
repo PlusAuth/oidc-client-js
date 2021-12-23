@@ -1,3 +1,15 @@
+# [0.12.0](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.11.0...v0.12.0) (2021-12-23)
+
+
+### Bug Fixes
+
+* accessibility warning for hidden iframe ([417cb2f](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/417cb2f033876076e79ec9d93da3a39b0a020a05))
+
+
+### Features
+
+* try fetching oidc metadata from well-known endpoint in case of missing endpoints ([0caec70](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/0caec70d733b127c27ef73c969f518a1a9e2d51b))
+
 # [0.11.0](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.10.2...v0.11.0) (2021-12-20)
 
 
