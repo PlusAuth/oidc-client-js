@@ -44,7 +44,7 @@ OpenID Connect (OIDC) and OAuth2 library for browser based JavaScript applicatio
 From the CDN:
 
 ```html
-<script src="https://unpkg.com/@plusauth/plusauth-oidc-client-js@0.11.0/dist/plusauth-oidc-client.umd.js"></script>
+<script src="https://unpkg.com/@plusauth/plusauth-oidc-client-js@0.12.0/dist/plusauth-oidc-client.umd.js"></script>
 
 ```
 
