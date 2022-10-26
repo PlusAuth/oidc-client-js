@@ -57,6 +57,8 @@ export class OIDCClient extends EventEmitter<EventTypes>{
 
   idToken?: string;
 
+  idTokenRaw?: string;
+
   issuer_metadata?: Record<string, any>;
 
   private readonly http: ( options: RequestOptions ) => Promise<any> | never;
@@ -756,13 +758,14 @@ export class OIDCClient extends EventEmitter<EventTypes>{
   }
 
   private async onUserLogin( authObj: any ){
-    const { expires_in, user, scope, access_token, id_token, refresh_token, session_state } = authObj
+    const { expires_in, user, scope, access_token, id_token, refresh_token, session_state, id_token_raw } = authObj
     await this.authStore.set( 'auth', authObj )
 
     this.user = user
     this.scopes = scope?.split( ' ' );
     this.accessToken = access_token
     this.idToken = id_token
+    this.idTokenRaw = id_token_raw
     this.refreshToken = refresh_token
 
     this.emit( Events.USER_LOGIN, authObj )
