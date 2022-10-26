@@ -10,7 +10,7 @@ describe('url util', function () {
       }
       expect(buildEncodedQueryString(obj)).toEqual("?a=1&b=str")
     });
-    
+
     it('should encode object (2)', function () {
       expect(buildEncodedQueryString()).toEqual("")
     });
@@ -47,6 +47,18 @@ describe('url util', function () {
         a: 'hello world'
       }
       expect(buildEncodedQueryString(obj)).toEqual('?a=hello%20world')
+    });
+
+    it('should allow nested objects', function () {
+      const obj = {
+        a: {
+          b: '1',
+          c: {
+            d: 2
+          }
+        }
+      }
+      expect(buildEncodedQueryString(obj)).toEqual('?a=%7B%22b%22%3A%221%22%2C%22c%22%3A%7B%22d%22%3A2%7D%7D')
     });
 
   })

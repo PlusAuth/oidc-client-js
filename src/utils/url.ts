@@ -14,13 +14,17 @@ export function isValidIssuer( issuer: string ){
     return false
   }
 }
-export function buildEncodedQueryString( obj?: Record<string, string | number | undefined | null>,
+export function buildEncodedQueryString( obj?: Record<string, any>,
                                          appendable = true, ) {
   if ( !obj ) return '';
   const ret: string[] = [];
   for ( const d in obj ) {
     if ( obj.hasOwnProperty( d ) && obj[d] ) {
-      ret.push( `${ encodeURIComponent( d ) }=${ encodeURIComponent( obj[d]! ) }` );
+      ret.push( `${
+        encodeURIComponent( d )
+      }=${
+        encodeURIComponent( typeof obj[d] === 'object' ? JSON.stringify( obj[d] ) : obj[d]! )
+      }` );
     }
   }
   return `${ appendable ? '?' : '' }${ ret.join( '&' ) }`;
