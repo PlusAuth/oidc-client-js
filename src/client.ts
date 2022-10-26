@@ -443,7 +443,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     localState.code_verifier = generateRandom( 72 )
 
 
-    const authParams: Record<string, string | undefined> = {
+    const authParams: Record<string, any> = {
       client_id:          finalOptions.client_id,
       state:              generateRandom( 10 ),
       scope:              finalOptions.scope,
@@ -453,6 +453,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
       ui_locales:         finalOptions.ui_locales,
       prompt:             finalOptions.prompt,
       display:            finalOptions.display,
+      claims:             finalOptions.claims,
       claims_locales:     finalOptions.claims_locales,
       acr_values:         finalOptions.acr_values,
       registration:       finalOptions.registration,

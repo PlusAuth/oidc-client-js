@@ -9,13 +9,14 @@ export type JWTHeaderField = 'typ' | 'cty' | 'alg' | 'zip' | 'jku' | 'jwk' |
 export interface AuthRequestOptions {
   acr_values?: string;
   audience?: string;
+  claims?: Record<string, any>;
   claims_locales?: string;
   client_id?: string;
   code_challenge?: string;
   code_challenge_method?: string;
   code_verifier?: string;
   display?: string;
-  extraParams?: { [key: string]: string };
+  extraParams?: { [key: string]: any };
   fragment?: string;
   id_token_hint?: string,
   login_hint?: string,
