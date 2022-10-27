@@ -27,6 +27,7 @@ OpenID Connect (OIDC) and OAuth2 library for browser based JavaScript applicatio
 ### Features
 - Silent Authentication
 - Automatic Access Token Renewal
+- [OAuth2 Token Revocation](http://tools.ietf.org/html/rfc7009)
 - [Session Management](https://openid.net/specs/openid-connect-session-1_0.html) (with logout functionality)
 - [PKCE](https://tools.ietf.org/html/rfc7636)
 - JWT payload validation
