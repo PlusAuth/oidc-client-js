@@ -25,7 +25,6 @@
       "src/index.ts"
     ],
     "hideGenerator": true,
-    "listInvalidSymbolLinks": false,
     "excludeProtected": true,
     "excludePrivate": true,
     "plugin": [
