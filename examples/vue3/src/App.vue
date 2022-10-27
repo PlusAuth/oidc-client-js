@@ -28,6 +28,9 @@ export default {
     this.$auth.on('user_login', ( { user })=>{
       this.user = user
     })
+    this.$auth.on('user_login', ( { user })=>{
+      this.user = user
+    })
   },
 }
 </script>
