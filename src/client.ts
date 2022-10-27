@@ -145,16 +145,13 @@ export class OIDCClient extends EventEmitter<EventTypes>{
           this.initialized = true
 
           if ( checkLogin ){
-            try {
-              if ( !window?.frameElement ){
-                await this.silentLogin()
-              }
-            } catch ( e ) {
-              await this.authStore.clear()
+            if ( !window?.frameElement ){
+              await this.silentLogin()
             }
           }
           resolve( this )
         } catch ( e ) {
+          await this.authStore.clear()
           if ( e instanceof OIDCClientError ){
             reject( e )
           } else {
