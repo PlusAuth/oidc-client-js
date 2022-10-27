@@ -1,5 +1,5 @@
 {
-  "name": "@plusauth/plusauth-oidc-client-js",
+  "name": "@plusauth/oidc-client-js",
   "description": "OpenID Connect (OIDC) and OAuth2 library for browser based JavaScript applications.",
   "version": "0.12.0",
   "license": "MIT",
