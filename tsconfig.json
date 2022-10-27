@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES2015",
+    "target": "es2019",
     "module": "commonjs",
     "allowSyntheticDefaultImports": true,
     "allowUmdGlobalAccess": true,

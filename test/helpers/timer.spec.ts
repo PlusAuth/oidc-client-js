@@ -5,7 +5,7 @@ describe("timer", function () {
   const nowFn = () => now
 
   beforeEach(()=>{
-    jest.useFakeTimers('legacy');
+    jest.useFakeTimers({legacyFakeTimers: true});
   })
 
   afterEach(()=>{
