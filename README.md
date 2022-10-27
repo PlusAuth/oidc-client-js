@@ -33,7 +33,7 @@ OpenID Connect (OIDC) and OAuth2 library for browser based JavaScript applicatio
 - JWT payload validation
 - Can be used with any OpenID Connect provider
 - Cross tab/window login synchronization
-- Single refresh token request per tab/window
+- Dispatches single request per tab/window to prevent inconsistency
 
 ### Table of Contents
 - [Installation](#installation)
