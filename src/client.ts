@@ -75,7 +75,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
 
   private initialized!: boolean;
 
-  private __initializePromise!: Promise<any>;
+  private __initializePromise!: Promise<any> | undefined;
 
   constructor( options: IPlusAuthClientOptions ) {
     super()
@@ -160,6 +160,8 @@ export class OIDCClient extends EventEmitter<EventTypes>{
           } else {
             reject( new OIDCClientError( e.message ) )
           }
+        } finally {
+          this.__initializePromise = undefined
         }
       } )
     }
