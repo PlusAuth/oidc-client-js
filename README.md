@@ -1,4 +1,7 @@
 ## @plusauth/plusauth-oidc-client-js
+> **⚠ DEPRECATION NOTICE ⚠**
+> New package identifier of this library is `@plusauth/oidc-client-js`. Please change your usage accordingly.
+
 <a href="https://github.com/PlusAuth/plusauth-oidc-client-js/actions?query=workflow%3Aci">
 <img src="https://github.com/PlusAuth/plusauth-oidc-client-js/workflows/ci/badge.svg" alt="Build Status">
 </a>
