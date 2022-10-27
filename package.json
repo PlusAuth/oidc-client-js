@@ -4,13 +4,29 @@
   "version": "1.0.0",
   "homepage": "https://github.com/PlusAuth/oidc-client-js",
   "license": "MIT",
-  "main": "dist/oidc-client.esm.js",
-  "module": "dist/oidc-client.esm.js",
-  "browser": "dist/oidc-client.min.js",
-  "types": "dist/types.d.ts",
+  "main": "./dist/oidc-client.esm.js",
+  "module": "./dist/oidc-client.esm.js",
+  "browser": "./dist/oidc-client.min.js",
+  "types": "./dist/types.d.ts",
+  "jsdelivr": "./dist/oidc-client.min.js",
+  "unpkg": "./dist/oidc-client.min.js",
   "files": [
     "dist"
   ],
+  "keywords": [
+    "openid-connect",
+    "oidc",
+    "oidc client",
+    "oauth2",
+    "plusauth"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PlusAuth/oidc-client-js"
+  },
+  "bugs": {
+    "url": "https://github.com/PlusAuth/oidc-client-js/issues"
+  },
   "scripts": {
     "test": "jest --forceExit",
     "test:coverage": "jest --coverage --forceExit",
