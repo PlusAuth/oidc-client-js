@@ -129,10 +129,10 @@ describe('runIframe', () => {
 
   it('times out after timeout', async () => {
     const { iframe, url, origin } = setup('' as any);
-    const timeout = 10 * 1000;
+    const timeout = 10;
     jest.useFakeTimers();
     const promise = runIframe(url, {eventOrigin: origin, timeout: timeout});
-    jest.advanceTimersByTime(timeout);
+    jest.advanceTimersByTime(timeout* 1000);
     await expect(promise).rejects.toThrow(OIDCClientError);
     expect(window.document.body.removeChild).toHaveBeenCalledWith(iframe);
   });
