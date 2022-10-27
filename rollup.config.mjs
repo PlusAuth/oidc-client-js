@@ -43,9 +43,7 @@ export default [
     },
   },
 
-  // ES6 builds
-  // dist/chart.js
-  // helpers/*.js
+  // ES build
   {
     input: 'src/index.ts',
     plugins: plugins(),
@@ -60,7 +58,6 @@ export default [
 
   // Types
   // dist/types.d.ts
-  // dist/helpers.d.ts
   {
     input: "src/index.ts",
     plugins: [dts()],
