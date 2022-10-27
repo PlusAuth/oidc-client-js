@@ -119,6 +119,11 @@ export interface IPlusAuthClientOptions extends Omit<AuthRequestOptions, 'reques
    */
   secondsToRefreshAccessTokenBeforeExp?: number;
 
+  /**
+   * Number of seconds to wait for the silent renew to return before assuming it has failed or timed out (default: 10). Related to {@link autoSilentRenew}
+   */
+  silentRequestTimeout?: number;
+
   silent_redirect_uri?: string;
 
   /**

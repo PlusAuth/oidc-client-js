@@ -31,7 +31,7 @@ export function runIframe(
     const timeoutSetTimeoutId = setTimeout( () => {
       reject( new OIDCClientError( 'Timed out' ) );
       removeIframe();
-    }, options.timeout || 60 * 1000 );
+    }, ( options.timeout || 10 ) * 1000 );
 
     const iframeEventHandler = function ( e: MessageEvent ) {
       if ( e.origin != options.eventOrigin ) return;

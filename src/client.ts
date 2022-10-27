@@ -352,7 +352,10 @@ export class OIDCClient extends EventEmitter<EventTypes>{
         request_type:  's'
       }, localState )
 
-      const { response, state } = await runIframe( authUrl, { eventOrigin: window.location.origin } )
+      const { response, state } = await runIframe( authUrl, {
+        timeout:     finalOptions.silentRequestTimeout,
+        eventOrigin: window.location.origin
+      } )
       tokenResult = await this.handleAuthResponse( response, finalOptions, localState )
       storedAuth.session_state = response.session_state;
       finalState = state
