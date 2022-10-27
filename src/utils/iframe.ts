@@ -20,20 +20,15 @@ export function runIframe(
   options: IFrameOptions
 ) {
   return new Promise<any>( ( resolve, reject ) => {
+    let onLoadTimeoutId: any = null;
     const iframe = createHiddenFrame()
-
-    const removeIframe = () => {
-      if ( window.document.body.contains( iframe ) ) {
-        window.document.body.removeChild( iframe );
-      }
-    };
 
     const timeoutSetTimeoutId = setTimeout( () => {
       reject( new OIDCClientError( 'Timed out' ) );
       removeIframe();
     }, ( options.timeout || 10 ) * 1000 );
 
-    const iframeEventHandler = function ( e: MessageEvent ) {
+    const iframeEventHandler =  ( e: MessageEvent ) => {
       if ( e.origin != options.eventOrigin ) return;
       if ( !e.data || e.data.type !== 'authorization_response' ) return;
       const eventSource = e.source;
@@ -46,23 +41,36 @@ export function runIframe(
         ? reject( new AuthenticationError( resp.error, resp.error_description, resp.state, resp.error_uri ) )
         : resolve( e.data );
       clearTimeout( timeoutSetTimeoutId );
-      window.removeEventListener( 'message', iframeEventHandler, false );
-      // Delay the removal of the iframe to prevent hanging loading status
-      setTimeout( removeIframe, 2000 );
+      removeIframe();
     };
+
+    const removeIframe = () => {
+      if ( onLoadTimeoutId != null ){
+        clearTimeout( onLoadTimeoutId )
+      }
+      if ( window.document.body.contains( iframe ) ) {
+        window.document.body.removeChild( iframe );
+      }
+      window.removeEventListener( 'message', iframeEventHandler, false );
+    };
+
+    const onLoadTimeout = () => setTimeout( ()=>{
+      reject( new OIDCClientError( 'Could not complete silent authentication', url ) )
+      removeIframe();
+    }, 300 )
+
+
+
     window.addEventListener( 'message', iframeEventHandler, false );
     window.document.body.appendChild( iframe );
     iframe.setAttribute( 'src', url );
-    const frameLoadCount = 0
-    let firstURL: string
+
+    /**
+     * In case of wrong client id, wrong redirect_uri, in short when redirect did not happen
+     * we assume flow failed.
+     */
     iframe.onload = function () {
-      if ( frameLoadCount === 0 ) {
-        firstURL = iframe.getAttribute( 'src' ) as string;
-      } else {
-        if ( firstURL !== iframe.getAttribute( 'src' ) ) {
-          reject()
-        }
-      }
+      onLoadTimeoutId = onLoadTimeout()
     }
   } );
 }
