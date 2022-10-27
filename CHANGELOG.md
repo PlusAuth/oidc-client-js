@@ -1,3 +1,23 @@
+
+
+# [1.0.0](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.12.0...v1.0.0) (2022-10-27)
+
+
+### Bug Fixes
+
+* retrying initialize attempts returns first failed response ([918794e](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/918794e053b06d9bcd214ced05423f6b57a16b0c))
+
+
+### Features
+
+* `silentRequestTimeout` option ([6001cdd](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/6001cddc3146b6fb4a28cdc7140be0610258d734))
+* accessor for raw idtoken ([a999894](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/a999894def817ba1993dcc01eb14953a6d374018))
+* allow objects in extra params ([6b83144](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/6b83144060113ed4ded41db66f9b37b35af140fc))
+* assume silent renew failed when no redirect happens ([1aa6540](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/1aa65407b3593e319e3afe751ed3e6a73459eac3))
+* claims parameter support ([ee35343](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/ee35343d2bc565ec59f337ca1587d4469a1ecb70))
+* clear auth store when initialization fails ([9e5c9b9](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/9e5c9b9ad08cce2e083c223667b3287290fe3baa))
+* do not fail initializing client when login checking fails ([91c576e](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/91c576ec4eb1933897845744a90dae08886e2acb))
+
 # [0.12.0](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.11.0...v0.12.0) (2021-12-23)
 
 
@@ -186,4 +206,3 @@
 * add initialized flag ([3115a0e](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/3115a0e4ddfa821205a2e8905797c33edc6bb9ca))
 * add sub claim to user profile ([4dfb78e](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/4dfb78e8719cf76105583cbc5981a913b8fd945d))
 * use merged options in constructor ([e1a8799](https://github.com/PlusAuth/plusauth-oidc-client-js/commit/e1a879934a7961f2bc968cba107ce4104b4bebf0))
-
