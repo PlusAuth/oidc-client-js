@@ -4,22 +4,22 @@
 <img src="https://github.com/PlusAuth/oidc-client-js/workflows/ci/badge.svg" alt="Build Status">
 </a>
 <a href="https://www.npmjs.com/package/@plusauth/oidc-client-js">
-<img alt="npm" src="https://img.shields.io/npm/v/@plusauth/oidc-client-js?label=latest%20&logo=npm&style=flat-square">
+<img alt="npm" src="https://img.shields.io/npm/v/@plusauth/oidc-client-js?label=latest%20&logo=npm&style=flat">
 </a>
 <a href="https://www.npmjs.com/package/@plusauth/oidc-client-js">
-<img alt="npm bundle size (scoped)" src="https://img.shields.io/bundlephobia/min/@plusauth/oidc-client-js@latest?label=minified%20size&style=flat-square">
+<img alt="npm bundle size (scoped)" src="https://img.shields.io/bundlephobia/min/@plusauth/oidc-client-js@latest?label=minified%20size&style=flat">
 </a>
 <a href="https://www.npmjs.com/package/@plusauth/oidc-client-js">
-<img alt="npm bundle size (scoped)" src="https://img.shields.io/bundlephobia/minzip/@plusauth/oidc-client-js@latest?color=darkgreen&label=minzipped%20size&style=flat-square">
+<img alt="npm bundle size (scoped)" src="https://img.shields.io/bundlephobia/minzip/@plusauth/oidc-client-js@latest?color=darkgreen&label=minzipped%20size&style=flat">
 </a>
 <a href="https://codecov.io/gh/PlusAuth/oidc-client-js">
-<img alt="Codecov" src="https://img.shields.io/codecov/c/gh/PlusAuth/oidc-client-js?logo=codecov&style=flat-square">
+<img alt="Codecov" src="https://img.shields.io/codecov/c/gh/PlusAuth/oidc-client-js?logo=codecov&style=flat">
 </a>
 <a href="https://snyk.io/test/github/PlusAuth/oidc-client-js">
-<img src="https://img.shields.io/snyk/vulnerabilities/github/PlusAuth/oidc-client-js?style=flat-square" alt="Vulnerabilities">
+<img src="https://img.shields.io/snyk/vulnerabilities/github/PlusAuth/oidc-client-js?style=flat" alt="Vulnerabilities">
 </a>
 <a href="https://github.com/PlusAuth/oidc-client-js/blob/master/LICENSE">
-<img alt="license" src="https://img.shields.io/npm/l/@plusauth/oidc-client-js?style=flat-square">
+<img alt="license" src="https://img.shields.io/npm/l/@plusauth/oidc-client-js?style=flat">
 </a>
 
 OpenID Connect (OIDC) and OAuth2 library for browser based JavaScript applications.
