@@ -73,6 +73,8 @@ Documentation is served on PlusAuth documentation site. You can reach it from [h
 
 Please visit [here](https://plusauth.github.io/oidc-client-js/classes/OIDCClient.html)
 
+### Browser Support
+[Browserlist Coverage](https://browsersl.ist/#q=defaults)
 
 ### Examples
 
