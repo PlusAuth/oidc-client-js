@@ -34,6 +34,7 @@ OpenID Connect (OIDC) and OAuth2 library for browser based JavaScript applicatio
 - Can be used with any OpenID Connect provider
 - Cross tab/window login synchronization
 - Dispatches single request per tab/window to prevent inconsistency
+- Official TypeScript support
 
 ### Table of Contents
 - [Installation](#installation)
