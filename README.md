@@ -31,7 +31,7 @@ OpenID Connect (OIDC) and OAuth2 library for browser based JavaScript applicatio
 - [Session Management](https://openid.net/specs/openid-connect-session-1_0.html) (with logout functionality)
 - [PKCE](https://tools.ietf.org/html/rfc7636)
 - JWT payload validation
-- Can be used with any OpenID Connect provider
+- Can be used with any OAuth 2.0 / OpenID Connect provider
 - Cross tab/window login synchronization
 - Dispatches single request per tab/window to prevent inconsistency
 - Official TypeScript support
