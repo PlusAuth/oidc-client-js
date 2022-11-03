@@ -47,7 +47,7 @@ OpenID Connect (OIDC) and OAuth2 library for browser based JavaScript applicatio
 
 From the CDN:
 
-> **⚠ NOTE:** We advise using specific versions in CDN links as fetching latest version may break up your application.
+> **⚠ NOTE:** Although `@plusauth/oidc-client-js` follows semantic versioning, we advise using specific versions in CDN links as they are easy to forget and latest version may break up your application.
 > Make sure to check releases and use the specific version.
 
 ```html
