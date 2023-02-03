@@ -50,7 +50,7 @@ From the CDN:
 > Make sure to check releases and use the specific version.
 
 ```html
-<script src="https://unpkg.com/@plusauth/oidc-client-js@1.0.0/dist/plusauth-oidc-client.umd.js"></script>
+<script src="https://unpkg.com/@plusauth/oidc-client-js@1.0.0/dist/oidc-client.min.js"></script>
 ```
 
 Using [npm](https://npmjs.org):

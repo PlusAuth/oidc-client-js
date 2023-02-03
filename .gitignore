@@ -7,4 +7,3 @@ types
 coverage
 test-results
 *.log
-dist
