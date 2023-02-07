@@ -1,5 +1,12 @@
 
 
+# [1.1.0](https://github.com/PlusAuth/oidc-client-js/compare/v1.0.0...v1.1.0) (2023-02-07)
+
+
+### Features
+
+* throw custom error when user closes popup ([41ceb5d](https://github.com/PlusAuth/oidc-client-js/commit/41ceb5dbbdf39eacc84d0d2b2a6a1187ad9cc081))
+
 # [1.0.0](https://github.com/PlusAuth/plusauth-oidc-client-js/compare/v0.12.0...v1.0.0) (2022-10-27)
 
 

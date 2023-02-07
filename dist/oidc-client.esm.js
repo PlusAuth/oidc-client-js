@@ -1,7 +1,7 @@
 /*!
- * @plusauth/oidc-client-js v1.0.0
+ * @plusauth/oidc-client-js v1.1.0
  * https://github.com/PlusAuth/oidc-client-js
- * (c) 2022 @plusauth/oidc-client-js Contributors
+ * (c) 2023 @plusauth/oidc-client-js Contributors
  * Released under the MIT License
  */
 /* eslint-disable @typescript-eslint/indent */ const Events = {
@@ -39,6 +39,12 @@ class InvalidIdTokenError extends InvalidJWTError {
     constructor(details){
         super(details);
         this.name = 'InvalidIdTokenError';
+    }
+}
+class InteractionCancelled extends OIDCClientError {
+    constructor(details){
+        super(details);
+        this.name = 'InteractionCancelled';
     }
 }
 
@@ -672,17 +678,32 @@ function runPopup(url, options) {
     if (!popup) {
         /* istanbul ignore next */ throw new Error('Could not open popup');
     }
+    let timeoutId;
+    let closeId;
     return new Promise((resolve, reject)=>{
-        const timeoutId = setTimeout(()=>{
+        function clearHandlers() {
+            clearInterval(closeId);
+            clearTimeout(timeoutId);
+            window.removeEventListener('message', messageListener);
+        }
+        timeoutId = setTimeout(()=>{
+            clearHandlers();
             reject(new OIDCClientError('Timed out'));
         }, options.timeout || 60 * 1000);
-        window.addEventListener('message', (e)=>{
+        closeId = setInterval(function() {
+            if (popup.closed) {
+                clearHandlers();
+                reject(new InteractionCancelled('user closed popup'));
+            }
+        }, 300);
+        window.addEventListener('message', messageListener);
+        function messageListener(e) {
             if (!e.data || e.data.type !== 'authorization_response') return;
-            clearTimeout(timeoutId);
+            clearHandlers();
             popup.close();
             const data = e.data.response || e.data;
             data.error ? reject(new OIDCClientError(data.error, data.error_description)) : resolve(e.data);
-        });
+        }
     });
 }
 
@@ -1396,5 +1417,5 @@ var ref;
     return new OIDCClient(options).initialize();
 }
 
-export { AuthenticationError, EventEmitter, Events, InMemoryStateStore, InvalidIdTokenError, InvalidJWTError, LocalStorageStateStore, OIDCClient, OIDCClientError, StateStore, createOIDCClient as default };
+export { AuthenticationError, EventEmitter, Events, InMemoryStateStore, InteractionCancelled, InvalidIdTokenError, InvalidJWTError, LocalStorageStateStore, OIDCClient, OIDCClientError, StateStore, createOIDCClient as default };
 //# sourceMappingURL=oidc-client.esm.js.map

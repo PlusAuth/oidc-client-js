@@ -53,6 +53,9 @@ interface RequestOptions {
     url: string;
 }
 
+declare const nonUserClaims: readonly ["iss", "aud", "exp", "nbf", "iat", "jti", "azp", "nonce", "auth_time", "at_hash", "c_hash", "acr", "amr", "sub_jwk", "cnf", "sip_from_tag", "sip_date", "sip_callid", "sip_cseq_num", "sip_via_branch", "orig", "dest", "mky", "events", "toe", "txn", "rph", "sid", "vot", "vtm", "attest", "origid", "act", "scope", "client_id", "may_act", "jcard", "at_use_nbr"];
+
+declare type JWTHeaderField = 'typ' | 'cty' | 'alg' | 'zip' | 'jku' | 'jwk' | 'kid' | 'x5u' | 'x5c' | 'x5t' | 'x5t#S256' | 'crit' | 'exp';
 interface AuthRequestOptions {
     acr_values?: string;
     audience?: string;
@@ -81,6 +84,10 @@ interface AuthRequestOptions {
     ui_locales?: string;
     web_message_target?: string;
     web_message_uri?: string;
+}
+interface SessionMonitorOptions {
+    session_state: string;
+    sub: string;
 }
 interface LogoutRequestOptions {
     extraLogoutParams?: {
@@ -168,6 +175,17 @@ interface IPlusAuthClientOptions extends Omit<AuthRequestOptions, 'request_type'
      */
     useRefreshToken?: boolean;
 }
+interface TokenRequestOption {
+    client_id: string;
+    client_secret?: string;
+    code?: string;
+    code_verifier?: string;
+    extraTokenHeaders?: Record<string, string>;
+    extraTokenParams?: Record<string, string>;
+    grant_type?: string;
+    redirect_uri?: string;
+    refresh_token?: string;
+}
 interface PopupOptions {
     popup?: Window | null;
     /**
@@ -176,11 +194,51 @@ interface PopupOptions {
      */
     timeout?: number;
 }
+interface IFrameOptions {
+    eventOrigin: string;
+    /**
+     * Iframe response timeout in milliseconds.
+     * @default 60000
+     */
+    timeout?: number;
+}
+interface ParsedJWT {
+    header: Partial<Record<JWTHeaderField, any>>;
+    payload: Readonly<Record<typeof nonUserClaims[number], string | number>>;
+    signature?: string;
+}
 declare type TokenType = 'access_token' | 'refresh_token';
 interface RevokeOptions {
     client_id?: string;
     client_secret?: string;
 }
+interface TokenResponse {
+    access_token?: string;
+    error?: string;
+    error_description?: string;
+    expires_in?: number;
+    id_token?: string;
+    refresh_token?: string;
+    scope?: string;
+    session_state?: string;
+}
+interface JWTValidationOptions {
+    audience?: string;
+    client_id: string;
+    clockSkew?: number;
+    currentTimeInMillis?: () => number;
+    issuer: string;
+}
+interface SessionCheckerOptions {
+    callback: (...args: any) => void;
+    checkInterval?: number;
+    client_id: string;
+    url: string;
+}
+declare type SessionChecker = {
+    start: (session_state: string) => void;
+    stop: () => void;
+};
 
 /**
  * `OIDCClient` provides methods for interacting with OIDC/OAuth2 authorization server. Those methods are signing a
@@ -386,6 +444,9 @@ declare class InvalidJWTError extends OIDCClientError {
 declare class InvalidIdTokenError extends InvalidJWTError {
     constructor(details: string);
 }
+declare class InteractionCancelled extends OIDCClientError {
+    constructor(details: string);
+}
 
 /**
  * Create OIDC client with initializing it. It resolves issuer metadata, jwks keys and check if user is
@@ -393,4 +454,4 @@ declare class InvalidIdTokenError extends InvalidJWTError {
  */
 declare function createOIDCClient(options: IPlusAuthClientOptions): Promise<OIDCClient>;
 
-export { AuthenticationError, EventEmitter, EventTypes, Events, InMemoryStateStore, InvalidIdTokenError, InvalidJWTError, Listener, LocalStorageStateStore, OIDCClient, OIDCClientError, StateStore, createOIDCClient as default };
+export { AuthRequestOptions, AuthenticationError, EventEmitter, EventTypes, Events, IEndpointConfiguration, IFrameOptions, IPlusAuthClientOptions, InMemoryStateStore, InteractionCancelled, InvalidIdTokenError, InvalidJWTError, JWTHeaderField, JWTValidationOptions, Listener, LocalStorageStateStore, LogoutRequestOptions, OIDCClient, OIDCClientError, ParsedJWT, PopupOptions, RevokeOptions, SessionChecker, SessionCheckerOptions, SessionMonitorOptions, StateStore, TokenRequestOption, TokenResponse, TokenType, createOIDCClient as default };
