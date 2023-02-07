@@ -37,3 +37,10 @@ export class InvalidIdTokenError extends InvalidJWTError {
     this.name = 'InvalidIdTokenError'
   }
 }
+
+export class InteractionCancelled extends OIDCClientError {
+  constructor( details: string ) {
+    super( details );
+    this.name = 'InteractionCancelled'
+  }
+}

@@ -25,8 +25,14 @@ describe('runPopup', () => {
   };
 
   describe('with invalid messages', () => {
+
+    afterEach(() => {
+      jest.clearAllTimers()
+      jest.useRealTimers();
+    });
     ['', {}, { data: 'test' }, { data: { type: 'other-type' } }].forEach(
       m => {
+
         it(`ignores invalid messages: ${JSON.stringify(m)}`, async () => {
           const { popup, url } = setup(m);
           /**
@@ -36,12 +42,11 @@ describe('runPopup', () => {
            * then using fake timers then rolling back to real timers
            */
           setTimeout(() => {
-            jest.runAllTimers();
+            jest.runOnlyPendingTimers();
           }, 10);
           jest.useFakeTimers();
           // @ts-ignore
           await expect(runPopup(url, { popup })).rejects.toThrow(OIDCClientError);
-          jest.useRealTimers();
         });
       }
     );

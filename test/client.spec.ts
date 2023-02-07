@@ -17,7 +17,7 @@ jest.mock('isomorphic-unfetch', () => {
 import {
   AuthenticationError,
   Events,
-  InMemoryStateStore,
+  InMemoryStateStore, InteractionCancelled,
   InvalidIdTokenError,
   LocalStorageStateStore,
   OIDCClient,
@@ -836,6 +836,27 @@ describe('oidc client', function (){
         expect(onLogin).toBeCalledWith(authResult)
         done()
       })
+    });
+
+    it('should throw interaction error when user closes popup', function (done) {
+      const mockedRunPopup = jest.fn( async () => {
+        throw new InteractionCancelled('user closed')
+      })
+      // @ts-expect-error
+      popupUtils["runPopup"] = mockedRunPopup
+      const oidc = new OIDCClient(dummyOpts)
+
+      const authResult = { user: 'x'}
+
+      // @ts-ignore
+      oidc.exchangeAuthorizationCode = jest.fn(async () => ({ }))
+      // @ts-ignore
+      oidc.handleTokenResult = jest.fn(async () => authResult)
+
+      oidc.loginWithPopup().catch(function (err) {
+        expect(err).toBeInstanceOf(InteractionCancelled)
+        done()
+      }).then(done.fail)
     });
 
   })

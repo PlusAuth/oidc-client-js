@@ -1,4 +1,4 @@
-import { OIDCClientError } from '../errors';
+import { InteractionCancelled, OIDCClientError } from '../errors';
 import { PopupOptions } from '../interfaces';
 
 const openPopup = ( url: string, width = 400, height = 600 ) => {
@@ -26,17 +26,37 @@ export function runPopup( url: string, options: PopupOptions ) {
     throw new Error( 'Could not open popup' );
   }
 
+  let timeoutId: any ;
+  let closeId: any ;
+
   return new Promise<any>( ( resolve, reject ) => {
-    const timeoutId = setTimeout( () => {
+    function clearHandlers(){
+      clearInterval( closeId );
+      clearTimeout( timeoutId )
+      window.removeEventListener( 'message', messageListener )
+    }
+
+    timeoutId = setTimeout( () => {
+      clearHandlers()
       reject( new OIDCClientError( 'Timed out' ) );
-    }, options.timeout || 60 * 1000 );
-    window.addEventListener( 'message', e => {
+    }, options.timeout || 60 * 1000 )
+
+    closeId = setInterval( function () {
+      if ( popup!.closed ) {
+        clearHandlers()
+        reject( new InteractionCancelled( 'user closed popup' ) )
+      }
+    }, 300 );
+
+    window.addEventListener( 'message', messageListener );
+
+    function messageListener( e: MessageEvent ){
       if ( !e.data || e.data.type !== 'authorization_response' ) return;
-      clearTimeout( timeoutId );
+      clearHandlers();
       popup!.close();
       const data = e.data.response || e.data
       data.error ? reject( new OIDCClientError( data.error, data.error_description ) )
         : resolve( e.data );
-    } );
+    }
   } );
 }
