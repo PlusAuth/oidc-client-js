@@ -1,5 +1,12 @@
 
 
+## [1.1.1](https://github.com/PlusAuth/oidc-client-js/compare/v1.1.0...v1.1.1) (2023-02-23)
+
+
+### Bug Fixes
+
+* get requests include headers resulting to fail with cors ([2b5519a](https://github.com/PlusAuth/oidc-client-js/commit/2b5519aebe94e1dedbfeb34eb742984eece558bd)), closes [#4](https://github.com/PlusAuth/oidc-client-js/issues/4)
+
 # [1.1.0](https://github.com/PlusAuth/oidc-client-js/compare/v1.0.0...v1.1.0) (2023-02-07)
 
 

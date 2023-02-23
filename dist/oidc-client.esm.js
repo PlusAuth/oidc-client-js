@@ -1,5 +1,5 @@
 /*!
- * @plusauth/oidc-client-js v1.1.0
+ * @plusauth/oidc-client-js v1.1.1
  * https://github.com/PlusAuth/oidc-client-js
  * (c) 2023 @plusauth/oidc-client-js Contributors
  * Released under the MIT License
@@ -427,10 +427,12 @@ function urlSafe(buffer) {
 function request(options) {
     let body = null;
     let headers = options.headers || {};
-    headers = {
-        'Content-Type': options.requestType === 'form' ? 'application/x-www-form-urlencoded;charset=UTF-8' : 'application/json;charset=UTF-8',
-        ...headers
-    };
+    if (options.method === 'POST') {
+        headers = {
+            'Content-Type': options.requestType === 'form' ? 'application/x-www-form-urlencoded;charset=UTF-8' : 'application/json;charset=UTF-8',
+            ...headers
+        };
+    }
     if (options.body) {
         body = options.requestType === 'form' ? buildEncodedQueryString(options.body, false) : JSON.stringify(options.body);
     }
