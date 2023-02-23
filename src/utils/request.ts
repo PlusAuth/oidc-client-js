@@ -13,10 +13,12 @@ export interface RequestOptions {
 export function request( options: RequestOptions ): Promise<any>{
   let body: any = null
   let headers = options.headers || {}
-  headers = {
-    'Content-Type': options.requestType === 'form' ? 'application/x-www-form-urlencoded;charset=UTF-8' :
-      'application/json;charset=UTF-8',
-    ...headers
+  if ( options.method === 'POST' ){
+    headers = {
+      'Content-Type': options.requestType === 'form' ? 'application/x-www-form-urlencoded;charset=UTF-8' :
+        'application/json;charset=UTF-8',
+      ...headers
+    }
   }
   if ( options.body ){
     body = options.requestType === 'form' ? buildEncodedQueryString( options.body, false )
