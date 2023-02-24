@@ -454,6 +454,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
       scope:              finalOptions.scope,
       audience:           finalOptions.audience,
       redirect_uri:       finalOptions.redirect_uri,
+      response_mode:      finalOptions.response_mode,
       response_type:      finalOptions.response_type || 'code',
       ui_locales:         finalOptions.ui_locales,
       prompt:             finalOptions.prompt,
