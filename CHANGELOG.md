@@ -1,5 +1,12 @@
 
 
+## [1.1.2](https://github.com/PlusAuth/oidc-client-js/compare/v1.1.1...v1.1.2) (2023-02-24)
+
+
+### Bug Fixes
+
+* response_mode param not included in auth request ([d3767dc](https://github.com/PlusAuth/oidc-client-js/commit/d3767dcb86f274ea2005c6e05ab11011ca19e93a)), closes [#6](https://github.com/PlusAuth/oidc-client-js/issues/6)
+
 ## [1.1.1](https://github.com/PlusAuth/oidc-client-js/compare/v1.1.0...v1.1.1) (2023-02-23)
 
 

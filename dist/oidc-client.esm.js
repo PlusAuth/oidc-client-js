@@ -1,5 +1,5 @@
 /*!
- * @plusauth/oidc-client-js v1.1.1
+ * @plusauth/oidc-client-js v1.1.2
  * https://github.com/PlusAuth/oidc-client-js
  * (c) 2023 @plusauth/oidc-client-js Contributors
  * Released under the MIT License
@@ -1070,6 +1070,7 @@ var ref;
             scope: finalOptions.scope,
             audience: finalOptions.audience,
             redirect_uri: finalOptions.redirect_uri,
+            response_mode: finalOptions.response_mode,
             response_type: finalOptions.response_type || 'code',
             ui_locales: finalOptions.ui_locales,
             prompt: finalOptions.prompt,
