@@ -766,7 +766,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
 
   private async onUserLogin( authObj: any ){
     const { expires_in, user, scope, access_token, id_token, refresh_token, session_state, id_token_raw } = authObj
-    const expires_at = expires_in ? expires_in + Date.now()/1_000 : undefined
+    const expires_at = Number.isFinite( expires_in ) ? expires_in + Date.now()/1_000 : undefined
     await this.authStore.set( 'auth', { expires_at, ...authObj } )
 
     this.user = user
