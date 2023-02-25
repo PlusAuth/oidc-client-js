@@ -1,13 +1,16 @@
 import { StateStore } from './state_store';
 
-export class LocalStorageStateStore extends StateStore {
-  constructor( prefix = 'pa_oidc.' ) {
+class WebStorageStateStore extends StateStore {
+  storage: Storage;
+
+  constructor( storage: Storage, prefix = 'pa_oidc.' ) {
     super( prefix )
+    this.storage = storage;
   }
 
   get( key: string ) {
     return new Promise<Record<string, any> | null>( ( resolve ) => {
-      const value = window.localStorage.getItem( this.prefix + key );
+      const value = this.storage.getItem( this.prefix + key );
       if ( value ) {
         resolve( JSON.parse( value ) );
       } else {
@@ -18,14 +21,14 @@ export class LocalStorageStateStore extends StateStore {
 
   set( key: string, value: Record<string, any> ) {
     return new Promise<void>( ( resolve ) => {
-      window.localStorage.setItem( this.prefix + key, JSON.stringify( value ) );
+      this.storage.setItem( this.prefix + key, JSON.stringify( value ) );
       resolve();
     } );
   }
 
   del( key: string ) {
     return new Promise<void>( ( resolve ) => {
-      window.localStorage.removeItem( this.prefix + key );
+      this.storage.removeItem( this.prefix + key );
       resolve();
     } );
   }
@@ -34,8 +37,8 @@ export class LocalStorageStateStore extends StateStore {
     return new Promise<void>( ( resolve ) => {
       let i;
       const storedKeys: string[] = [];
-      for ( i = 0; i < window.localStorage.length; i++ ) {
-        const key = window.localStorage.key( i )
+      for ( i = 0; i < this.storage.length; i++ ) {
+        const key = this.storage.key( i )
         // items only created by oidc client
         if ( key?.substring( 0, this.prefix.length ) == this.prefix ) {
           storedKeys.push( key );
@@ -44,17 +47,29 @@ export class LocalStorageStateStore extends StateStore {
       for ( i = 0; i < storedKeys.length; i++ ) {
         if ( before ) {
           try {
-            const storedItem = JSON.parse( window.localStorage.getItem( storedKeys[i] )! )
+            const storedItem = JSON.parse( this.storage.getItem( storedKeys[i] )! )
             if ( storedItem.created_at < before ) {
-              window.localStorage.removeItem( storedKeys[i] )
+              this.storage.removeItem( storedKeys[i] )
             }
           } catch ( e ) {
           }
         } else {
-          window.localStorage.removeItem( storedKeys[i] )
+          this.storage.removeItem( storedKeys[i] )
         }
       }
       resolve();
     } );
+  }
+}
+
+export class LocalStorageStateStore extends WebStorageStateStore {
+  constructor( prefix = 'pa_oidc.' ) {
+    super( window.localStorage, prefix )
+  }
+}
+
+export class SessionStorageStateStore extends WebStorageStateStore {
+  constructor( prefix = 'pa_oidc.' ) {
+    super( window.sessionStorage, prefix )
   }
 }
