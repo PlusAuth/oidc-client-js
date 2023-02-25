@@ -185,6 +185,7 @@ export interface TokenResponse {
   access_token?: string;
   error?: string;
   error_description?: string,
+  expires_at?: number;
   expires_in?: number;
   id_token?: string;
   refresh_token?: string;
