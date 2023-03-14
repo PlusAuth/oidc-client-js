@@ -200,7 +200,9 @@ export class OIDCClient extends EventEmitter<EventTypes>{
       request_type:  'p'
     } )
     const { response, state } = await runPopup( url, popupOptions )
-    const { authParams, localState } = state
+    const { authParams, localState } = !state || typeof state === 'string' ?
+      await this.loadState( state || response.state )
+      : state;
     const tokenResult = await this.handleAuthResponse( response, authParams, localState )
     const authObject = await this.handleTokenResult(
       tokenResult,
