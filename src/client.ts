@@ -194,8 +194,8 @@ export class OIDCClient extends EventEmitter<EventTypes>{
    */
   async loginWithPopup( options: Partial<AuthRequestOptions> = {}, popupOptions: PopupOptions = {} ){
     const url = await this.createAuthRequest( {
+      response_mode: 'fragment',
       ...options,
-      response_mode: 'web_message',
       display:       'popup',
       request_type:  'p'
     } )

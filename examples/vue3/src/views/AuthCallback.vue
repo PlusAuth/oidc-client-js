@@ -6,6 +6,7 @@ export default {
   name: "AuthCallback",
   async mounted() {
     try {
+
       const localState = await this.$auth.loginCallback(window.location.href)
       if (localState && localState.location) {
         window.location.replace(localState.location)
