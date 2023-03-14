@@ -347,10 +347,10 @@ export class OIDCClient extends EventEmitter<EventTypes>{
       } )
     } else {
       const authUrl = await this.createAuthRequest( {
-        ...finalOptions,
-        display:       'page',
         response_mode: 'query',
-        prompt:        finalOptions.prompt || 'none',
+        display:       'page',
+        prompt:        'none',
+        ...finalOptions,
         request_type:  's'
       }, localState )
 
