@@ -1,5 +1,5 @@
 /*!
- * @plusauth/oidc-client-js v1.1.2
+ * @plusauth/oidc-client-js v1.2.0
  * https://github.com/PlusAuth/oidc-client-js
  * (c) 2023 @plusauth/oidc-client-js Contributors
  * Released under the MIT License
@@ -849,13 +849,13 @@ var ref;
    * @param popupOptions
    */ async loginWithPopup(options = {}, popupOptions = {}) {
         const url = await this.createAuthRequest({
+            response_mode: 'fragment',
             ...options,
-            response_mode: 'web_message',
             display: 'popup',
             request_type: 'p'
         });
         const { response , state  } = await runPopup(url, popupOptions);
-        const { authParams , localState  } = state;
+        const { authParams , localState  } = !state || typeof state === 'string' ? await this.loadState(state || response.state) : state;
         const tokenResult = await this.handleAuthResponse(response, authParams, localState);
         const authObject = await this.handleTokenResult(tokenResult, authParams, Object.assign({}, this.options, authParams));
         authObject.session_state = response.session_state;
@@ -978,10 +978,10 @@ var ref;
             });
         } else {
             const authUrl = await this.createAuthRequest({
-                ...finalOptions,
-                display: 'page',
                 response_mode: 'query',
-                prompt: finalOptions.prompt || 'none',
+                display: 'page',
+                prompt: 'none',
+                ...finalOptions,
                 request_type: 's'
             }, localState);
             const { response , state  } = await runIframe(authUrl, {
@@ -1014,6 +1014,12 @@ var ref;
    */ async getIdToken() {
         var ref;
         return (ref = await this.authStore.get('auth')) === null || ref === void 0 ? void 0 : ref.id_token;
+    }
+    /**
+   * Retrieve access token's expiration.
+   */ async getExpiresAt() {
+        var ref;
+        return (ref = await this.authStore.get('auth')) === null || ref === void 0 ? void 0 : ref.expires_at;
     }
     /**
    * Retrieve logged in user's id token in raw format if it exists.

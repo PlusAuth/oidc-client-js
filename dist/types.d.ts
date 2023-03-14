@@ -338,6 +338,10 @@ declare class OIDCClient extends EventEmitter<EventTypes> {
      */
     getIdToken(): Promise<any>;
     /**
+     * Retrieve access token's expiration.
+     */
+    getExpiresAt(): Promise<any>;
+    /**
      * Retrieve logged in user's id token in raw format if it exists.
      */
     getIdTokenRaw(): Promise<any>;

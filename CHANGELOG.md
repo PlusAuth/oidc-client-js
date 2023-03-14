@@ -1,5 +1,19 @@
 
 
+# [1.2.0](https://github.com/PlusAuth/oidc-client-js/compare/v1.1.2...v1.2.0) (2023-03-14)
+
+
+### Bug Fixes
+
+* cannot override response mode and prompt for silent login ([15c404e](https://github.com/PlusAuth/oidc-client-js/commit/15c404e077bef9392af77fc9b21346db04647a4f)), closes [#9](https://github.com/PlusAuth/oidc-client-js/issues/9)
+* cannot override response mode for popup login ([89359d2](https://github.com/PlusAuth/oidc-client-js/commit/89359d20172484ebaddd67747738e17315084251)), closes [#10](https://github.com/PlusAuth/oidc-client-js/issues/10)
+* cannot resolve state if web message does not contain it ([a9f899f](https://github.com/PlusAuth/oidc-client-js/commit/a9f899f4ba5b8a4af9a78ae3e8410d5725a91c17))
+
+
+### Features
+
+* add getter for expires_at ([9c8718e](https://github.com/PlusAuth/oidc-client-js/commit/9c8718e36c50f56ca743ede999ef67fbae1bc4d3)), closes [#7](https://github.com/PlusAuth/oidc-client-js/issues/7)
+
 ## [1.1.2](https://github.com/PlusAuth/oidc-client-js/compare/v1.1.1...v1.1.2) (2023-02-24)
 
 
