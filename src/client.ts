@@ -392,6 +392,13 @@ export class OIDCClient extends EventEmitter<EventTypes>{
   }
 
   /**
+   * Retrieve access token's expiration.
+   */
+  async getExpiresAt(){
+    return ( await this.authStore.get( 'auth' ) )?.expires_at
+  }
+
+  /**
    * Retrieve logged in user's id token in raw format if it exists.
    */
   async getIdTokenRaw(){
