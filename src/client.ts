@@ -543,6 +543,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
 
     options.grant_type = options.grant_type || 'authorization_code';
     options.client_id = options.client_id || this.options.client_id;
+    options.client_secret = options.client_secret || this.options.client_secret;
     options.redirect_uri = options.redirect_uri || this.options.redirect_uri;
 
     if ( !options.code ) {
@@ -637,6 +638,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
       return this.exchangeAuthorizationCode( {
         redirect_uri:  finalOptions.redirect_uri,
         client_id:     finalOptions.client_id,
+        client_secret: finalOptions.client_secret,
         code_verifier: localState.code_verifier,
         grant_type:    'authorization_code',
         code:          response.code,
