@@ -1,5 +1,5 @@
 /*!
- * @plusauth/oidc-client-js v1.2.0
+ * @plusauth/oidc-client-js v1.2.1
  * https://github.com/PlusAuth/oidc-client-js
  * (c) 2023 @plusauth/oidc-client-js Contributors
  * Released under the MIT License
@@ -12,9 +12,24 @@
     SESSION_CHANGE: 'session_change'
 };
 
+function _defineProperty$6(obj, key, value) {
+    if (key in obj) {
+        Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: true,
+            configurable: true,
+            writable: true
+        });
+    } else {
+        obj[key] = value;
+    }
+    return obj;
+}
 class OIDCClientError extends Error {
     constructor(error, error_description){
         super(`${error}${error_description && ` - ${error_description}` || ''}`);
+        _defineProperty$6(this, "error", void 0);
+        _defineProperty$6(this, "error_description", void 0);
         this.name = 'OIDCClientError';
         this.error = error;
         this.error_description = error_description;
@@ -23,6 +38,8 @@ class OIDCClientError extends Error {
 class AuthenticationError extends OIDCClientError {
     constructor(error, error_description, state, error_uri){
         super(error, error_description);
+        _defineProperty$6(this, "state", void 0);
+        _defineProperty$6(this, "error_uri", void 0);
         this.name = 'AuthenticationError';
         this.state = state;
         this.error_uri = error_uri;
@@ -48,8 +65,22 @@ class InteractionCancelled extends OIDCClientError {
     }
 }
 
+function _defineProperty$5(obj, key, value) {
+    if (key in obj) {
+        Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: true,
+            configurable: true,
+            writable: true
+        });
+    } else {
+        obj[key] = value;
+    }
+    return obj;
+}
 class StateStore {
     constructor(prefix = ''){
+        _defineProperty$5(this, "prefix", void 0);
         this.prefix = prefix;
     }
 }
@@ -108,6 +139,19 @@ class LocalStorageStateStore extends StateStore {
     }
 }
 
+function _defineProperty$4(obj, key, value) {
+    if (key in obj) {
+        Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: true,
+            configurable: true,
+            writable: true
+        });
+    } else {
+        obj[key] = value;
+    }
+    return obj;
+}
 class InMemoryStateStore extends StateStore {
     clear(before) {
         if (before) {
@@ -134,10 +178,23 @@ class InMemoryStateStore extends StateStore {
     }
     constructor(...args){
         super(...args);
-        this.map = new Map();
+        _defineProperty$4(this, "map", new Map());
     }
 }
 
+function _defineProperty$3(obj, key, value) {
+    if (key in obj) {
+        Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: true,
+            configurable: true,
+            writable: true
+        });
+    } else {
+        obj[key] = value;
+    }
+    return obj;
+}
 class EventEmitter {
     once(event, fn) {
         function on(...onArgs) {
@@ -191,10 +248,24 @@ class EventEmitter {
         return this;
     }
     constructor(){
+        _defineProperty$3(this, "callbacks", void 0);
         this.callbacks = {};
     }
 }
 
+function _defineProperty$2(obj, key, value) {
+    if (key in obj) {
+        Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: true,
+            configurable: true,
+            writable: true
+        });
+    } else {
+        obj[key] = value;
+    }
+    return obj;
+}
 class Timer {
     start(duration, callback) {
         if (duration <= 0) {
@@ -225,6 +296,9 @@ class Timer {
         }
     }
     constructor(currentTimeInMillisFunc = ()=>Date.now()){
+        _defineProperty$2(this, "now", void 0);
+        _defineProperty$2(this, "_timerHandle", void 0);
+        _defineProperty$2(this, "_expiration", void 0);
         this.now = currentTimeInMillisFunc;
     }
 }
@@ -286,9 +360,16 @@ function runIframe(url, options) {
 }
 
 function getAugmentedNamespace(n) {
+  if (n.__esModule) return n;
   var f = n.default;
 	if (typeof f == "function") {
-		var a = function () {
+		var a = function a () {
+			if (this instanceof a) {
+				var args = [null];
+				args.push.apply(args, arguments);
+				var Ctor = Function.bind.apply(f, args);
+				return new Ctor();
+			}
 			return f.apply(this, arguments);
 		};
 		a.prototype = f.prototype;
@@ -414,8 +495,8 @@ function parseQueryUrl(value) {
         const paramAndValue = params[i];
         const parts = paramAndValue.split('=');
         const key = decodeURIComponent(parts.shift());
-        const value1 = parts.length > 0 ? parts.join('=') : '';
-        result[key] = decodeURIComponent(value1);
+        const value = parts.length > 0 ? parts.join('=') : '';
+        result[key] = decodeURIComponent(value);
     }
     return result;
 }
@@ -424,6 +505,7 @@ function urlSafe(buffer) {
     return encoded.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 }
 
+// eslint-disable-next-line import/default
 function request(options) {
     let body = null;
     let headers = options.headers || {};
@@ -550,16 +632,16 @@ function validateJwt(jwt, options, isIdToken = false) {
     if (!payload.iat) {
         throw new InvalidJWTError('Issued At (iat) was not provided');
     }
-    if (lowerNow < payload.iat) {
+    if (lowerNow < Number(payload.iat)) {
         throw new InvalidJWTError(`Issued At (iat) is in the future: ${payload.iat}`);
     }
-    if (payload.nbf && lowerNow < payload.nbf) {
+    if (payload.nbf && lowerNow < Number(payload.nbf)) {
         throw new InvalidJWTError(`Not Before time (nbf) is in the future: ${payload.nbf}`);
     }
     if (!payload.exp) {
         throw new InvalidJWTError('Expiration Time (exp) was not provided');
     }
-    if (payload.exp < upperNow) {
+    if (Number(payload.exp) < upperNow) {
         throw new InvalidJWTError(`Expiration Time (exp) is in the past: ${payload.exp}`);
     }
     return payload;
@@ -716,7 +798,20 @@ https://github.com/jitbit/TabUtils
 - broadcasting a message to all tabs (including the current one) with some message "data"
 - handling a broadcasted message
 MIT license: https://github.com/jitbit/TabUtils/blob/master/LICENSE
-*/ const currentTabId = `${performance.now()}:${Math.random() * 1000000000 | 0}`;
+*/ function _defineProperty$1(obj, key, value) {
+    if (key in obj) {
+        Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: true,
+            configurable: true,
+            writable: true
+        });
+    } else {
+        obj[key] = value;
+    }
+    return obj;
+}
+const currentTabId = `${performance.now()}:${Math.random() * 1000000000 | 0}`;
 const handlers = {};
 class TabUtils {
     //runs code only once in multiple tabs
@@ -768,11 +863,25 @@ class TabUtils {
         });
     }
     constructor(kid){
+        _defineProperty$1(this, "keyPrefix", void 0);
         this.keyPrefix = kid;
     }
 }
 
-var ref;
+function _defineProperty(obj, key, value) {
+    if (key in obj) {
+        Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: true,
+            configurable: true,
+            writable: true
+        });
+    } else {
+        obj[key] = value;
+    }
+    return obj;
+}
+var _window_location;
 /**
  * `OIDCClient` provides methods for interacting with OIDC/OAuth2 authorization server. Those methods are signing a
  * user in, signing out, managing the user's claims, checking session and managing tokens returned from the
@@ -811,14 +920,15 @@ var ref;
                             }
                         }
                     } catch (e) {
+                        this.emit(Events.SILENT_RENEW_ERROR, e);
                         await this.authStore.clear();
                     }
                     resolve(this);
-                } catch (e1) {
-                    if (e1 instanceof OIDCClientError) {
-                        reject(e1);
+                } catch (e) {
+                    if (e instanceof OIDCClientError) {
+                        reject(e);
                     } else {
-                        reject(new OIDCClientError(e1.message));
+                        reject(new OIDCClientError(e.message));
                     }
                 } finally{
                     this.__initializePromise = undefined;
@@ -868,7 +978,7 @@ var ref;
    * call this method.
    *
    * @param url Full url which contains authorization request result parameters. Defaults to `window.location.href`
-   */ async loginCallback(url = window === null || window === void 0 ? void 0 : (ref = window.location) === null || ref === void 0 ? void 0 : ref.href) {
+   */ async loginCallback(url = window === null || window === void 0 ? void 0 : (_window_location = window.location) === null || _window_location === void 0 ? void 0 : _window_location.href) {
         if (!url) {
             return Promise.reject(new OIDCClientError('Url must be passed to handle login redirect'));
         }
@@ -1000,44 +1110,44 @@ var ref;
     /**
    * Retrieve logged in user's access token if it exists.
    */ async getAccessToken() {
-        var ref;
-        return (ref = await this.authStore.get('auth')) === null || ref === void 0 ? void 0 : ref.access_token;
+        var _ref;
+        return (_ref = await this.authStore.get('auth')) === null || _ref === void 0 ? void 0 : _ref.access_token;
     }
     /**
    * Retrieve logged in user's refresh token if it exists.
    */ async getRefreshToken() {
-        var ref;
-        return (ref = await this.authStore.get('auth')) === null || ref === void 0 ? void 0 : ref.refresh_token;
+        var _ref;
+        return (_ref = await this.authStore.get('auth')) === null || _ref === void 0 ? void 0 : _ref.refresh_token;
     }
     /**
    * Retrieve logged in user's parsed id token if it exists.
    */ async getIdToken() {
-        var ref;
-        return (ref = await this.authStore.get('auth')) === null || ref === void 0 ? void 0 : ref.id_token;
+        var _ref;
+        return (_ref = await this.authStore.get('auth')) === null || _ref === void 0 ? void 0 : _ref.id_token;
     }
     /**
    * Retrieve access token's expiration.
    */ async getExpiresAt() {
-        var ref;
-        return (ref = await this.authStore.get('auth')) === null || ref === void 0 ? void 0 : ref.expires_at;
+        var _ref;
+        return (_ref = await this.authStore.get('auth')) === null || _ref === void 0 ? void 0 : _ref.expires_at;
     }
     /**
    * Retrieve logged in user's id token in raw format if it exists.
    */ async getIdTokenRaw() {
-        var ref;
-        return (ref = await this.authStore.get('auth')) === null || ref === void 0 ? void 0 : ref.id_token_raw;
+        var _ref;
+        return (_ref = await this.authStore.get('auth')) === null || _ref === void 0 ? void 0 : _ref.id_token_raw;
     }
     /**
    * Retrieve logged in user's scopes if it exists.
    */ async getScopes() {
-        var ref, ref1;
-        return (ref = await this.authStore.get('auth')) === null || ref === void 0 ? void 0 : (ref1 = ref.scope) === null || ref1 === void 0 ? void 0 : ref1.split(' ');
+        var _ref, _ref_scope;
+        return (_ref = await this.authStore.get('auth')) === null || _ref === void 0 ? void 0 : (_ref_scope = _ref.scope) === null || _ref_scope === void 0 ? void 0 : _ref_scope.split(' ');
     }
     /**
    * Retrieve logged in user's profile.
    */ async getUser() {
-        var ref;
-        return (ref = await this.authStore.get('auth')) === null || ref === void 0 ? void 0 : ref.user;
+        var _ref;
+        return (_ref = await this.authStore.get('auth')) === null || _ref === void 0 ? void 0 : _ref.user;
     }
     /**
    * If there is a user stored locally return true. Otherwise it will make a silentLogin to check if End-User is
@@ -1063,8 +1173,8 @@ var ref;
    * @param localState
    * @private
    */ async createAuthRequest(options = {}, localState = {}) {
-        var ref;
-        if (!((ref = this.options.endpoints) === null || ref === void 0 ? void 0 : ref.authorization_endpoint)) {
+        var _this_options_endpoints;
+        if (!((_this_options_endpoints = this.options.endpoints) === null || _this_options_endpoints === void 0 ? void 0 : _this_options_endpoints.authorization_endpoint)) {
             await this.initialize(false);
         }
         // TODO: deep merge for extra params
@@ -1118,15 +1228,15 @@ var ref;
    * @param options
    * @private
    */ async createLogoutRequest(options = {}) {
-        var ref;
-        if (!((ref = this.options.endpoints) === null || ref === void 0 ? void 0 : ref.end_session_endpoint)) {
+        var _this_options_endpoints;
+        if (!((_this_options_endpoints = this.options.endpoints) === null || _this_options_endpoints === void 0 ? void 0 : _this_options_endpoints.end_session_endpoint)) {
             await this.fetchFromIssuer();
         }
         const finalOptions = Object.assign({}, this.options, options);
         const logoutParams = {
             id_token_hint: finalOptions.id_token_hint,
             post_logout_redirect_uri: finalOptions.post_logout_redirect_uri,
-            ...finalOptions.extraLogoutParams && finalOptions.extraLogoutParams
+            ...finalOptions.extraLogoutParams || {}
         };
         return `${this.options.endpoints.end_session_endpoint}${buildEncodedQueryString(logoutParams)}`;
     }
@@ -1135,34 +1245,34 @@ var ref;
    * @param options
    * @private
    */ async exchangeAuthorizationCode(options) {
-        var ref;
-        if (!((ref = this.options.endpoints) === null || ref === void 0 ? void 0 : ref.token_endpoint)) {
+        var _this_options_endpoints;
+        if (!((_this_options_endpoints = this.options.endpoints) === null || _this_options_endpoints === void 0 ? void 0 : _this_options_endpoints.token_endpoint)) {
             await this.fetchFromIssuer();
         }
-        const extraTokenHeaders = options.extraTokenHeaders;
-        options = Object.assign({}, options, options.extraTokenParams || {});
-        delete options.extraTokenParams;
-        delete options.extraTokenHeaders;
-        options.grant_type = options.grant_type || 'authorization_code';
-        options.client_id = options.client_id || this.options.client_id;
-        options.redirect_uri = options.redirect_uri || this.options.redirect_uri;
-        if (!options.code) {
-            return Promise.reject(new Error('"code" is required'));
-        }
-        if (!options.redirect_uri) {
-            return Promise.reject(new Error('"redirect_uri" is required'));
-        }
-        if (!options.code_verifier) {
-            return Promise.reject(new Error('"code_verifier" is required'));
-        }
-        if (!options.client_id) {
-            return Promise.reject(new Error('"client_id" is required'));
+        const { extraTokenHeaders , extraTokenParams , ...rest } = options;
+        const mergedOptions = {
+            grant_type: 'authorization_code',
+            client_id: this.options.client_id,
+            client_secret: this.options.client_secret,
+            redirect_uri: this.options.redirect_uri,
+            ...rest,
+            ...extraTokenParams || {}
+        };
+        for (const req of [
+            'code',
+            'redirect_uri',
+            'code_verifier',
+            'client_id'
+        ]){
+            if (!mergedOptions[req]) {
+                return Promise.reject(new Error(`"${req}" is required`));
+            }
         }
         return this.http({
             url: `${this.options.endpoints.token_endpoint}`,
             method: 'POST',
             requestType: 'form',
-            body: options,
+            body: mergedOptions,
             headers: extraTokenHeaders
         });
     }
@@ -1171,26 +1281,31 @@ var ref;
    * @param options
    * @private
    */ async exchangeRefreshToken(options) {
-        var ref;
-        if (!((ref = this.options.endpoints) === null || ref === void 0 ? void 0 : ref.token_endpoint)) {
+        var _this_options_endpoints;
+        if (!((_this_options_endpoints = this.options.endpoints) === null || _this_options_endpoints === void 0 ? void 0 : _this_options_endpoints.token_endpoint)) {
             await this.fetchFromIssuer();
         }
-        const extraTokenHeaders = options.extraTokenHeaders;
-        options = Object.assign({}, options, options.extraTokenParams || {});
-        options.grant_type = options.grant_type || 'refresh_token';
-        options.client_id = options.client_id || this.options.client_id;
-        options.client_secret = options.client_secret || this.options.client_secret;
-        if (!options.refresh_token) {
-            return Promise.reject(new Error('"refresh_token" is required'));
-        }
-        if (!options.client_id) {
-            return Promise.reject(new Error('"client_id" is required'));
+        const { extraTokenHeaders , extraTokenParams , ...rest } = options;
+        const mergedOptions = {
+            grant_type: 'refresh_token',
+            client_id: this.options.client_id,
+            client_secret: this.options.client_secret,
+            ...rest,
+            ...extraTokenParams || {}
+        };
+        for (const req of [
+            'refresh_token',
+            'client_id'
+        ]){
+            if (!mergedOptions[req]) {
+                return Promise.reject(new Error(`"${req}" is required`));
+            }
         }
         return this.http({
             url: `${this.options.endpoints.token_endpoint}`,
             method: 'POST',
             requestType: 'form',
-            body: options,
+            body: mergedOptions,
             headers: extraTokenHeaders
         });
     }
@@ -1228,6 +1343,7 @@ var ref;
             return this.exchangeAuthorizationCode({
                 redirect_uri: finalOptions.redirect_uri,
                 client_id: finalOptions.client_id,
+                client_secret: finalOptions.client_secret,
                 code_verifier: localState.code_verifier,
                 grant_type: 'authorization_code',
                 code: response.code
@@ -1261,8 +1377,8 @@ var ref;
             });
         }
         if (tokenResult.access_token) {
-            var ref;
-            if (finalOptions.requestUserInfo && ((ref = this.options.endpoints) === null || ref === void 0 ? void 0 : ref.userinfo_endpoint)) {
+            var _this_options_endpoints;
+            if (finalOptions.requestUserInfo && ((_this_options_endpoints = this.options.endpoints) === null || _this_options_endpoints === void 0 ? void 0 : _this_options_endpoints.userinfo_endpoint)) {
                 const userInfoResult = await this.fetchUserInfo(tokenResult.access_token);
                 if (!userInfoResult.error) {
                     user = {
@@ -1289,7 +1405,7 @@ var ref;
    */ async loadState(state) {
         const rawStoredState = await this.stateStore.get(state);
         if (!rawStoredState) {
-            return Promise.reject(new AuthenticationError('State not found'));
+            return Promise.reject(new AuthenticationError(`State not found: ${state}`));
         } else {
             await this.stateStore.del(state);
         }
@@ -1389,6 +1505,22 @@ var ref;
     }
     constructor(options){
         super();
+        _defineProperty(this, "options", void 0);
+        _defineProperty(this, "user", void 0);
+        _defineProperty(this, "scopes", void 0);
+        _defineProperty(this, "accessToken", void 0);
+        _defineProperty(this, "refreshToken", void 0);
+        _defineProperty(this, "idToken", void 0);
+        _defineProperty(this, "idTokenRaw", void 0);
+        _defineProperty(this, "issuer_metadata", void 0);
+        _defineProperty(this, "http", void 0);
+        _defineProperty(this, "synchronizer", void 0);
+        _defineProperty(this, "stateStore", void 0);
+        _defineProperty(this, "authStore", void 0);
+        _defineProperty(this, "sessionCheckerFrame", void 0);
+        _defineProperty(this, "_accessTokenExpireTimer", void 0);
+        _defineProperty(this, "initialized", void 0);
+        _defineProperty(this, "__initializePromise", void 0);
         if (!isValidIssuer(options.issuer)) {
             throw new OIDCClientError('"issuer" must be a valid uri.');
         }

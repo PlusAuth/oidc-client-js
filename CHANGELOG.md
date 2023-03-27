@@ -1,5 +1,12 @@
 
 
+## [1.2.1](https://github.com/PlusAuth/oidc-client-js/compare/v1.2.0...v1.2.1) (2023-03-27)
+
+
+### Bug Fixes
+
+* silent renew error not emitted on initialization ([1ddc260](https://github.com/PlusAuth/oidc-client-js/commit/1ddc26095f0c036552fb6f99d4ee25059ccabb9a))
+
 # [1.2.0](https://github.com/PlusAuth/oidc-client-js/compare/v1.1.2...v1.2.0) (2023-03-14)
 
 

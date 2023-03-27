@@ -5,7 +5,7 @@ declare const Events: {
     readonly SILENT_RENEW_ERROR: "silent_renew_error";
     readonly SESSION_CHANGE: "session_change";
 };
-declare type EventTypes = 'user_logout' | 'user_login' | 'silent_renew_success' | 'silent_renew_error' | 'session_change' | 'session_error';
+type EventTypes = 'user_logout' | 'user_login' | 'silent_renew_success' | 'silent_renew_error' | 'session_change' | 'session_error';
 
 interface StateStore {
     init?(): Promise<StateStore>;
@@ -35,7 +35,7 @@ declare class InMemoryStateStore extends StateStore {
     set(key: string, value: any): Promise<void>;
 }
 
-declare type Listener = (...args: any) => void;
+type Listener = (...args: any) => void;
 declare class EventEmitter<T extends string> {
     callbacks: Record<string, any[]>;
     constructor();
@@ -55,7 +55,7 @@ interface RequestOptions {
 
 declare const nonUserClaims: readonly ["iss", "aud", "exp", "nbf", "iat", "jti", "azp", "nonce", "auth_time", "at_hash", "c_hash", "acr", "amr", "sub_jwk", "cnf", "sip_from_tag", "sip_date", "sip_callid", "sip_cseq_num", "sip_via_branch", "orig", "dest", "mky", "events", "toe", "txn", "rph", "sid", "vot", "vtm", "attest", "origid", "act", "scope", "client_id", "may_act", "jcard", "at_use_nbr"];
 
-declare type JWTHeaderField = 'typ' | 'cty' | 'alg' | 'zip' | 'jku' | 'jwk' | 'kid' | 'x5u' | 'x5c' | 'x5t' | 'x5t#S256' | 'crit' | 'exp';
+type JWTHeaderField = 'typ' | 'cty' | 'alg' | 'zip' | 'jku' | 'jwk' | 'kid' | 'x5u' | 'x5c' | 'x5t' | 'x5t#S256' | 'crit' | 'exp';
 interface AuthRequestOptions {
     acr_values?: string;
     audience?: string;
@@ -176,7 +176,7 @@ interface IPlusAuthClientOptions extends Omit<AuthRequestOptions, 'request_type'
     useRefreshToken?: boolean;
 }
 interface TokenRequestOption {
-    client_id: string;
+    client_id?: string;
     client_secret?: string;
     code?: string;
     code_verifier?: string;
@@ -207,7 +207,7 @@ interface ParsedJWT {
     payload: Readonly<Record<typeof nonUserClaims[number], string | number>>;
     signature?: string;
 }
-declare type TokenType = 'access_token' | 'refresh_token';
+type TokenType = 'access_token' | 'refresh_token';
 interface RevokeOptions {
     client_id?: string;
     client_secret?: string;
@@ -235,7 +235,7 @@ interface SessionCheckerOptions {
     client_id: string;
     url: string;
 }
-declare type SessionChecker = {
+type SessionChecker = {
     start: (session_state: string) => void;
     stop: () => void;
 };
