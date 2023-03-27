@@ -1,5 +1,5 @@
 import { InteractionCancelled, OIDCClientError } from '../errors';
-import { PopupOptions } from '../interfaces';
+import type { PopupOptions } from '../interfaces';
 
 const openPopup = ( url: string, width = 400, height = 600 ) => {
   const left = window.screenX + ( window.innerWidth - width ) / 2;

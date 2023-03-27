@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/default
 import fetch from 'isomorphic-unfetch'
 
 import { buildEncodedQueryString } from './url';
@@ -31,7 +32,7 @@ export function request( options: RequestOptions ): Promise<any>{
       body:   body,
       headers
     } )
-      .then( value => resolve( value.json() ) )
+      .then( ( value: Response ) => resolve( value.json() ) )
       .catch( reject )
   } )
 }

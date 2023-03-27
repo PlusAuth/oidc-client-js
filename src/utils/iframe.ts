@@ -1,5 +1,5 @@
 import { AuthenticationError, OIDCClientError } from '../errors';
-import { IFrameOptions } from '../interfaces';
+import type { IFrameOptions } from '../interfaces';
 
 export function createHiddenFrame() {
   const iframe = window.document.createElement( 'iframe' );

@@ -1,5 +1,5 @@
 import { OIDCClient } from './client';
-import { IPlusAuthClientOptions } from './interfaces';
+import type { IPlusAuthClientOptions } from './interfaces';
 
 export * from './interfaces'
 export * from './client'

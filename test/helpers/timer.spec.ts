@@ -40,7 +40,7 @@ describe("timer", function () {
 
     it("should stop previous timer if new time is not the same", function () {
       const clearIntervalSpy = jest.spyOn(global, 'clearInterval')
-      const setIntervalMock = (setInterval as jest.Mock);
+      const setIntervalMock = (setInterval as any as jest.Mock);
       setIntervalMock.mockImplementation(() => Math.random());
       const timer = new Timer(nowFn)
       const cb =jest.fn()

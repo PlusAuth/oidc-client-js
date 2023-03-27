@@ -11,6 +11,7 @@ jest.mock('isomorphic-unfetch', () => {
 import fetch from 'isomorphic-unfetch'
 import {buildEncodedQueryString, request, RequestOptions} from "../../src/utils";
 
+//  @ts-ignore
 const mockFetch = <jest.Mock> fetch
 describe('request', function () {
   beforeEach(() => {

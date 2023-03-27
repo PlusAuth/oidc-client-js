@@ -1,4 +1,4 @@
-import { SessionChecker, SessionCheckerOptions } from '../interfaces';
+import type { SessionChecker, SessionCheckerOptions } from '../interfaces';
 
 import { createHiddenFrame } from './iframe';
 

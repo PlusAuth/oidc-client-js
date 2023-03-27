@@ -1,5 +1,5 @@
 import { InvalidIdTokenError, InvalidJWTError, OIDCClientError } from '../errors';
-import { IPlusAuthClientOptions, JWTValidationOptions, ParsedJWT } from '../interfaces';
+import type { IPlusAuthClientOptions, JWTValidationOptions, ParsedJWT } from '../interfaces';
 
 import { urlSafe } from './url';
 
@@ -141,18 +141,18 @@ export function validateJwt( jwt: string, options: JWTValidationOptions, isIdTok
     throw new InvalidJWTError( 'Issued At (iat) was not provided' );
   }
 
-  if ( lowerNow < payload.iat ) {
+  if ( lowerNow < Number( payload.iat ) ) {
     throw new InvalidJWTError( `Issued At (iat) is in the future: ${ payload.iat }` );
   }
 
-  if ( payload.nbf && lowerNow < payload.nbf ) {
+  if ( payload.nbf && lowerNow < Number( payload.nbf ) ) {
     throw new InvalidJWTError( `Not Before time (nbf) is in the future: ${ payload.nbf }` );
   }
 
   if ( !payload.exp ) {
     throw new InvalidJWTError( 'Expiration Time (exp) was not provided' );
   }
-  if ( payload.exp < upperNow ) {
+  if ( Number( payload.exp ) < upperNow ) {
     throw new InvalidJWTError( `Expiration Time (exp) is in the past: ${ payload.exp }` );
   }
 

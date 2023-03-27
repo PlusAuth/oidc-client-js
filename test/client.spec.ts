@@ -708,7 +708,7 @@ describe('oidc client', function () {
       oidc.loadState('notExists').then(done).catch((err) => {
         expect(mockedGet).toBeCalled()
         expect(err).toBeInstanceOf(AuthenticationError)
-        expect(err.message).toBe('State not found')
+        expect(err.message).toBe('State not found: notExists')
         done()
       })
     });

@@ -24,6 +24,13 @@ module.exports = {
   rules: {
     "@typescript-eslint/ban-ts-ignore": "off",
     "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/consistent-type-imports": [
+      "error",
+      {
+        "prefer": "type-imports",
+        "disallowTypeAnnotations": false
+      }
+    ],
     "@typescript-eslint/indent": [ "error", 2, {
       "ArrayExpression": "first",
       "FunctionDeclaration": {

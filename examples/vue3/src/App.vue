@@ -28,9 +28,7 @@ export default {
     this.$auth.on('user_login', ( { user })=>{
       this.user = user
     })
-    this.$auth.on('user_login', ( { user })=>{
-      this.user = user
-    })
+    this.$auth.on('silent_renew_error', console.error)
   },
 }
 </script>
