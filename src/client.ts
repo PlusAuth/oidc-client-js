@@ -1,21 +1,23 @@
-import { Events, EventTypes } from './constants';
+import type { EventTypes } from './constants';
+import { Events } from './constants';
 
 import {
   AuthenticationError, InvalidIdTokenError,
   OIDCClientError
 } from './errors';
 
+import type {
+  StateStore } from './helpers';
 import {
   EventEmitter,
   InMemoryStateStore,
-  LocalStorageStateStore,
-  StateStore,
+  LocalStorageStateStore
 } from './helpers';
 
 
 
 import { Timer } from './helpers/timer';
-import {
+import type {
   AuthRequestOptions, IEndpointConfiguration,
   IPlusAuthClientOptions,
   LogoutRequestOptions, PopupOptions, RevokeOptions, SessionChecker,
@@ -23,8 +25,9 @@ import {
   TokenRequestOption, TokenResponse, TokenType
 } from './interfaces';
 
+import type {
+  RequestOptions } from './utils';
 import {
-  RequestOptions,
   request,
   runIframe,
   buildEncodedQueryString,
@@ -151,6 +154,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
               }
             }
           } catch ( e ) {
+            this.emit( Events.SILENT_RENEW_ERROR, e )
             await this.authStore.clear()
           }
           resolve( this )
@@ -696,7 +700,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
   private async loadState( state: string ){
     const rawStoredState = await this.stateStore.get( state )
     if ( !rawStoredState ){
-      return Promise.reject( new AuthenticationError( 'State not found' ) )
+      return Promise.reject( new AuthenticationError( `State not found: ${ state }` ) )
     } else {
       await this.stateStore.del( state )
     }
