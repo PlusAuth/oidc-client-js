@@ -521,7 +521,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     const logoutParams = {
       id_token_hint:            finalOptions.id_token_hint,
       post_logout_redirect_uri: finalOptions.post_logout_redirect_uri,
-      ...finalOptions.extraLogoutParams && finalOptions.extraLogoutParams
+      ...finalOptions.extraLogoutParams || {}
     }
     return `${ this.options.endpoints!.end_session_endpoint }${ buildEncodedQueryString( logoutParams ) }`
   }
@@ -535,35 +535,27 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     if ( !this.options.endpoints?.token_endpoint ){
       await this.fetchFromIssuer();
     }
-    const extraTokenHeaders = options.extraTokenHeaders
-    options = Object.assign( {}, options, options.extraTokenParams || {} );
-
-    delete options.extraTokenParams
-    delete options.extraTokenHeaders
-
-    options.grant_type = options.grant_type || 'authorization_code';
-    options.client_id = options.client_id || this.options.client_id;
-    options.client_secret = options.client_secret || this.options.client_secret;
-    options.redirect_uri = options.redirect_uri || this.options.redirect_uri;
-
-    if ( !options.code ) {
-      return Promise.reject( new Error( '"code" is required' ) );
+    const { extraTokenHeaders, extraTokenParams, ...rest } = options
+    const mergedOptions = {
+      grant_type:    'authorization_code',
+      client_id:     this.options.client_id,
+      client_secret: this.options.client_secret,
+      redirect_uri:  this.options.redirect_uri,
+      ...rest,
+      ...extraTokenParams || {}
     }
-    if ( !options.redirect_uri ) {
-      return Promise.reject( new Error( '"redirect_uri" is required' ) );
-    }
-    if ( !options.code_verifier ) {
-      return Promise.reject( new Error( '"code_verifier" is required' ) );
-    }
-    if ( !options.client_id ) {
-      return Promise.reject( new Error( '"client_id" is required' ) );
+
+    for ( const req of ['code', 'redirect_uri', 'code_verifier', 'client_id'] as const ){
+      if ( !mergedOptions[req] ){
+        return Promise.reject( new Error( `"${ req }" is required` ) );
+      }
     }
 
     return this.http( {
       url:         `${ this.options.endpoints!.token_endpoint }`,
       method:      'POST',
       requestType: 'form',
-      body:        options as any,
+      body:        mergedOptions as any,
       headers:     extraTokenHeaders
     } )
   }
@@ -577,25 +569,26 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     if ( !this.options.endpoints?.token_endpoint ){
       await this.fetchFromIssuer();
     }
-    const extraTokenHeaders = options.extraTokenHeaders
-    options = Object.assign( {}, options, options.extraTokenParams || {} );
-
-    options.grant_type = options.grant_type || 'refresh_token';
-    options.client_id = options.client_id || this.options.client_id;
-    options.client_secret = options.client_secret || this.options.client_secret;
-
-    if ( !options.refresh_token ) {
-      return Promise.reject( new Error( '"refresh_token" is required' ) );
+    const { extraTokenHeaders, extraTokenParams, ...rest } = options
+    const mergedOptions = {
+      grant_type:    'refresh_token',
+      client_id:     this.options.client_id,
+      client_secret: this.options.client_secret,
+      ...rest,
+      ...extraTokenParams || {}
     }
-    if ( !options.client_id ) {
-      return Promise.reject( new Error( '"client_id" is required' ) );
+
+    for ( const req of ['refresh_token', 'client_id'] as const ){
+      if ( !mergedOptions[req] ){
+        return Promise.reject( new Error( `"${ req }" is required` ) );
+      }
     }
 
     return this.http( {
       url:         `${ this.options.endpoints!.token_endpoint }`,
       method:      'POST',
       requestType: 'form',
-      body:        options as any,
+      body:        mergedOptions as any,
       headers:     extraTokenHeaders
     } );
   }

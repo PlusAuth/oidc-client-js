@@ -138,7 +138,7 @@ export interface IPlusAuthClientOptions extends Omit<AuthRequestOptions, 'reques
 }
 
 export interface TokenRequestOption {
-  client_id: string;
+  client_id?: string;
   client_secret?: string;
   code?: string;
   code_verifier?: string;
