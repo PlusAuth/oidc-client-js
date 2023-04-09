@@ -51,7 +51,7 @@ From the CDN:
 > Make sure to check releases and use the specific version.
 
 ```html
-<script src="https://unpkg.com/@plusauth/oidc-client-js@1.2.1/dist/oidc-client.min.js"></script>
+<script src="https://unpkg.com/@plusauth/oidc-client-js@1.2.2/dist/oidc-client.min.js"></script>
 ```
 
 Using [npm](https://npmjs.org):
@@ -75,6 +75,9 @@ Please visit [here](https://plusauth.github.io/oidc-client-js/classes/OIDCClient
 
 ### Browser Support
 [Browserlist Coverage](https://browsersl.ist/#q=defaults)
+
+This library uses global fetch api. If your app requires to be working in environment that does not have `fetch`
+you must use a polyfill like [whatwg-fetch](https://github.com/github/fetch).
 
 ### Examples
 
