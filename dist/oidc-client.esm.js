@@ -1,5 +1,5 @@
 /*!
- * @plusauth/oidc-client-js v1.2.1
+ * @plusauth/oidc-client-js v1.2.2
  * https://github.com/PlusAuth/oidc-client-js
  * (c) 2023 @plusauth/oidc-client-js Contributors
  * Released under the MIT License
