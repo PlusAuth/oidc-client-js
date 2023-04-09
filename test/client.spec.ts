@@ -1,18 +1,13 @@
-import fetch from "isomorphic-unfetch";
 import * as joseUtils from '../src/utils/jose'
 import * as popupUtils from '../src/utils/popup'
 import * as iframeUtils from '../src/utils/iframe'
 import * as checkSessionUtils from '../src/utils/check_session_iframe'
 
-jest.mock('isomorphic-unfetch', () => {
-  return {
-    default: jest.fn().mockReturnValue(new Promise(resolve => {
-      resolve({
-        json: () => ({})
-      })
-    }))
-  }
-});
+window.fetch = jest.fn().mockReturnValue(new Promise(resolve => {
+  resolve({
+    json: () => ({})
+  })
+}))
 
 import {
   AuthenticationError,

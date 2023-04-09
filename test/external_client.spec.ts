@@ -1,9 +1,4 @@
-jest.mock('isomorphic-unfetch', () => {
-  return {
-    default: jest.requireActual('isomorphic-unfetch')
-  }
-});
-
+import "whatwg-fetch"
 import {OIDCClient} from "../src";
 
 it('should fetch issuer metadata when endpoints not provided ', function (done) {

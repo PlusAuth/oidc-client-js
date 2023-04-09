@@ -12,7 +12,7 @@
     SESSION_CHANGE: 'session_change'
 };
 
-function _defineProperty$6(obj, key, value) {
+function _define_property$6(obj, key, value) {
     if (key in obj) {
         Object.defineProperty(obj, key, {
             value: value,
@@ -28,8 +28,8 @@ function _defineProperty$6(obj, key, value) {
 class OIDCClientError extends Error {
     constructor(error, error_description){
         super(`${error}${error_description && ` - ${error_description}` || ''}`);
-        _defineProperty$6(this, "error", void 0);
-        _defineProperty$6(this, "error_description", void 0);
+        _define_property$6(this, "error", void 0);
+        _define_property$6(this, "error_description", void 0);
         this.name = 'OIDCClientError';
         this.error = error;
         this.error_description = error_description;
@@ -38,8 +38,8 @@ class OIDCClientError extends Error {
 class AuthenticationError extends OIDCClientError {
     constructor(error, error_description, state, error_uri){
         super(error, error_description);
-        _defineProperty$6(this, "state", void 0);
-        _defineProperty$6(this, "error_uri", void 0);
+        _define_property$6(this, "state", void 0);
+        _define_property$6(this, "error_uri", void 0);
         this.name = 'AuthenticationError';
         this.state = state;
         this.error_uri = error_uri;
@@ -65,7 +65,7 @@ class InteractionCancelled extends OIDCClientError {
     }
 }
 
-function _defineProperty$5(obj, key, value) {
+function _define_property$5(obj, key, value) {
     if (key in obj) {
         Object.defineProperty(obj, key, {
             value: value,
@@ -80,7 +80,7 @@ function _defineProperty$5(obj, key, value) {
 }
 class StateStore {
     constructor(prefix = ''){
-        _defineProperty$5(this, "prefix", void 0);
+        _define_property$5(this, "prefix", void 0);
         this.prefix = prefix;
     }
 }
@@ -139,7 +139,7 @@ class LocalStorageStateStore extends StateStore {
     }
 }
 
-function _defineProperty$4(obj, key, value) {
+function _define_property$4(obj, key, value) {
     if (key in obj) {
         Object.defineProperty(obj, key, {
             value: value,
@@ -178,11 +178,11 @@ class InMemoryStateStore extends StateStore {
     }
     constructor(...args){
         super(...args);
-        _defineProperty$4(this, "map", new Map());
+        _define_property$4(this, "map", new Map());
     }
 }
 
-function _defineProperty$3(obj, key, value) {
+function _define_property$3(obj, key, value) {
     if (key in obj) {
         Object.defineProperty(obj, key, {
             value: value,
@@ -248,12 +248,12 @@ class EventEmitter {
         return this;
     }
     constructor(){
-        _defineProperty$3(this, "callbacks", void 0);
+        _define_property$3(this, "callbacks", void 0);
         this.callbacks = {};
     }
 }
 
-function _defineProperty$2(obj, key, value) {
+function _define_property$2(obj, key, value) {
     if (key in obj) {
         Object.defineProperty(obj, key, {
             value: value,
@@ -296,9 +296,9 @@ class Timer {
         }
     }
     constructor(currentTimeInMillisFunc = ()=>Date.now()){
-        _defineProperty$2(this, "now", void 0);
-        _defineProperty$2(this, "_timerHandle", void 0);
-        _defineProperty$2(this, "_expiration", void 0);
+        _define_property$2(this, "now", void 0);
+        _define_property$2(this, "_timerHandle", void 0);
+        _define_property$2(this, "_expiration", void 0);
         this.now = currentTimeInMillisFunc;
     }
 }
@@ -358,45 +358,6 @@ function runIframe(url, options) {
         };
     });
 }
-
-function getAugmentedNamespace(n) {
-  if (n.__esModule) return n;
-  var f = n.default;
-	if (typeof f == "function") {
-		var a = function a () {
-			if (this instanceof a) {
-				var args = [null];
-				args.push.apply(args, arguments);
-				var Ctor = Function.bind.apply(f, args);
-				return new Ctor();
-			}
-			return f.apply(this, arguments);
-		};
-		a.prototype = f.prototype;
-  } else a = {};
-  Object.defineProperty(a, '__esModule', {value: true});
-	Object.keys(n).forEach(function (k) {
-		var d = Object.getOwnPropertyDescriptor(n, k);
-		Object.defineProperty(a, k, d.get ? d : {
-			enumerable: true,
-			get: function () {
-				return n[k];
-			}
-		});
-	});
-	return a;
-}
-
-function unfetch_module(e,n){return n=n||{},new Promise(function(t,r){var s=new XMLHttpRequest,o=[],u=[],i={},a=function(){return {ok:2==(s.status/100|0),statusText:s.statusText,status:s.status,url:s.responseURL,text:function(){return Promise.resolve(s.responseText)},json:function(){return Promise.resolve(s.responseText).then(JSON.parse)},blob:function(){return Promise.resolve(new Blob([s.response]))},clone:a,headers:{keys:function(){return o},entries:function(){return u},get:function(e){return i[e.toLowerCase()]},has:function(e){return e.toLowerCase()in i}}}};for(var l in s.open(n.method||"get",e,!0),s.onload=function(){s.getAllResponseHeaders().replace(/^(.*?):[^\S\n]*([\s\S]*?)$/gm,function(e,n,t){o.push(n=n.toLowerCase()),u.push([n,t]),i[n]=i[n]?i[n]+","+t:t;}),t(a());},s.onerror=r,s.withCredentials="include"==n.credentials,n.headers)s.setRequestHeader(l,n.headers[l]);s.send(n.body||null);})}
-
-var unfetch_module$1 = /*#__PURE__*/Object.freeze({
-__proto__: null,
-default: unfetch_module
-});
-
-var require$$0 = /*@__PURE__*/getAugmentedNamespace(unfetch_module$1);
-
-var browser = self.fetch || (self.fetch = require$$0.default || require$$0);
 
 var fromByteArray_1 = fromByteArray;
 
@@ -505,7 +466,6 @@ function urlSafe(buffer) {
     return encoded.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 }
 
-// eslint-disable-next-line import/default
 function request(options) {
     let body = null;
     let headers = options.headers || {};
@@ -519,7 +479,7 @@ function request(options) {
         body = options.requestType === 'form' ? buildEncodedQueryString(options.body, false) : JSON.stringify(options.body);
     }
     return new Promise((resolve, reject)=>{
-        browser(options.url, {
+        fetch(options.url, {
             method: options.method,
             body: body,
             headers
@@ -798,7 +758,7 @@ https://github.com/jitbit/TabUtils
 - broadcasting a message to all tabs (including the current one) with some message "data"
 - handling a broadcasted message
 MIT license: https://github.com/jitbit/TabUtils/blob/master/LICENSE
-*/ function _defineProperty$1(obj, key, value) {
+*/ function _define_property$1(obj, key, value) {
     if (key in obj) {
         Object.defineProperty(obj, key, {
             value: value,
@@ -863,12 +823,12 @@ class TabUtils {
         });
     }
     constructor(kid){
-        _defineProperty$1(this, "keyPrefix", void 0);
+        _define_property$1(this, "keyPrefix", void 0);
         this.keyPrefix = kid;
     }
 }
 
-function _defineProperty(obj, key, value) {
+function _define_property(obj, key, value) {
     if (key in obj) {
         Object.defineProperty(obj, key, {
             value: value,
@@ -1505,22 +1465,22 @@ var _window_location;
     }
     constructor(options){
         super();
-        _defineProperty(this, "options", void 0);
-        _defineProperty(this, "user", void 0);
-        _defineProperty(this, "scopes", void 0);
-        _defineProperty(this, "accessToken", void 0);
-        _defineProperty(this, "refreshToken", void 0);
-        _defineProperty(this, "idToken", void 0);
-        _defineProperty(this, "idTokenRaw", void 0);
-        _defineProperty(this, "issuer_metadata", void 0);
-        _defineProperty(this, "http", void 0);
-        _defineProperty(this, "synchronizer", void 0);
-        _defineProperty(this, "stateStore", void 0);
-        _defineProperty(this, "authStore", void 0);
-        _defineProperty(this, "sessionCheckerFrame", void 0);
-        _defineProperty(this, "_accessTokenExpireTimer", void 0);
-        _defineProperty(this, "initialized", void 0);
-        _defineProperty(this, "__initializePromise", void 0);
+        _define_property(this, "options", void 0);
+        _define_property(this, "user", void 0);
+        _define_property(this, "scopes", void 0);
+        _define_property(this, "accessToken", void 0);
+        _define_property(this, "refreshToken", void 0);
+        _define_property(this, "idToken", void 0);
+        _define_property(this, "idTokenRaw", void 0);
+        _define_property(this, "issuer_metadata", void 0);
+        _define_property(this, "http", void 0);
+        _define_property(this, "synchronizer", void 0);
+        _define_property(this, "stateStore", void 0);
+        _define_property(this, "authStore", void 0);
+        _define_property(this, "sessionCheckerFrame", void 0);
+        _define_property(this, "_accessTokenExpireTimer", void 0);
+        _define_property(this, "initialized", void 0);
+        _define_property(this, "__initializePromise", void 0);
         if (!isValidIssuer(options.issuer)) {
             throw new OIDCClientError('"issuer" must be a valid uri.');
         }

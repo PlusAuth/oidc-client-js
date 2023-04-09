@@ -1,6 +1,3 @@
-// eslint-disable-next-line import/default
-import fetch from 'isomorphic-unfetch'
-
 import { buildEncodedQueryString } from './url';
 
 export interface RequestOptions {

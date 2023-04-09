@@ -1,14 +1,9 @@
+window.fetch = jest.fn().mockReturnValue(new Promise(resolve => {
+  resolve({
+    json: () => ({})
+  })
+}))
 
-jest.mock('isomorphic-unfetch', () => {
-  return {
-    default: jest.fn().mockReturnValue(new Promise(resolve => {
-      resolve({
-        json: () => ({})
-      })
-    }))
-  }
-});
-import fetch from 'isomorphic-unfetch'
 import {buildEncodedQueryString, request, RequestOptions} from "../../src/utils";
 
 //  @ts-ignore

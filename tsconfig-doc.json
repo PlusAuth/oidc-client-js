@@ -26,9 +26,6 @@
     ],
     "hideGenerator": true,
     "excludeProtected": true,
-    "excludePrivate": true,
-    "plugin": [
-      "typedoc-plugin-merge-modules"
-    ]
+    "excludePrivate": true
   }
 }
