@@ -36,6 +36,7 @@ import {
   createSessionCheckerFrame,
   nonUserClaims, generateRandom, deriveChallenge, isValidIssuer,
 } from './utils';
+import { cleanUndefined, mergeObjects } from './utils/object';
 
 import { isResponseType, isScopeIncluded } from './utils/oidc';
 import { runPopup } from './utils/popup';
@@ -88,7 +89,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
 
     this.synchronizer = new TabUtils( btoa( options.issuer ) )
 
-    this.options = Object.assign( {
+    this.options = mergeObjects( {
       secondsToRefreshAccessTokenBeforeExp: 60,
       autoSilentRenew:                      true,
       checkSession:                         true,
@@ -211,7 +212,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     const authObject = await this.handleTokenResult(
       tokenResult,
       authParams,
-      Object.assign( {}, this.options, authParams )
+      mergeObjects( this.options, authParams )
     )
     authObject.session_state= response.session_state;
     this.synchronizer.BroadcastMessageToAllTabs( Events.USER_LOGIN, authObject )
@@ -269,7 +270,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
         const authObject = await this.handleTokenResult(
           tokenResult,
           authParams,
-          Object.assign( {}, this.options, authParams )
+          mergeObjects( this.options, authParams )
         )
         authObject.session_state= responseParams.session_state;
         this.synchronizer.BroadcastMessageToAllTabs( Events.USER_LOGIN, authObject )
@@ -336,26 +337,26 @@ export class OIDCClient extends EventEmitter<EventTypes>{
 
     const storedAuth = await this.authStore.get( 'auth' ) || {}
 
-    const finalOptions = Object.assign( {}, this.options, options )
+    const finalOptions = mergeObjects( this.options, {
+      response_mode: 'query',
+      display:       'page',
+      prompt:        'none'
+    }, options )
 
     if ( finalOptions.silent_redirect_uri ){
       finalOptions.redirect_uri = finalOptions.silent_redirect_uri
     }
 
     if ( this.options.useRefreshToken && storedAuth?.refresh_token ){
-      // TODO: deep merge
-      finalState.authParams = Object.assign( {}, storedAuth?.authParams || {}, finalState.authParams || {} )
+      finalState.authParams = mergeObjects( storedAuth?.authParams || {}, finalState.authParams || {} )
       tokenResult = await this.exchangeRefreshToken( {
         ...finalOptions,
         refresh_token: storedAuth.refresh_token,
       } )
     } else {
       const authUrl = await this.createAuthRequest( {
-        response_mode: 'query',
-        display:       'page',
-        prompt:        'none',
         ...finalOptions,
-        request_type:  's'
+        request_type: 's'
       }, localState )
 
       const { response, state } = await runIframe( authUrl, {
@@ -501,12 +502,12 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     this.stateStore.clear( now - 86400000 )
 
 
-    await this.stateStore.set( authParams.state!, {
+    await this.stateStore.set( authParams.state!, cleanUndefined( {
       created_at:   now,
       authParams,
       localState,
       request_type: finalOptions.request_type
-    } )
+    } ) )
     return url
   }
 
@@ -520,7 +521,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     if ( !this.options.endpoints?.end_session_endpoint ){
       await this.fetchFromIssuer();
     }
-    const finalOptions = Object.assign( {}, this.options, options )
+    const finalOptions = mergeObjects( this.options, options )
     const logoutParams = {
       id_token_hint:            finalOptions.id_token_hint,
       post_logout_redirect_uri: finalOptions.post_logout_redirect_uri,
@@ -538,14 +539,12 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     if ( !this.options.endpoints?.token_endpoint ){
       await this.fetchFromIssuer();
     }
-    const { extraTokenHeaders, extraTokenParams, ...rest } = options
+    const finalOptions = mergeObjects( this.options, options )
+    const { extraTokenHeaders, extraTokenParams, ...rest } = finalOptions
     const mergedOptions = {
-      grant_type:    'authorization_code',
-      client_id:     this.options.client_id,
-      client_secret: this.options.client_secret,
-      redirect_uri:  this.options.redirect_uri,
       ...rest,
-      ...extraTokenParams || {}
+      ...extraTokenParams || {},
+      grant_type: 'authorization_code',
     }
 
     for ( const req of ['code', 'redirect_uri', 'code_verifier', 'client_id'] as const ){

@@ -556,6 +556,17 @@ describe('oidc client', function () {
         }).catch(done)
     });
 
+    it('should use client_secret', function (done) {
+      const oidc = new OIDCClient({...dummyOpts, client_secret: 'test_secret', redirect_uri: 'http://localhost:8080'})
+
+      // @ts-expect-error
+      oidc.handleAuthResponse({code: 'test'}, {}, {code_verifier: 'test'})
+        .then(() => {
+          expect(mockedFetch).toBeCalledTimes(1)
+          done()
+        }).catch(done)
+    });
+
   })
 
   describe('.exchangeRefreshToken()', function () {
@@ -913,7 +924,8 @@ describe('oidc client', function () {
       oidc.loginWithPopup().catch(function (err) {
         expect(err).toBeInstanceOf(InteractionCancelled)
         done()
-      }).then(done.fail)
+        return 'passed'
+      }).then((v) => v !== 'passed' && done(new Error('login with popup should fail')))
     });
 
   })
