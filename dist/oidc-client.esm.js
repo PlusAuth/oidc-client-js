@@ -1,5 +1,5 @@
 /*!
- * @plusauth/oidc-client-js v1.2.2
+ * @plusauth/oidc-client-js v1.2.3
  * https://github.com/PlusAuth/oidc-client-js
  * (c) 2023 @plusauth/oidc-client-js Contributors
  * Released under the MIT License
@@ -704,6 +704,33 @@ function createSessionCheckerFrame(options) {
     };
 }
 
+/**
+ * not suitable for every object but it is enough for this library
+ * @param object
+ */ function cleanUndefined(object) {
+    if (!object || typeof object !== 'object') {
+        return object;
+    }
+    return JSON.parse(JSON.stringify(object));
+}
+function merge(previousValue, currentValue) {
+    for(const p in currentValue){
+        if (currentValue[p] !== undefined) {
+            if (typeof currentValue[p] === 'object') {
+                previousValue[p] = merge(previousValue[p] || {}, currentValue[p]);
+            } else {
+                previousValue[p] = currentValue[p];
+            }
+        }
+    }
+    return previousValue;
+}
+function mergeObjects(...objects) {
+    return objects.reduce((previousValue, currentValue)=>{
+        return merge(previousValue || {}, currentValue);
+    }, {});
+}
+
 const isResponseType = (type, response_type)=>response_type && response_type.split(/\s+/g).filter((rt)=>rt === type).length > 0;
 const isScopeIncluded = (scope, scopes)=>scopes && scopes.split(' ').indexOf(scope) > -1;
 
@@ -927,7 +954,7 @@ var _window_location;
         const { response , state  } = await runPopup(url, popupOptions);
         const { authParams , localState  } = !state || typeof state === 'string' ? await this.loadState(state || response.state) : state;
         const tokenResult = await this.handleAuthResponse(response, authParams, localState);
-        const authObject = await this.handleTokenResult(tokenResult, authParams, Object.assign({}, this.options, authParams));
+        const authObject = await this.handleTokenResult(tokenResult, authParams, mergeObjects(this.options, authParams));
         authObject.session_state = response.session_state;
         this.synchronizer.BroadcastMessageToAllTabs(Events.USER_LOGIN, authObject);
         return localState;
@@ -978,7 +1005,7 @@ var _window_location;
                     return Promise.reject(new AuthenticationError(responseParams.error, responseParams.error_description));
                 }
                 const tokenResult = await this.handleAuthResponse(responseParams, authParams, localState);
-                const authObject = await this.handleTokenResult(tokenResult, authParams, Object.assign({}, this.options, authParams));
+                const authObject = await this.handleTokenResult(tokenResult, authParams, mergeObjects(this.options, authParams));
                 authObject.session_state = responseParams.session_state;
                 this.synchronizer.BroadcastMessageToAllTabs(Events.USER_LOGIN, authObject);
                 return localState;
@@ -1035,22 +1062,22 @@ var _window_location;
         let tokenResult;
         let finalState = {};
         const storedAuth = await this.authStore.get('auth') || {};
-        const finalOptions = Object.assign({}, this.options, options);
+        const finalOptions = mergeObjects(this.options, {
+            response_mode: 'query',
+            display: 'page',
+            prompt: 'none'
+        }, options);
         if (finalOptions.silent_redirect_uri) {
             finalOptions.redirect_uri = finalOptions.silent_redirect_uri;
         }
         if (this.options.useRefreshToken && (storedAuth === null || storedAuth === void 0 ? void 0 : storedAuth.refresh_token)) {
-            // TODO: deep merge
-            finalState.authParams = Object.assign({}, (storedAuth === null || storedAuth === void 0 ? void 0 : storedAuth.authParams) || {}, finalState.authParams || {});
+            finalState.authParams = mergeObjects((storedAuth === null || storedAuth === void 0 ? void 0 : storedAuth.authParams) || {}, finalState.authParams || {});
             tokenResult = await this.exchangeRefreshToken({
                 ...finalOptions,
                 refresh_token: storedAuth.refresh_token
             });
         } else {
             const authUrl = await this.createAuthRequest({
-                response_mode: 'query',
-                display: 'page',
-                prompt: 'none',
                 ...finalOptions,
                 request_type: 's'
             }, localState);
@@ -1174,12 +1201,12 @@ var _window_location;
         const url = `${this.options.endpoints.authorization_endpoint}${authParamsString}${fragment}`;
         // clear 1 day old state entries
         this.stateStore.clear(now - 86400000);
-        await this.stateStore.set(authParams.state, {
+        await this.stateStore.set(authParams.state, cleanUndefined({
             created_at: now,
             authParams,
             localState,
             request_type: finalOptions.request_type
-        });
+        }));
         return url;
     }
     /**
@@ -1192,7 +1219,7 @@ var _window_location;
         if (!((_this_options_endpoints = this.options.endpoints) === null || _this_options_endpoints === void 0 ? void 0 : _this_options_endpoints.end_session_endpoint)) {
             await this.fetchFromIssuer();
         }
-        const finalOptions = Object.assign({}, this.options, options);
+        const finalOptions = mergeObjects(this.options, options);
         const logoutParams = {
             id_token_hint: finalOptions.id_token_hint,
             post_logout_redirect_uri: finalOptions.post_logout_redirect_uri,
@@ -1209,14 +1236,12 @@ var _window_location;
         if (!((_this_options_endpoints = this.options.endpoints) === null || _this_options_endpoints === void 0 ? void 0 : _this_options_endpoints.token_endpoint)) {
             await this.fetchFromIssuer();
         }
-        const { extraTokenHeaders , extraTokenParams , ...rest } = options;
+        const finalOptions = mergeObjects(this.options, options);
+        const { extraTokenHeaders , extraTokenParams , ...rest } = finalOptions;
         const mergedOptions = {
-            grant_type: 'authorization_code',
-            client_id: this.options.client_id,
-            client_secret: this.options.client_secret,
-            redirect_uri: this.options.redirect_uri,
             ...rest,
-            ...extraTokenParams || {}
+            ...extraTokenParams || {},
+            grant_type: 'authorization_code'
         };
         for (const req of [
             'code',
@@ -1303,7 +1328,6 @@ var _window_location;
             return this.exchangeAuthorizationCode({
                 redirect_uri: finalOptions.redirect_uri,
                 client_id: finalOptions.client_id,
-                client_secret: finalOptions.client_secret,
                 code_verifier: localState.code_verifier,
                 grant_type: 'authorization_code',
                 code: response.code
@@ -1408,7 +1432,8 @@ var _window_location;
                         await this.silentLogin({}, {});
                         const storedAuth = await this.authStore.get('auth');
                         if (storedAuth) {
-                            if ((storedAuth === null || storedAuth === void 0 ? void 0 : storedAuth.user.sub) === sub) {
+                            var _storedAuth_user;
+                            if (((_storedAuth_user = storedAuth.user) === null || _storedAuth_user === void 0 ? void 0 : _storedAuth_user.sub) === sub && storedAuth.session_state) {
                                 this.sessionCheckerFrame.start(storedAuth.session_state);
                             }
                         } else {
@@ -1485,7 +1510,7 @@ var _window_location;
             throw new OIDCClientError('"issuer" must be a valid uri.');
         }
         this.synchronizer = new TabUtils(btoa(options.issuer));
-        this.options = Object.assign({
+        this.options = mergeObjects({
             secondsToRefreshAccessTokenBeforeExp: 60,
             autoSilentRenew: true,
             checkSession: true

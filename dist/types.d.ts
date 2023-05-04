@@ -7,27 +7,27 @@ declare const Events: {
 };
 type EventTypes = 'user_logout' | 'user_login' | 'silent_renew_success' | 'silent_renew_error' | 'session_change' | 'session_error';
 
-interface StateStore {
-    init?(): Promise<StateStore>;
+interface StateStore<T = Record<string, any>> {
+    init?(): Promise<StateStore<T>>;
 }
-declare abstract class StateStore {
+declare abstract class StateStore<T = Record<string, any>> {
     prefix: string;
     constructor(prefix?: string);
-    abstract get(key: string): Promise<Record<string, any> | null>;
-    abstract set(key: string, value: Record<string, any>): Promise<void>;
+    abstract get(key: string): Promise<T | null>;
+    abstract set(key: string, value: T): Promise<void>;
     abstract del(key: string): Promise<void>;
     abstract clear(maxAge?: number): Promise<void>;
 }
 
-declare class LocalStorageStateStore extends StateStore {
+declare class LocalStorageStateStore<T = any> extends StateStore<T> {
     constructor(prefix?: string);
-    get(key: string): Promise<Record<string, any> | null>;
-    set(key: string, value: Record<string, any>): Promise<void>;
+    get(key: string): Promise<T | null>;
+    set(key: string, value: T): Promise<void>;
     del(key: string): Promise<void>;
     clear(before?: number): Promise<void>;
 }
 
-declare class InMemoryStateStore extends StateStore {
+declare class InMemoryStateStore<T = any> extends StateStore<T> {
     map: Map<any, any>;
     clear(before?: number): Promise<void>;
     del(key: string): Promise<void>;
@@ -168,7 +168,7 @@ interface IPlusAuthClientOptions extends Omit<AuthRequestOptions, 'request_type'
     /**
      * Custom state store. See {@link StateStore}
      */
-    stateStore?: StateStore;
+    stateStore?: StateStore<StateRecord>;
     /**
      * If `true`, refresh tokens will be used for renewing access token. If `false`, authorization request will be
      * performed silently in an iframe.
@@ -239,6 +239,23 @@ type SessionChecker = {
     start: (session_state: string) => void;
     stop: () => void;
 };
+type StateRecord = {
+    authParams: AuthRequestOptions;
+    created_at: number;
+    localState: Record<string, any>;
+    request_type: 'p' | 's' | any;
+};
+type AuthRecord = {
+    access_token?: string;
+    authParams?: IPlusAuthClientOptions;
+    expires_at?: number;
+    id_token?: Record<string, any>;
+    id_token_raw?: string;
+    refresh_token?: string;
+    scope?: string;
+    session_state?: string;
+    user?: Record<string, any>;
+};
 
 /**
  * `OIDCClient` provides methods for interacting with OIDC/OAuth2 authorization server. Those methods are signing a
@@ -292,7 +309,7 @@ declare class OIDCClient extends EventEmitter<EventTypes> {
      * @param options
      * @param popupOptions
      */
-    loginWithPopup(options?: Partial<AuthRequestOptions>, popupOptions?: PopupOptions): Promise<any>;
+    loginWithPopup(options?: Partial<AuthRequestOptions>, popupOptions?: PopupOptions): Promise<Record<string, any>>;
     /**
      * After a user successfully authorizes an application, the authorization server will redirect the user back to
      * the application with either an authorization code or access token in the URL. In the callback page you should
@@ -300,7 +317,7 @@ declare class OIDCClient extends EventEmitter<EventTypes> {
      *
      * @param url Full url which contains authorization request result parameters. Defaults to `window.location.href`
      */
-    loginCallback(url?: string): Promise<any>;
+    loginCallback(url?: string): Promise<Record<string, any> | undefined>;
     /**
      * Redirect to provider's `end_session_endpoint` with provided parameters. After logout provider will redirect to
      * provided `post_logout_redirect_uri` if it provided.
@@ -328,31 +345,31 @@ declare class OIDCClient extends EventEmitter<EventTypes> {
     /**
      * Retrieve logged in user's access token if it exists.
      */
-    getAccessToken(): Promise<any>;
+    getAccessToken(): Promise<string | undefined>;
     /**
      * Retrieve logged in user's refresh token if it exists.
      */
-    getRefreshToken(): Promise<any>;
+    getRefreshToken(): Promise<string | undefined>;
     /**
      * Retrieve logged in user's parsed id token if it exists.
      */
-    getIdToken(): Promise<any>;
+    getIdToken(): Promise<Record<string, any> | undefined>;
     /**
      * Retrieve access token's expiration.
      */
-    getExpiresAt(): Promise<any>;
+    getExpiresAt(): Promise<number | undefined>;
     /**
      * Retrieve logged in user's id token in raw format if it exists.
      */
-    getIdTokenRaw(): Promise<any>;
+    getIdTokenRaw(): Promise<string | undefined>;
     /**
      * Retrieve logged in user's scopes if it exists.
      */
-    getScopes(): Promise<any>;
+    getScopes(): Promise<string[] | undefined>;
     /**
      * Retrieve logged in user's profile.
      */
-    getUser(): Promise<any>;
+    getUser(): Promise<Record<string, any> | undefined>;
     /**
      * If there is a user stored locally return true. Otherwise it will make a silentLogin to check if End-User is
      * logged in provider.
@@ -458,4 +475,4 @@ declare class InteractionCancelled extends OIDCClientError {
  */
 declare function createOIDCClient(options: IPlusAuthClientOptions): Promise<OIDCClient>;
 
-export { AuthRequestOptions, AuthenticationError, EventEmitter, EventTypes, Events, IEndpointConfiguration, IFrameOptions, IPlusAuthClientOptions, InMemoryStateStore, InteractionCancelled, InvalidIdTokenError, InvalidJWTError, JWTHeaderField, JWTValidationOptions, Listener, LocalStorageStateStore, LogoutRequestOptions, OIDCClient, OIDCClientError, ParsedJWT, PopupOptions, RevokeOptions, SessionChecker, SessionCheckerOptions, SessionMonitorOptions, StateStore, TokenRequestOption, TokenResponse, TokenType, createOIDCClient as default };
+export { AuthRecord, AuthRequestOptions, AuthenticationError, EventEmitter, EventTypes, Events, IEndpointConfiguration, IFrameOptions, IPlusAuthClientOptions, InMemoryStateStore, InteractionCancelled, InvalidIdTokenError, InvalidJWTError, JWTHeaderField, JWTValidationOptions, Listener, LocalStorageStateStore, LogoutRequestOptions, OIDCClient, OIDCClientError, ParsedJWT, PopupOptions, RevokeOptions, SessionChecker, SessionCheckerOptions, SessionMonitorOptions, StateRecord, StateStore, TokenRequestOption, TokenResponse, TokenType, createOIDCClient as default };

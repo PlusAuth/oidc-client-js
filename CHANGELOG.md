@@ -1,5 +1,12 @@
 
 
+## [1.2.3](https://github.com/PlusAuth/oidc-client-js/compare/v1.2.2...v1.2.3) (2023-05-04)
+
+
+### Bug Fixes
+
+* merge options properly, ignore undefined ([cfd0cd8](https://github.com/PlusAuth/oidc-client-js/commit/cfd0cd8d4c4e267f6c714109461ed0ff2f4bc0fc)), closes [#13](https://github.com/PlusAuth/oidc-client-js/issues/13)
+
 ## [1.2.2](https://github.com/PlusAuth/oidc-client-js/compare/v1.2.1...v1.2.2) (2023-04-09)
 
 ## [1.2.1](https://github.com/PlusAuth/oidc-client-js/compare/v1.2.0...v1.2.1) (2023-03-27)
