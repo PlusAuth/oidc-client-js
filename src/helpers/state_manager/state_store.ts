@@ -1,16 +1,16 @@
-export interface StateStore {
-  init?(): Promise<StateStore>
+export interface StateStore<T = Record<string, any>> {
+  init?(): Promise<StateStore<T>>
 }
-export abstract class StateStore {
+export abstract class StateStore<T = Record<string, any>> {
   prefix: string;
 
   constructor( prefix = '' ) {
     this.prefix = prefix
   }
 
-  public abstract get( key: string ): Promise<Record<string, any> | null>;
+  public abstract get( key: string ): Promise<T | null>;
 
-  public abstract set( key: string, value: Record<string, any> ): Promise<void>;
+  public abstract set( key: string, value: T ): Promise<void>;
 
   public abstract del( key: string ): Promise<void>;
 

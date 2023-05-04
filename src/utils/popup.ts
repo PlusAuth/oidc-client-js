@@ -29,7 +29,7 @@ export function runPopup( url: string, options: PopupOptions ) {
   let timeoutId: any ;
   let closeId: any ;
 
-  return new Promise<any>( ( resolve, reject ) => {
+  return new Promise<{ response: any, state: string }>( ( resolve, reject ) => {
     function clearHandlers(){
       clearInterval( closeId );
       clearTimeout( timeoutId )

@@ -1,12 +1,12 @@
 import { StateStore } from './state_store';
 
-export class LocalStorageStateStore extends StateStore {
+export class LocalStorageStateStore<T = any> extends StateStore<T> {
   constructor( prefix = 'pa_oidc.' ) {
     super( prefix )
   }
 
   get( key: string ) {
-    return new Promise<Record<string, any> | null>( ( resolve ) => {
+    return new Promise<T | null>( ( resolve ) => {
       const value = window.localStorage.getItem( this.prefix + key );
       if ( value ) {
         resolve( JSON.parse( value ) );
@@ -16,7 +16,7 @@ export class LocalStorageStateStore extends StateStore {
     } );
   }
 
-  set( key: string, value: Record<string, any> ) {
+  set( key: string, value: T ) {
     return new Promise<void>( ( resolve ) => {
       window.localStorage.setItem( this.prefix + key, JSON.stringify( value ) );
       resolve();

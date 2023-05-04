@@ -1,6 +1,6 @@
 import { StateStore } from './state_store';
 
-export class InMemoryStateStore extends StateStore {
+export class InMemoryStateStore<T = any> extends StateStore<T> {
   map = new Map()
 
   clear( before?: number ) {

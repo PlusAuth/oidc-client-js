@@ -17,11 +17,11 @@ import {
 
 
 import { Timer } from './helpers/timer';
-import type {
+import type { AuthRecord,
   AuthRequestOptions, IEndpointConfiguration,
   IPlusAuthClientOptions,
   LogoutRequestOptions, PopupOptions, RevokeOptions, SessionChecker,
-  SessionMonitorOptions,
+  SessionMonitorOptions, StateRecord,
   TokenRequestOption, TokenResponse, TokenType
 } from './interfaces';
 
@@ -68,9 +68,9 @@ export class OIDCClient extends EventEmitter<EventTypes>{
 
   private synchronizer: TabUtils;
 
-  private stateStore: StateStore
+  private stateStore: StateStore<StateRecord>
 
-  private authStore: StateStore;
+  private authStore: StateStore<AuthRecord>;
 
   private sessionCheckerFrame?: SessionChecker
 
@@ -98,8 +98,8 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     } )
 
     this.http = this.options.httpClient || request
-    this.stateStore = this.options.stateStore || new LocalStorageStateStore( 'pa_oidc.state.' )
-    this.authStore = this.options.authStore || new InMemoryStateStore()
+    this.stateStore = this.options.stateStore || new LocalStorageStateStore<StateRecord>( 'pa_oidc.state.' )
+    this.authStore = this.options.authStore || new InMemoryStateStore<AuthRecord>()
 
 
     if ( this.options.autoSilentRenew ){
@@ -460,8 +460,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     const finalOptions = Object.assign( {}, this.options, options )
     localState.code_verifier = generateRandom( 72 )
 
-
-    const authParams: Record<string, any> = {
+    const authParams = {
       client_id:          finalOptions.client_id,
       state:              generateRandom( 10 ),
       scope:              finalOptions.scope,
@@ -481,7 +480,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
       web_message_uri:    finalOptions.web_message_uri,
       web_message_target: finalOptions.web_message_target,
       ...finalOptions.extraParams && finalOptions.extraParams
-    };
+    } as AuthRequestOptions;
 
     if ( isResponseType( 'id_token', authParams.response_type ) ||
       isScopeIncluded( 'openid', authParams.scope ) ){
@@ -629,13 +628,15 @@ export class OIDCClient extends EventEmitter<EventTypes>{
    * @param localState
    * @private
    */
-  private async handleAuthResponse( response: any, finalOptions: IPlusAuthClientOptions,
-    localState: Record<string, any> = {} ){
+  private async handleAuthResponse(
+    response: any,
+    finalOptions: AuthRequestOptions,
+    localState: Record<string, any> = {}
+  ){
     if ( response.code ){
       return this.exchangeAuthorizationCode( {
         redirect_uri:  finalOptions.redirect_uri,
         client_id:     finalOptions.client_id,
-        client_secret: finalOptions.client_secret,
         code_verifier: localState.code_verifier,
         grant_type:    'authorization_code',
         code:          response.code,
@@ -748,7 +749,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
             await this.silentLogin( {}, {} )
             const storedAuth = await this.authStore.get( 'auth' )
             if ( storedAuth ){
-              if ( storedAuth?.user.sub === sub ){
+              if ( storedAuth.user?.sub === sub && storedAuth.session_state ){
                 this.sessionCheckerFrame!.start( storedAuth.session_state )
               }
             } else {

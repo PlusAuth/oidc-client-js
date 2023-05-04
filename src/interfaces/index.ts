@@ -129,7 +129,7 @@ export interface IPlusAuthClientOptions extends Omit<AuthRequestOptions, 'reques
   /**
    * Custom state store. See {@link StateStore}
    */
-  stateStore?: StateStore;
+  stateStore?: StateStore<StateRecord>;
   /**
    * If `true`, refresh tokens will be used for renewing access token. If `false`, authorization request will be
    * performed silently in an iframe.
@@ -210,4 +210,24 @@ export interface SessionCheckerOptions {
 export type SessionChecker = {
   start: ( session_state: string ) => void;
   stop: () => void;
+}
+
+
+export type StateRecord = {
+  authParams: AuthRequestOptions,
+  created_at: number,
+  localState: Record<string, any>,
+  request_type: 'p' | 's' | any
+}
+
+export type AuthRecord = {
+  access_token?: string,
+  authParams?: IPlusAuthClientOptions,
+  expires_at?: number,
+  id_token?: Record<string, any>,
+  id_token_raw?: string,
+  refresh_token?: string,
+  scope?: string,
+  session_state?: string,
+  user?: Record<string, any>
 }
