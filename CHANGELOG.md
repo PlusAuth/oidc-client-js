@@ -1,5 +1,12 @@
 
 
+## [1.2.4](https://github.com/PlusAuth/oidc-client-js/compare/v1.2.3...v1.2.4) (2023-05-06)
+
+
+### Bug Fixes
+
+* silent login options are not using client defaults. regression in v1.2.3 ([d00e0f2](https://github.com/PlusAuth/oidc-client-js/commit/d00e0f2f193ec155be15656a061de6666eb986d4))
+
 ## [1.2.3](https://github.com/PlusAuth/oidc-client-js/compare/v1.2.2...v1.2.3) (2023-05-04)
 
 

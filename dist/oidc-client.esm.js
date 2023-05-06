@@ -1,5 +1,5 @@
 /*!
- * @plusauth/oidc-client-js v1.2.3
+ * @plusauth/oidc-client-js v1.2.4
  * https://github.com/PlusAuth/oidc-client-js
  * (c) 2023 @plusauth/oidc-client-js Contributors
  * Released under the MIT License
@@ -1062,11 +1062,11 @@ var _window_location;
         let tokenResult;
         let finalState = {};
         const storedAuth = await this.authStore.get('auth') || {};
-        const finalOptions = mergeObjects(this.options, {
+        const finalOptions = mergeObjects({
             response_mode: 'query',
             display: 'page',
             prompt: 'none'
-        }, options);
+        }, this.options, options);
         if (finalOptions.silent_redirect_uri) {
             finalOptions.redirect_uri = finalOptions.silent_redirect_uri;
         }
