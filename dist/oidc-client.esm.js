@@ -1,5 +1,5 @@
 /*!
- * @plusauth/oidc-client-js v1.2.4
+ * @plusauth/oidc-client-js v1.2.5
  * https://github.com/PlusAuth/oidc-client-js
  * (c) 2023 @plusauth/oidc-client-js Contributors
  * Released under the MIT License
@@ -716,7 +716,7 @@ function createSessionCheckerFrame(options) {
 function merge(previousValue, currentValue) {
     for(const p in currentValue){
         if (currentValue[p] !== undefined) {
-            if (typeof currentValue[p] === 'object') {
+            if (typeof currentValue[p] === 'object' && currentValue[p].constructor.name === 'Object') {
                 previousValue[p] = merge(previousValue[p] || {}, currentValue[p]);
             } else {
                 previousValue[p] = currentValue[p];

@@ -1,5 +1,12 @@
 
 
+## [1.2.5](https://github.com/PlusAuth/oidc-client-js/compare/v1.2.4...v1.2.5) (2023-05-12)
+
+
+### Bug Fixes
+
+* object merging behaves incorrectly for classes ([6a6c09d](https://github.com/PlusAuth/oidc-client-js/commit/6a6c09db5741c0c780a1161f7b6096001a3be946)), closes [#14](https://github.com/PlusAuth/oidc-client-js/issues/14)
+
 ## [1.2.4](https://github.com/PlusAuth/oidc-client-js/compare/v1.2.3...v1.2.4) (2023-05-06)
 
 
