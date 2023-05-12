@@ -62,7 +62,7 @@ export interface IEndpointConfiguration {
 
 export interface IPlusAuthClientOptions extends Omit<AuthRequestOptions, 'request_type'>,
   Omit<LogoutRequestOptions, 'localOnly'> {
-  authStore?: StateStore;
+  authStore?: StateStore<any>;
   /**
    * Enable/disable automatic access token renewal. If enabled, access tokens will be refreshed by using silent
    * login in an iframe before they expire.
@@ -129,7 +129,7 @@ export interface IPlusAuthClientOptions extends Omit<AuthRequestOptions, 'reques
   /**
    * Custom state store. See {@link StateStore}
    */
-  stateStore?: StateStore<StateRecord>;
+  stateStore?: StateStore<any>;
   /**
    * If `true`, refresh tokens will be used for renewing access token. If `false`, authorization request will be
    * performed silently in an iframe.
