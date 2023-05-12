@@ -16,7 +16,7 @@ import {
   InvalidIdTokenError,
   LocalStorageStateStore,
   OIDCClient,
-  OIDCClientError
+  OIDCClientError, StateStore
 } from "../src";
 import {Timer} from "../src/helpers/timer";
 import {deriveChallenge} from "../src/utils/jose";
@@ -118,6 +118,37 @@ describe('oidc client', function () {
       expect(oidc._accessTokenExpireTimer).toBeInstanceOf(Timer)
     });
 
+    it('should allow custom state stores', function () {
+
+      class CustomStateStore extends StateStore {
+        get = jest.fn()
+        set = jest.fn()
+        clear = jest.fn()
+        del = jest.fn()
+      }
+      const oidcClient = new OIDCClient({
+        issuer: 'https://testoidcuri.com',
+        client_id: 'test',
+        stateStore: new CustomStateStore()
+      })
+      expect(oidcClient.options.stateStore).toBeInstanceOf(CustomStateStore)
+    });
+
+    it('should allow custom auth stores', function () {
+
+      class CustomStateStore extends StateStore {
+        get = jest.fn()
+        set = jest.fn()
+        clear = jest.fn()
+        del = jest.fn()
+      }
+      const oidcClient = new OIDCClient({
+        issuer: 'https://testoidcuri.com',
+        client_id: 'test',
+        authStore: new CustomStateStore()
+      })
+      expect(oidcClient.options.authStore).toBeInstanceOf(CustomStateStore)
+    });
 
     it('should set/clear direct variables on login/logout', function (done) {
       const oidc = new OIDCClient(dummyOpts)
