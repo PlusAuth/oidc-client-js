@@ -16,7 +16,7 @@ export function cleanUndefined<T extends Record<string, any>>( object: T ) {
 function merge( previousValue: any, currentValue: any ) {
   for ( const p in currentValue ) {
     if ( currentValue[p] !== undefined ) {
-      if ( typeof currentValue[p] === 'object' ) {
+      if ( typeof currentValue[p] === 'object' && currentValue[p].constructor.name === 'Object' ) {
         previousValue[p] = merge( previousValue[p] || {}, currentValue[p] );
       } else {
         previousValue[p] = currentValue[p];
