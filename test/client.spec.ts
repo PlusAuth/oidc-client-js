@@ -213,7 +213,7 @@ describe('oidc client', function () {
   })
 
   describe('[getters]', function () {
-    it('should work', function (done) {
+    it('should work', async function () {
 
       const getters = [
         'getAccessToken',
@@ -221,19 +221,59 @@ describe('oidc client', function () {
         'getIdToken',
         'getIdTokenRaw',
         'getScopes',
+        'getExpiresIn',
         'getUser',
       ]
       const oidc = new OIDCClient(dummyOpts) as any
-      oidc.authStore.get = jest.fn(() => Promise.resolve())
+      const storeEntry ={
+        "authParams": {
+          "client_id": "test",
+          "state": "TyqL9Uztfx",
+          "scope": "scope scope1",
+          "redirect_uri": "https://test",
+          "response_mode": "fragment",
+          "response_type": "id_token token",
+          "nonce": "zw5kXFU6C0"
+        },
+        "user": {
+          "sub": "123123",
+          "name": null,
+          "username": null,
+          "updated_at": 1693991194,
+          "email": "john@doe.com",
+          "email_verified": true,
+          "s_hash": "gnH0mJ8qkfFp6nwoxo5GmA"
+        },
+        "id_token": {
+          "sub": "123123",
+          "name": null,
+          "username": null,
+          "updated_at": 1693991194,
+          "email": "john@doe.com",
+          "email_verified": true,
+          "nonce": "zw5kXFU6C0",
+          "at_hash": "10GcVFUGFN-0hBy17UJBKQ",
+          "s_hash": "gnH0mJ8qkfFp6nwoxo5GmA",
+          "exp": 1693994893,
+          "iat": 1693991293,
+          "iss": "https://test.issuer.com"
+        },
+        "access_token": "acc_token",
+        "expires_in": "7200",
+        "token_type": "Bearer",
+        "scope": "scope scope1",
+        "state": "TyqL9Uztfx",
+        "session_state": "uWqBtGfPDBMQH14R5RNx1Vv49dA-abJ4XqXdzKeAaDs",
+        "id_token_raw": "test",
+        "refresh_token": "test",
+      }
+      oidc.authStore.get = jest.fn(() => Promise.resolve(storeEntry))
 
-      Promise.all(getters.map(getter => {
+      for (let getter of getters) {
         expect(oidc).toHaveProperty(getter)
-        return oidc[getter]();
-      })).then(() => {
-        expect(oidc.authStore.get).toBeCalledTimes(getters.length)
-        done()
-      }).catch(done)
-
+        expect(await oidc[getter]()).toBeTruthy()
+      }
+      expect(oidc.authStore.get).toBeCalledTimes(getters.length)
     });
   })
 
