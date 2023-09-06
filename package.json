@@ -27,6 +27,7 @@
   "bugs": {
     "url": "https://github.com/PlusAuth/oidc-client-js/issues"
   },
+  "packageManager": "pnpm@8.7.4",
   "scripts": {
     "test": "jest --forceExit",
     "test:coverage": "jest --coverage --forceExit",
