@@ -1,5 +1,17 @@
 
 
+# [1.3.0](https://github.com/PlusAuth/oidc-client-js/compare/v1.2.5...v1.3.0) (2023-09-06)
+
+
+### Bug Fixes
+
+* incorrect getter for expires_in ([d427e22](https://github.com/PlusAuth/oidc-client-js/commit/d427e228e8867569e4ab4152be0cc5a1c316d314)), closes [#17](https://github.com/PlusAuth/oidc-client-js/issues/17)
+
+
+### Features
+
+* specific error when local state does not exist ([b931a54](https://github.com/PlusAuth/oidc-client-js/commit/b931a54d82c413a8511b279998a82943bf7cd5e5))
+
 ## [1.2.5](https://github.com/PlusAuth/oidc-client-js/compare/v1.2.4...v1.2.5) (2023-05-12)
 
 

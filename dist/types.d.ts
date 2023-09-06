@@ -248,7 +248,7 @@ type StateRecord = {
 type AuthRecord = {
     access_token?: string;
     authParams?: IPlusAuthClientOptions;
-    expires_at?: number;
+    expires_in?: number;
     id_token?: Record<string, any>;
     id_token_raw?: string;
     refresh_token?: string;
@@ -357,7 +357,7 @@ declare class OIDCClient extends EventEmitter<EventTypes> {
     /**
      * Retrieve access token's expiration.
      */
-    getExpiresAt(): Promise<number | undefined>;
+    getExpiresIn(): Promise<number | undefined>;
     /**
      * Retrieve logged in user's id token in raw format if it exists.
      */
@@ -459,6 +459,10 @@ declare class AuthenticationError extends OIDCClientError {
     error_uri?: string;
     constructor(error: string, error_description?: string, state?: string, error_uri?: string);
 }
+declare class StateNotFound extends AuthenticationError {
+    state?: string;
+    constructor(error: string, state?: string);
+}
 declare class InvalidJWTError extends OIDCClientError {
     constructor(details: string);
 }
@@ -475,4 +479,4 @@ declare class InteractionCancelled extends OIDCClientError {
  */
 declare function createOIDCClient(options: IPlusAuthClientOptions): Promise<OIDCClient>;
 
-export { AuthRecord, AuthRequestOptions, AuthenticationError, EventEmitter, EventTypes, Events, IEndpointConfiguration, IFrameOptions, IPlusAuthClientOptions, InMemoryStateStore, InteractionCancelled, InvalidIdTokenError, InvalidJWTError, JWTHeaderField, JWTValidationOptions, Listener, LocalStorageStateStore, LogoutRequestOptions, OIDCClient, OIDCClientError, ParsedJWT, PopupOptions, RevokeOptions, SessionChecker, SessionCheckerOptions, SessionMonitorOptions, StateRecord, StateStore, TokenRequestOption, TokenResponse, TokenType, createOIDCClient as default };
+export { type AuthRecord, type AuthRequestOptions, AuthenticationError, EventEmitter, type EventTypes, Events, type IEndpointConfiguration, type IFrameOptions, type IPlusAuthClientOptions, InMemoryStateStore, InteractionCancelled, InvalidIdTokenError, InvalidJWTError, type JWTHeaderField, type JWTValidationOptions, type Listener, LocalStorageStateStore, type LogoutRequestOptions, OIDCClient, OIDCClientError, type ParsedJWT, type PopupOptions, type RevokeOptions, type SessionChecker, type SessionCheckerOptions, type SessionMonitorOptions, StateNotFound, type StateRecord, StateStore, type TokenRequestOption, type TokenResponse, type TokenType, createOIDCClient as default };

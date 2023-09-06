@@ -1,5 +1,5 @@
 /*!
- * @plusauth/oidc-client-js v1.2.5
+ * @plusauth/oidc-client-js v1.3.0
  * https://github.com/PlusAuth/oidc-client-js
  * (c) 2023 @plusauth/oidc-client-js Contributors
  * Released under the MIT License
@@ -45,6 +45,14 @@ class AuthenticationError extends OIDCClientError {
         this.error_uri = error_uri;
     }
 }
+class StateNotFound extends AuthenticationError {
+    constructor(error, state){
+        super(error);
+        _define_property$6(this, "state", void 0);
+        this.name = 'StateNotFound';
+        this.state = state;
+    }
+}
 class InvalidJWTError extends OIDCClientError {
     constructor(details){
         super(details);
@@ -78,6 +86,7 @@ function _define_property$5(obj, key, value) {
     }
     return obj;
 }
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 class StateStore {
     constructor(prefix = ''){
         _define_property$5(this, "prefix", void 0);
@@ -113,9 +122,10 @@ class LocalStorageStateStore extends StateStore {
             let i;
             const storedKeys = [];
             for(i = 0; i < window.localStorage.length; i++){
+                var _key;
                 const key = window.localStorage.key(i);
                 // items only created by oidc client
-                if ((key === null || key === void 0 ? void 0 : key.substring(0, this.prefix.length)) == this.prefix) {
+                if (((_key = key) === null || _key === void 0 ? void 0 : _key.substring(0, this.prefix.length)) == this.prefix) {
                     storedKeys.push(key);
                 }
             }
@@ -564,7 +574,7 @@ function validateIdToken(id_token, nonce, options) {
 }
 function validateJwt(jwt, options, isIdToken = false) {
     // eslint-disable-next-line prefer-const
-    let { clockSkew , currentTimeInMillis , issuer , audience , client_id  } = options;
+    let { clockSkew, currentTimeInMillis, issuer, audience, client_id } = options;
     if (!clockSkew) {
         clockSkew = 0;
     }
@@ -651,7 +661,7 @@ const nonUserClaims = [
 
 const DEFAULT_CHECK_INTERVAL = 2000;
 function createSessionCheckerFrame(options) {
-    const { url , callback , client_id , checkInterval  } = options;
+    const { url, callback, client_id, checkInterval } = options;
     let internalSessionState;
     const idx = url.indexOf('/', url.indexOf('//') + 2);
     const frameOrigin = url.substr(0, idx);
@@ -868,7 +878,6 @@ function _define_property(obj, key, value) {
     }
     return obj;
 }
-var _window_location;
 /**
  * `OIDCClient` provides methods for interacting with OIDC/OAuth2 authorization server. Those methods are signing a
  * user in, signing out, managing the user's claims, checking session and managing tokens returned from the
@@ -902,7 +911,8 @@ var _window_location;
                     this.initialized = true;
                     try {
                         if (checkLogin) {
-                            if (!(window === null || window === void 0 ? void 0 : window.frameElement)) {
+                            var _window;
+                            if (!((_window = window) === null || _window === void 0 ? void 0 : _window.frameElement)) {
                                 await this.silentLogin();
                             }
                         }
@@ -951,8 +961,8 @@ var _window_location;
             display: 'popup',
             request_type: 'p'
         });
-        const { response , state  } = await runPopup(url, popupOptions);
-        const { authParams , localState  } = !state || typeof state === 'string' ? await this.loadState(state || response.state) : state;
+        const { response, state } = await runPopup(url, popupOptions);
+        const { authParams, localState } = !state || typeof state === 'string' ? await this.loadState(state || response.state) : state;
         const tokenResult = await this.handleAuthResponse(response, authParams, localState);
         const authObject = await this.handleTokenResult(tokenResult, authParams, mergeObjects(this.options, authParams));
         authObject.session_state = response.session_state;
@@ -965,7 +975,10 @@ var _window_location;
    * call this method.
    *
    * @param url Full url which contains authorization request result parameters. Defaults to `window.location.href`
-   */ async loginCallback(url = window === null || window === void 0 ? void 0 : (_window_location = window.location) === null || _window_location === void 0 ? void 0 : _window_location.href) {
+   */ async loginCallback(url = (()=>{
+        var _window_location, _window;
+        return (_window = window) === null || _window === void 0 ? void 0 : (_window_location = _window.location) === null || _window_location === void 0 ? void 0 : _window_location.href;
+    })()) {
         if (!url) {
             return Promise.reject(new OIDCClientError('Url must be passed to handle login redirect'));
         }
@@ -977,11 +990,12 @@ var _window_location;
         }
         const responseParams = parseQueryUrl(parsedUrl.search || parsedUrl.hash);
         const rawStoredState = await this.loadState(responseParams.state);
-        const { authParams , localState , request_type  } = rawStoredState;
+        const { authParams, localState, request_type } = rawStoredState;
         url = url || window.location.href;
         switch(request_type){
             case 's':
-                if (window === null || window === void 0 ? void 0 : window.frameElement) {
+                var _window;
+                if ((_window = window) === null || _window === void 0 ? void 0 : _window.frameElement) {
                     if (url) {
                         window.parent.postMessage({
                             type: 'authorization_response',
@@ -1017,8 +1031,9 @@ var _window_location;
    * @param options
    */ async logout(options = {}) {
         if (!options.localOnly) {
+            var _storedAuth;
             const storedAuth = await this.authStore.get('auth');
-            const id_token_hint = options.id_token_hint || (storedAuth === null || storedAuth === void 0 ? void 0 : storedAuth.id_token_raw);
+            const id_token_hint = options.id_token_hint || ((_storedAuth = storedAuth) === null || _storedAuth === void 0 ? void 0 : _storedAuth.id_token_raw);
             window.location.assign(await this.createLogoutRequest({
                 ...options,
                 id_token_hint
@@ -1058,6 +1073,7 @@ var _window_location;
    * @param options
    * @param localState
    */ async silentLogin(options = {}, localState = {}) {
+        var _storedAuth;
         await this.initialize(false);
         let tokenResult;
         let finalState = {};
@@ -1070,8 +1086,9 @@ var _window_location;
         if (finalOptions.silent_redirect_uri) {
             finalOptions.redirect_uri = finalOptions.silent_redirect_uri;
         }
-        if (this.options.useRefreshToken && (storedAuth === null || storedAuth === void 0 ? void 0 : storedAuth.refresh_token)) {
-            finalState.authParams = mergeObjects((storedAuth === null || storedAuth === void 0 ? void 0 : storedAuth.authParams) || {}, finalState.authParams || {});
+        if (this.options.useRefreshToken && ((_storedAuth = storedAuth) === null || _storedAuth === void 0 ? void 0 : _storedAuth.refresh_token)) {
+            var _storedAuth1;
+            finalState.authParams = mergeObjects(((_storedAuth1 = storedAuth) === null || _storedAuth1 === void 0 ? void 0 : _storedAuth1.authParams) || {}, finalState.authParams || {});
             tokenResult = await this.exchangeRefreshToken({
                 ...finalOptions,
                 refresh_token: storedAuth.refresh_token
@@ -1081,7 +1098,7 @@ var _window_location;
                 ...finalOptions,
                 request_type: 's'
             }, localState);
-            const { response , state  } = await runIframe(authUrl, {
+            const { response, state } = await runIframe(authUrl, {
                 timeout: finalOptions.silentRequestTimeout,
                 eventOrigin: window.location.origin
             });
@@ -1097,44 +1114,44 @@ var _window_location;
     /**
    * Retrieve logged in user's access token if it exists.
    */ async getAccessToken() {
-        var _ref;
-        return (_ref = await this.authStore.get('auth')) === null || _ref === void 0 ? void 0 : _ref.access_token;
+        var _this;
+        return (_this = await this.authStore.get('auth')) === null || _this === void 0 ? void 0 : _this.access_token;
     }
     /**
    * Retrieve logged in user's refresh token if it exists.
    */ async getRefreshToken() {
-        var _ref;
-        return (_ref = await this.authStore.get('auth')) === null || _ref === void 0 ? void 0 : _ref.refresh_token;
+        var _this;
+        return (_this = await this.authStore.get('auth')) === null || _this === void 0 ? void 0 : _this.refresh_token;
     }
     /**
    * Retrieve logged in user's parsed id token if it exists.
    */ async getIdToken() {
-        var _ref;
-        return (_ref = await this.authStore.get('auth')) === null || _ref === void 0 ? void 0 : _ref.id_token;
+        var _this;
+        return (_this = await this.authStore.get('auth')) === null || _this === void 0 ? void 0 : _this.id_token;
     }
     /**
    * Retrieve access token's expiration.
-   */ async getExpiresAt() {
-        var _ref;
-        return (_ref = await this.authStore.get('auth')) === null || _ref === void 0 ? void 0 : _ref.expires_at;
+   */ async getExpiresIn() {
+        var _this;
+        return (_this = await this.authStore.get('auth')) === null || _this === void 0 ? void 0 : _this.expires_in;
     }
     /**
    * Retrieve logged in user's id token in raw format if it exists.
    */ async getIdTokenRaw() {
-        var _ref;
-        return (_ref = await this.authStore.get('auth')) === null || _ref === void 0 ? void 0 : _ref.id_token_raw;
+        var _this;
+        return (_this = await this.authStore.get('auth')) === null || _this === void 0 ? void 0 : _this.id_token_raw;
     }
     /**
    * Retrieve logged in user's scopes if it exists.
    */ async getScopes() {
-        var _ref, _ref_scope;
-        return (_ref = await this.authStore.get('auth')) === null || _ref === void 0 ? void 0 : (_ref_scope = _ref.scope) === null || _ref_scope === void 0 ? void 0 : _ref_scope.split(' ');
+        var _scope, _this;
+        return (_this = await this.authStore.get('auth')) === null || _this === void 0 ? void 0 : (_scope = _this.scope) === null || _scope === void 0 ? void 0 : _scope.split(' ');
     }
     /**
    * Retrieve logged in user's profile.
    */ async getUser() {
-        var _ref;
-        return (_ref = await this.authStore.get('auth')) === null || _ref === void 0 ? void 0 : _ref.user;
+        var _this;
+        return (_this = await this.authStore.get('auth')) === null || _this === void 0 ? void 0 : _this.user;
     }
     /**
    * If there is a user stored locally return true. Otherwise it will make a silentLogin to check if End-User is
@@ -1237,7 +1254,7 @@ var _window_location;
             await this.fetchFromIssuer();
         }
         const finalOptions = mergeObjects(this.options, options);
-        const { extraTokenHeaders , extraTokenParams , ...rest } = finalOptions;
+        const { extraTokenHeaders, extraTokenParams, ...rest } = finalOptions;
         const mergedOptions = {
             ...rest,
             ...extraTokenParams || {},
@@ -1270,7 +1287,7 @@ var _window_location;
         if (!((_this_options_endpoints = this.options.endpoints) === null || _this_options_endpoints === void 0 ? void 0 : _this_options_endpoints.token_endpoint)) {
             await this.fetchFromIssuer();
         }
-        const { extraTokenHeaders , extraTokenParams , ...rest } = options;
+        const { extraTokenHeaders, extraTokenParams, ...rest } = options;
         const mergedOptions = {
             grant_type: 'refresh_token',
             client_id: this.options.client_id,
@@ -1389,7 +1406,7 @@ var _window_location;
    */ async loadState(state) {
         const rawStoredState = await this.stateStore.get(state);
         if (!rawStoredState) {
-            return Promise.reject(new AuthenticationError(`State not found: ${state}`));
+            return Promise.reject(new StateNotFound('Local state not found', state));
         } else {
             await this.stateStore.del(state);
         }
@@ -1416,9 +1433,10 @@ var _window_location;
    *
    * @param sub End-User's id to for monitoring session
    * @param session_state string that represents the End-User's login state at the OP
-   */ monitorSession({ sub , session_state  }) {
-        const { client_id , endpoints  } = this.options;
-        if (!(endpoints === null || endpoints === void 0 ? void 0 : endpoints.check_session_iframe)) {
+   */ monitorSession({ sub, session_state }) {
+        var _endpoints;
+        const { client_id, endpoints } = this.options;
+        if (!((_endpoints = endpoints) === null || _endpoints === void 0 ? void 0 : _endpoints.check_session_iframe)) {
             console.warn('"check_session_iframe" endpoint missing or session management is not supported by provider');
             return;
         }
@@ -1455,16 +1473,17 @@ var _window_location;
         this.sessionCheckerFrame.start(session_state);
     }
     async onUserLogin(authObj) {
-        const { expires_in , user , scope , access_token , id_token , refresh_token , session_state , id_token_raw  } = authObj;
+        var _scope, _window;
+        const { expires_in, user, scope, access_token, id_token, refresh_token, session_state, id_token_raw } = authObj;
         await this.authStore.set('auth', authObj);
         this.user = user;
-        this.scopes = scope === null || scope === void 0 ? void 0 : scope.split(' ');
+        this.scopes = (_scope = scope) === null || _scope === void 0 ? void 0 : _scope.split(' ');
         this.accessToken = access_token;
         this.idToken = id_token;
         this.idTokenRaw = id_token_raw;
         this.refreshToken = refresh_token;
         this.emit(Events.USER_LOGIN, authObj);
-        if (!(window === null || window === void 0 ? void 0 : window.frameElement)) {
+        if (!((_window = window) === null || _window === void 0 ? void 0 : _window.frameElement)) {
             if (this.options.checkSession) {
                 this.monitorSession({
                     sub: user.sub || user.id,
@@ -1543,5 +1562,5 @@ var _window_location;
     return new OIDCClient(options).initialize();
 }
 
-export { AuthenticationError, EventEmitter, Events, InMemoryStateStore, InteractionCancelled, InvalidIdTokenError, InvalidJWTError, LocalStorageStateStore, OIDCClient, OIDCClientError, StateStore, createOIDCClient as default };
+export { AuthenticationError, EventEmitter, Events, InMemoryStateStore, InteractionCancelled, InvalidIdTokenError, InvalidJWTError, LocalStorageStateStore, OIDCClient, OIDCClientError, StateNotFound, StateStore, createOIDCClient as default };
 //# sourceMappingURL=oidc-client.esm.js.map
