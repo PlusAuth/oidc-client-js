@@ -51,7 +51,7 @@ From the CDN:
 > Make sure to check releases and use the specific version.
 
 ```html
-<script src="https://unpkg.com/@plusauth/oidc-client-js@1.2.3/dist/oidc-client.min.js"></script>
+<script src="https://unpkg.com/@plusauth/oidc-client-js@1.3.0/dist/oidc-client.min.js"></script>
 ```
 
 Using [npm](https://npmjs.org):
