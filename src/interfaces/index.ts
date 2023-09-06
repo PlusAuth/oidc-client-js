@@ -223,7 +223,7 @@ export type StateRecord = {
 export type AuthRecord = {
   access_token?: string,
   authParams?: IPlusAuthClientOptions,
-  expires_at?: number,
+  expires_in?: number,
   id_token?: Record<string, any>,
   id_token_raw?: string,
   refresh_token?: string,
