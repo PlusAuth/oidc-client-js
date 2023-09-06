@@ -24,6 +24,16 @@ export class AuthenticationError extends OIDCClientError {
   }
 }
 
+export class StateNotFound extends AuthenticationError {
+  state?: string;
+
+  constructor( error: string, state?: string ) {
+    super( error );
+    this.name = 'StateNotFound'
+    this.state = state;
+  }
+}
+
 export class InvalidJWTError extends OIDCClientError {
   constructor( details: string ) {
     super( details );
@@ -31,6 +41,7 @@ export class InvalidJWTError extends OIDCClientError {
     this.error_description = details
   }
 }
+
 export class InvalidIdTokenError extends InvalidJWTError {
   constructor( details: string ) {
     super( details );

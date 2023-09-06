@@ -16,7 +16,7 @@ import {
   InvalidIdTokenError,
   LocalStorageStateStore,
   OIDCClient,
-  OIDCClientError, StateStore
+  OIDCClientError, StateNotFound, StateStore
 } from "../src";
 import {Timer} from "../src/helpers/timer";
 import {deriveChallenge} from "../src/utils/jose";
@@ -744,8 +744,8 @@ describe('oidc client', function () {
       // @ts-expect-error
       oidc.loadState('notExists').then(done).catch((err) => {
         expect(mockedGet).toBeCalled()
-        expect(err).toBeInstanceOf(AuthenticationError)
-        expect(err.message).toBe('State not found: notExists')
+        expect(err).toBeInstanceOf(StateNotFound)
+        expect(err.message).toBe('Local state not found')
         done()
       })
     });

@@ -3,7 +3,7 @@ import { Events } from './constants';
 
 import {
   AuthenticationError, InvalidIdTokenError,
-  OIDCClientError
+  OIDCClientError, StateNotFound
 } from './errors';
 
 import type {
@@ -700,7 +700,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
   private async loadState( state: string ){
     const rawStoredState = await this.stateStore.get( state )
     if ( !rawStoredState ){
-      return Promise.reject( new AuthenticationError( `State not found: ${ state }` ) )
+      return Promise.reject( new StateNotFound( 'Local state not found', state ) )
     } else {
       await this.stateStore.del( state )
     }
