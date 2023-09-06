@@ -1,6 +1,7 @@
 export interface StateStore<T = Record<string, any>> {
   init?(): Promise<StateStore<T>>
 }
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export abstract class StateStore<T = Record<string, any>> {
   prefix: string;
 
