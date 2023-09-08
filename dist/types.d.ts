@@ -151,6 +151,11 @@ interface IPlusAuthClientOptions extends Omit<AuthRequestOptions, 'request_type'
     idTokenValidator?: (idToken: string) => Promise<boolean>;
     issuer: string;
     /**
+     * Generated nonce length. Defaults to 10
+     * @default 10
+     */
+    nonceLength?: number;
+    /**
      * Fetch user profile by using [UserInfo
      * Request](https://openid.net/specs/openid-connect-core-1_0.html#UserInfoRequest) after successful authorization.
      * Usually this wouldn't not be necessary if id token is received.
@@ -165,6 +170,11 @@ interface IPlusAuthClientOptions extends Omit<AuthRequestOptions, 'request_type'
      */
     silentRequestTimeout?: number;
     silent_redirect_uri?: string;
+    /**
+     * Generated state length. Defaults to 10
+     * @default 10
+     */
+    stateLength?: number;
     /**
      * Custom state store. See {@link StateStore}
      */

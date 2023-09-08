@@ -1,5 +1,12 @@
 
 
+# [1.4.0](https://github.com/PlusAuth/oidc-client-js/compare/v1.3.0...v1.4.0) (2023-09-08)
+
+
+### Features
+
+* options for providing custom state and nonce length ([24970cc](https://github.com/PlusAuth/oidc-client-js/commit/24970cc969e13851c0a515afe176f4e70bb2eeb0))
+
 # [1.3.0](https://github.com/PlusAuth/oidc-client-js/compare/v1.2.5...v1.3.0) (2023-09-06)
 
 

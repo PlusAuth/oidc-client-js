@@ -1,5 +1,5 @@
 /*!
- * @plusauth/oidc-client-js v1.3.0
+ * @plusauth/oidc-client-js v1.4.0
  * https://github.com/PlusAuth/oidc-client-js
  * (c) 2023 @plusauth/oidc-client-js Contributors
  * Released under the MIT License
@@ -1186,7 +1186,7 @@ function _define_property(obj, key, value) {
         localState.code_verifier = generateRandom(72);
         const authParams = {
             client_id: finalOptions.client_id,
-            state: generateRandom(10),
+            state: generateRandom(finalOptions.stateLength),
             scope: finalOptions.scope,
             audience: finalOptions.audience,
             redirect_uri: finalOptions.redirect_uri,
@@ -1206,7 +1206,7 @@ function _define_property(obj, key, value) {
             ...finalOptions.extraParams && finalOptions.extraParams
         };
         if (isResponseType('id_token', authParams.response_type) || isScopeIncluded('openid', authParams.scope)) {
-            authParams.nonce = generateRandom(10);
+            authParams.nonce = generateRandom(finalOptions.nonceLength);
         }
         if (isResponseType('code', authParams.response_type)) {
             authParams.code_challenge = await deriveChallenge(localState.code_verifier);
@@ -1532,7 +1532,9 @@ function _define_property(obj, key, value) {
         this.options = mergeObjects({
             secondsToRefreshAccessTokenBeforeExp: 60,
             autoSilentRenew: true,
-            checkSession: true
+            checkSession: true,
+            stateLength: 10,
+            nonceLength: 10
         }, options, {
             // remove last slash for consistency across the lib
             issuer: options.issuer.endsWith('/') ? options.issuer.slice(0, -1) : options.issuer
