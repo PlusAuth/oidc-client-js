@@ -105,6 +105,11 @@ describe('oidc client', function () {
     it('should apply defaults', function () {
       const oidc = new OIDCClient(dummyOpts)
 
+      expect(oidc.options.stateLength).toBe(10)
+      expect(oidc.options.nonceLength).toBe(10)
+      expect(oidc.options.secondsToRefreshAccessTokenBeforeExp).toBe(60)
+      expect(oidc.options.autoSilentRenew).toBe(true)
+      expect(oidc.options.checkSession).toBe(true)
       // @ts-expect-error
       expect(oidc.authStore).toBeInstanceOf(InMemoryStateStore)
       // @ts-expect-error
@@ -470,6 +475,28 @@ describe('oidc client', function () {
       // @ts-expect-error
       oidc.createAuthRequest().then(uri => {
         expect(uri).toMatch(/\&nonce=\w+\&?/)
+        done()
+      })
+    });
+
+    it('should use provided state length', (done) => {
+      const oidc = new OIDCClient({...dummyOpts, stateLength: 16, response_type: 'id_token'})
+
+      // @ts-expect-error
+      oidc.createAuthRequest().then(uri => {
+        expect(uri).toMatch(/\&state=\w+\&?/)
+        expect(uri.match(/\&state=(\w+)\&?/)![1].length).toBe(16)
+        done()
+      })
+    });
+
+    it('should use provided nonce length', (done) => {
+      const oidc = new OIDCClient({...dummyOpts, nonceLength: 16, response_type: 'id_token'})
+
+      // @ts-expect-error
+      oidc.createAuthRequest().then(uri => {
+        expect(uri).toMatch(/\&nonce=\w+\&?/)
+        expect(uri.match(/\&nonce=(\w+)\&?/)![1].length).toBe(16)
         done()
       })
     });

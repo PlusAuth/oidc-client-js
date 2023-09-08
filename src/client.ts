@@ -93,6 +93,8 @@ export class OIDCClient extends EventEmitter<EventTypes>{
       secondsToRefreshAccessTokenBeforeExp: 60,
       autoSilentRenew:                      true,
       checkSession:                         true,
+      stateLength:                          10,
+      nonceLength:                          10
     }, options, {
       // remove last slash for consistency across the lib
       issuer: options.issuer.endsWith( '/' ) ? options.issuer.slice( 0, -1 ) : options.issuer
@@ -463,7 +465,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
 
     const authParams = {
       client_id:          finalOptions.client_id,
-      state:              generateRandom( 10 ),
+      state:              generateRandom( finalOptions.stateLength! ),
       scope:              finalOptions.scope,
       audience:           finalOptions.audience,
       redirect_uri:       finalOptions.redirect_uri,
@@ -485,7 +487,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
 
     if ( isResponseType( 'id_token', authParams.response_type ) ||
       isScopeIncluded( 'openid', authParams.scope ) ){
-      authParams.nonce = generateRandom( 10 )
+      authParams.nonce = generateRandom( finalOptions.nonceLength! )
     }
 
     if ( isResponseType( 'code', authParams.response_type ) ){
