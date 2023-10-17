@@ -87,7 +87,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
       throw new OIDCClientError( '"issuer" must be a valid uri.' )
     }
 
-    this.synchronizer = new TabUtils( btoa( options.issuer ) )
+    this.synchronizer = new TabUtils( btoa( options.issuer ), this )
 
     this.options = mergeObjects( {
       secondsToRefreshAccessTokenBeforeExp: 60,

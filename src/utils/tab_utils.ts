@@ -7,14 +7,19 @@ https://github.com/jitbit/TabUtils
 MIT license: https://github.com/jitbit/TabUtils/blob/master/LICENSE
 */
 
+import type { EventEmitter } from '../helpers';
+
 const currentTabId = `${ performance.now() }:${ Math.random() * 1000000000 | 0 }`;
 const handlers: Record<string, any> = {};
 
 export class TabUtils {
   keyPrefix: string;
 
-  constructor( kid: string ) {
+  private events: EventEmitter<any>;
+
+  constructor( kid: string, fallbackEvents: EventEmitter<any> ) {
     this.keyPrefix = kid;
+    this.events = fallbackEvents
   }
 
   //runs code only once in multiple tabs
@@ -46,7 +51,10 @@ export class TabUtils {
     try { handlers[messageId]( eventData ); } //"try" in case handler not found
     catch ( x ) { }
 
-    if ( !window.localStorage ) return; //no local storage. old browser
+    if ( !window.localStorage ){
+      this.events.emit( messageId, eventData )
+      return; //no local storage. old browser
+    }
 
     const data = {
       data:      eventData,
@@ -62,7 +70,10 @@ export class TabUtils {
 
   OnBroadcastMessage( messageId: string, fn: ( data: any ) => void ): void{
     handlers[messageId] = fn;
-    if ( !window.localStorage ) return; //no local storage. old browser
+    if ( !window.localStorage ){
+      this.events.on( messageId, fn )
+      return; //no local storage. old browser
+    }
 
     //first register a handler for "storage" event that we trigger above
     window.addEventListener( 'storage', ( ev ) => {
