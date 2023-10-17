@@ -1,5 +1,13 @@
 
 
+## [1.4.1](https://github.com/PlusAuth/oidc-client-js/compare/v1.4.0...v1.4.1) (2023-10-17)
+
+
+### Bug Fixes
+
+* access token renewal wont start on inital load ([c5f09f4](https://github.com/PlusAuth/oidc-client-js/commit/c5f09f456fd1903885a536f476a4fce9eead237d))
+* synchronizer events not fired when localStorage is disabled ([0cfae29](https://github.com/PlusAuth/oidc-client-js/commit/0cfae292c69b06e17a7cb574aef947000617594c))
+
 # [1.4.0](https://github.com/PlusAuth/oidc-client-js/compare/v1.3.0...v1.4.0) (2023-09-08)
 
 

@@ -1,5 +1,5 @@
 /*!
- * @plusauth/oidc-client-js v1.4.0
+ * @plusauth/oidc-client-js v1.4.1
  * https://github.com/PlusAuth/oidc-client-js
  * (c) 2023 @plusauth/oidc-client-js Contributors
  * Released under the MIT License
@@ -836,7 +836,10 @@ class TabUtils {
         try {
             handlers[messageId](eventData);
         } catch (x) {}
-        if (!window.localStorage) return; //no local storage. old browser
+        if (!window.localStorage) {
+            this.events.emit(messageId, eventData);
+            return; //no local storage. old browser
+        }
         const data = {
             data: eventData,
             timeStamp: new Date().getTime()
@@ -850,7 +853,10 @@ class TabUtils {
     }
     OnBroadcastMessage(messageId, fn) {
         handlers[messageId] = fn;
-        if (!window.localStorage) return; //no local storage. old browser
+        if (!window.localStorage) {
+            this.events.on(messageId, fn);
+            return; //no local storage. old browser
+        }
         //first register a handler for "storage" event that we trigger above
         window.addEventListener('storage', (ev)=>{
             if (ev.key != `${this.keyPrefix}event${messageId}`) return; // ignore other keys
@@ -859,9 +865,11 @@ class TabUtils {
             fn(messageData.data);
         });
     }
-    constructor(kid){
+    constructor(kid, fallbackEvents){
         _define_property$1(this, "keyPrefix", void 0);
+        _define_property$1(this, "events", void 0);
         this.keyPrefix = kid;
+        this.events = fallbackEvents;
     }
 }
 
@@ -1492,17 +1500,22 @@ function _define_property(obj, key, value) {
             }
             if (expires_in !== undefined && this.options.autoSilentRenew) {
                 const expiration = Number(expires_in) - this.options.secondsToRefreshAccessTokenBeforeExp;
+                const renew = ()=>{
+                    this.synchronizer.CallOnce('silent-login', async ()=>{
+                        try {
+                            await this.silentLogin();
+                            this.emit(Events.SILENT_RENEW_SUCCESS, null);
+                        } catch (e) {
+                            this.emit(Events.SILENT_RENEW_ERROR, e);
+                        }
+                    });
+                };
                 if (expiration >= 0) {
                     this._accessTokenExpireTimer.start(expiration, async ()=>{
-                        this.synchronizer.CallOnce('silent-login', async ()=>{
-                            try {
-                                await this.silentLogin();
-                                this.emit(Events.SILENT_RENEW_SUCCESS, null);
-                            } catch (e) {
-                                this.emit(Events.SILENT_RENEW_ERROR, e);
-                            }
-                        });
+                        renew();
                     });
+                } else {
+                    renew();
                 }
             }
         }
@@ -1528,7 +1541,7 @@ function _define_property(obj, key, value) {
         if (!isValidIssuer(options.issuer)) {
             throw new OIDCClientError('"issuer" must be a valid uri.');
         }
-        this.synchronizer = new TabUtils(btoa(options.issuer));
+        this.synchronizer = new TabUtils(btoa(options.issuer), this);
         this.options = mergeObjects({
             secondsToRefreshAccessTokenBeforeExp: 60,
             autoSilentRenew: true,
