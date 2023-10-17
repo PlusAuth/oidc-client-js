@@ -793,17 +793,22 @@ export class OIDCClient extends EventEmitter<EventTypes>{
 
       if ( expires_in !== undefined && this.options.autoSilentRenew ){
         const expiration = Number( expires_in ) - this.options.secondsToRefreshAccessTokenBeforeExp!
+        const renew = () => {
+          this.synchronizer.CallOnce( 'silent-login', async () => {
+            try {
+              await this.silentLogin()
+              this.emit( Events.SILENT_RENEW_SUCCESS, null )
+            } catch ( e ) {
+              this.emit( Events.SILENT_RENEW_ERROR, e )
+            }
+          } )
+        }
         if ( expiration >= 0 ){
           this._accessTokenExpireTimer!.start( expiration, async ()=> {
-            this.synchronizer.CallOnce( 'silent-login', async () => {
-              try {
-                await this.silentLogin()
-                this.emit( Events.SILENT_RENEW_SUCCESS, null )
-              } catch ( e ) {
-                this.emit( Events.SILENT_RENEW_ERROR, e )
-              }
-            } )
+            renew()
           } )
+        } else {
+          renew()
         }
       }
     }
