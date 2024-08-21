@@ -150,15 +150,20 @@ export class OIDCClient extends EventEmitter<EventTypes>{
           }
           this.initialized = true
 
-          try {
-            if ( checkLogin ){
+          if ( checkLogin ){
+            try {
               if ( !window?.frameElement ){
                 await this.silentLogin()
               }
+            } catch ( e ) {
+              this.emit( Events.SILENT_RENEW_ERROR, e )
+              await this.authStore.clear()
             }
-          } catch ( e ) {
-            this.emit( Events.SILENT_RENEW_ERROR, e )
-            await this.authStore.clear()
+          } else {
+            const localAuth = await this.authStore.get( 'auth' )
+            if ( localAuth ){
+              await this.onUserLogin( localAuth, true )
+            }
           }
           resolve( this )
         } catch ( e ) {
@@ -774,7 +779,7 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     this.sessionCheckerFrame.start( session_state )
   }
 
-  private async onUserLogin( authObj: any ){
+  private async onUserLogin( authObj: any, isInternal = false ){
     const { expires_in, user, scope, access_token, id_token, refresh_token, session_state, id_token_raw } = authObj
     await this.authStore.set( 'auth', authObj )
 
@@ -785,7 +790,9 @@ export class OIDCClient extends EventEmitter<EventTypes>{
     this.idTokenRaw = id_token_raw
     this.refreshToken = refresh_token
 
-    this.emit( Events.USER_LOGIN, authObj )
+    if ( !isInternal ){
+      this.emit( Events.USER_LOGIN, authObj )
+    }
     if ( !window?.frameElement ) {
       if ( this.options.checkSession ) {
         this.monitorSession( { sub: user.sub || user.id, session_state } )
