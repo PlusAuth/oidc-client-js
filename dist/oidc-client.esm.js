@@ -1,7 +1,7 @@
 /*!
- * @plusauth/oidc-client-js v1.4.1
+ * @plusauth/oidc-client-js v1.4.2
  * https://github.com/PlusAuth/oidc-client-js
- * (c) 2023 @plusauth/oidc-client-js Contributors
+ * (c) 2024 @plusauth/oidc-client-js Contributors
  * Released under the MIT License
  */
 /* eslint-disable @typescript-eslint/indent */ const Events = {
@@ -122,10 +122,9 @@ class LocalStorageStateStore extends StateStore {
             let i;
             const storedKeys = [];
             for(i = 0; i < window.localStorage.length; i++){
-                var _key;
                 const key = window.localStorage.key(i);
                 // items only created by oidc client
-                if (((_key = key) === null || _key === void 0 ? void 0 : _key.substring(0, this.prefix.length)) == this.prefix) {
+                if ((key === null || key === void 0 ? void 0 : key.substring(0, this.prefix.length)) == this.prefix) {
                     storedKeys.push(key);
                 }
             }
@@ -917,16 +916,21 @@ function _define_property(obj, key, value) {
                         await this.fetchFromIssuer();
                     }
                     this.initialized = true;
-                    try {
-                        if (checkLogin) {
+                    if (checkLogin) {
+                        try {
                             var _window;
                             if (!((_window = window) === null || _window === void 0 ? void 0 : _window.frameElement)) {
                                 await this.silentLogin();
                             }
+                        } catch (e) {
+                            this.emit(Events.SILENT_RENEW_ERROR, e);
+                            await this.authStore.clear();
                         }
-                    } catch (e) {
-                        this.emit(Events.SILENT_RENEW_ERROR, e);
-                        await this.authStore.clear();
+                    } else {
+                        const localAuth = await this.authStore.get('auth');
+                        if (localAuth) {
+                            await this.onUserLogin(localAuth, true);
+                        }
                     }
                     resolve(this);
                 } catch (e) {
@@ -1039,9 +1043,8 @@ function _define_property(obj, key, value) {
    * @param options
    */ async logout(options = {}) {
         if (!options.localOnly) {
-            var _storedAuth;
             const storedAuth = await this.authStore.get('auth');
-            const id_token_hint = options.id_token_hint || ((_storedAuth = storedAuth) === null || _storedAuth === void 0 ? void 0 : _storedAuth.id_token_raw);
+            const id_token_hint = options.id_token_hint || (storedAuth === null || storedAuth === void 0 ? void 0 : storedAuth.id_token_raw);
             window.location.assign(await this.createLogoutRequest({
                 ...options,
                 id_token_hint
@@ -1081,7 +1084,6 @@ function _define_property(obj, key, value) {
    * @param options
    * @param localState
    */ async silentLogin(options = {}, localState = {}) {
-        var _storedAuth;
         await this.initialize(false);
         let tokenResult;
         let finalState = {};
@@ -1094,9 +1096,8 @@ function _define_property(obj, key, value) {
         if (finalOptions.silent_redirect_uri) {
             finalOptions.redirect_uri = finalOptions.silent_redirect_uri;
         }
-        if (this.options.useRefreshToken && ((_storedAuth = storedAuth) === null || _storedAuth === void 0 ? void 0 : _storedAuth.refresh_token)) {
-            var _storedAuth1;
-            finalState.authParams = mergeObjects(((_storedAuth1 = storedAuth) === null || _storedAuth1 === void 0 ? void 0 : _storedAuth1.authParams) || {}, finalState.authParams || {});
+        if (this.options.useRefreshToken && (storedAuth === null || storedAuth === void 0 ? void 0 : storedAuth.refresh_token)) {
+            finalState.authParams = mergeObjects((storedAuth === null || storedAuth === void 0 ? void 0 : storedAuth.authParams) || {}, finalState.authParams || {});
             tokenResult = await this.exchangeRefreshToken({
                 ...finalOptions,
                 refresh_token: storedAuth.refresh_token
@@ -1442,9 +1443,8 @@ function _define_property(obj, key, value) {
    * @param sub End-User's id to for monitoring session
    * @param session_state string that represents the End-User's login state at the OP
    */ monitorSession({ sub, session_state }) {
-        var _endpoints;
         const { client_id, endpoints } = this.options;
-        if (!((_endpoints = endpoints) === null || _endpoints === void 0 ? void 0 : _endpoints.check_session_iframe)) {
+        if (!(endpoints === null || endpoints === void 0 ? void 0 : endpoints.check_session_iframe)) {
             console.warn('"check_session_iframe" endpoint missing or session management is not supported by provider');
             return;
         }
@@ -1480,17 +1480,19 @@ function _define_property(obj, key, value) {
         }
         this.sessionCheckerFrame.start(session_state);
     }
-    async onUserLogin(authObj) {
-        var _scope, _window;
+    async onUserLogin(authObj, isInternal = false) {
+        var _window;
         const { expires_in, user, scope, access_token, id_token, refresh_token, session_state, id_token_raw } = authObj;
         await this.authStore.set('auth', authObj);
         this.user = user;
-        this.scopes = (_scope = scope) === null || _scope === void 0 ? void 0 : _scope.split(' ');
+        this.scopes = scope === null || scope === void 0 ? void 0 : scope.split(' ');
         this.accessToken = access_token;
         this.idToken = id_token;
         this.idTokenRaw = id_token_raw;
         this.refreshToken = refresh_token;
-        this.emit(Events.USER_LOGIN, authObj);
+        if (!isInternal) {
+            this.emit(Events.USER_LOGIN, authObj);
+        }
         if (!((_window = window) === null || _window === void 0 ? void 0 : _window.frameElement)) {
             if (this.options.checkSession) {
                 this.monitorSession({

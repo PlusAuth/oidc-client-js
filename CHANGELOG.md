@@ -1,5 +1,12 @@
 
 
+## [1.4.2](https://github.com/PlusAuth/oidc-client-js/compare/v1.4.1...v1.4.2) (2024-08-21)
+
+
+### Bug Fixes
+
+* user state is not set on initialize when checkLogin = false ([3bcb9a6](https://github.com/PlusAuth/oidc-client-js/commit/3bcb9a67a8ad06dd6fd11ada2abb6961178b4879))
+
 ## [1.4.1](https://github.com/PlusAuth/oidc-client-js/compare/v1.4.0...v1.4.1) (2023-10-17)
 
 
