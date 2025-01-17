@@ -1,4 +1,11 @@
+# Changelog
 
+# [1.5.0](https://github.com/PlusAuth/oidc-client-js/compare/v1.4.2...v1.5.0) (2025-01-17)
+
+
+### Features
+
+* allow the library to be used in non-secure contexts ([b384d5b](https://github.com/PlusAuth/oidc-client-js/commit/b384d5b202b4c5cd3b3ac24dcf5d70fd08f4ee74))
 
 ## [1.4.2](https://github.com/PlusAuth/oidc-client-js/compare/v1.4.1...v1.4.2) (2024-08-21)
 
