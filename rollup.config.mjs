@@ -1,43 +1,43 @@
-import commonjs from '@rollup/plugin-commonjs'
-import json from '@rollup/plugin-json'
-import { nodeResolve } from '@rollup/plugin-node-resolve'
-import {swc, minify} from 'rollup-plugin-swc3';
-import dts from 'rollup-plugin-dts';
-import {readFileSync} from 'fs';
+import { readFileSync } from "node:fs"
+import commonjs from "@rollup/plugin-commonjs"
+import json from "@rollup/plugin-json"
+import { nodeResolve } from "@rollup/plugin-node-resolve"
+import dts from "rollup-plugin-dts"
+import { minify, swc } from "rollup-plugin-swc3"
 
-const {version, homepage, browser, module, types} = JSON.parse(readFileSync('./package.json'));
+const { version, homepage, browser, module, types } = JSON.parse(readFileSync("./package.json"))
 
 const banner = `/*!
  * @plusauth/oidc-client-js v${version}
  * ${homepage}
- * (c) ${(new Date(process.env.SOURCE_DATE_EPOCH ? (process.env.SOURCE_DATE_EPOCH * 1000) : new Date().getTime())).getFullYear()} @plusauth/oidc-client-js Contributors
+ * (c) ${(new Date(process.env.SOURCE_DATE_EPOCH ? process.env.SOURCE_DATE_EPOCH * 1000 : new Date().getTime())).getFullYear()} @plusauth/oidc-client-js Contributors
  * Released under the MIT License
- */`;
-const plugins = (min) =>
-  [
-    commonjs(),
-    nodeResolve({
-      browser: true
-    }),
-    json(),
-    swc({
-      sourceMaps: true
-    }),
-    min && minify({
+ */`
+const plugins = (min) => [
+  commonjs(),
+  nodeResolve({
+    browser: true,
+  }),
+  json(),
+  swc({
+    sourceMaps: true,
+  }),
+  min &&
+    minify({
       sourceMap: true,
-      compress: true
-    })
-  ];
+      compress: true,
+    }),
+]
 
 export default [
   // UMD build
   {
-    input: 'src/index.ts',
+    input: "src/index.ts",
     plugins: plugins(true),
     output: {
-      name: 'PlusAuthOIDCClient',
+      name: "PlusAuthOIDCClient",
       file: browser,
-      format: 'umd',
+      format: "umd",
       indent: false,
       sourcemap: true,
     },
@@ -45,12 +45,12 @@ export default [
 
   // ES build
   {
-    input: 'src/index.ts',
+    input: "src/index.ts",
     plugins: plugins(),
     output: {
       file: module,
       banner,
-      format: 'esm',
+      format: "esm",
       indent: false,
       sourcemap: true,
     },
@@ -63,7 +63,7 @@ export default [
     plugins: [dts()],
     output: {
       file: types,
-      format: 'es'
-    }
-  }
-];
+      format: "es",
+    },
+  },
+]

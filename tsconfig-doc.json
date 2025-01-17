@@ -14,16 +14,14 @@
     "strict": true,
     "useUnknownInCatchVariables": false,
     "removeComments": false,
-    "noImplicitAny": false,
+    "noImplicitAny": false
   },
   "typedocOptions": {
     "out": "./docs",
     "name": "PAOIDCClient",
     "readme": "none",
     "categorizeByGroup": false,
-    "entryPoints": [
-      "src/index.ts"
-    ],
+    "entryPoints": ["src/index.ts"],
     "hideGenerator": true,
     "excludeProtected": true,
     "excludePrivate": true

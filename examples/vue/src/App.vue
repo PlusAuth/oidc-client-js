@@ -11,21 +11,21 @@
 </template>
 
 <script>
-import AppSidebar from '@/components/AppSidebar';
-import AppHeader from '@/components/AppHeader';
+import AppHeader from "@/components/AppHeader"
+import AppSidebar from "@/components/AppSidebar"
 export default {
-  name: 'App',
-  components: {AppSidebar, AppHeader},
+  name: "App",
+  components: { AppSidebar, AppHeader },
   data() {
     return {
-      user: null
+      user: null,
     }
   },
   async beforeCreate() {
     this.user = await this.$auth.getUser()
   },
   mounted() {
-    this.$auth.on('user_login', ( { user })=>{
+    this.$auth.on("user_login", ({ user }) => {
       this.user = user
     })
   },

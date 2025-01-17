@@ -5,7 +5,7 @@ declare const Events: {
     readonly SILENT_RENEW_ERROR: "silent_renew_error";
     readonly SESSION_CHANGE: "session_change";
 };
-type EventTypes = 'user_logout' | 'user_login' | 'silent_renew_success' | 'silent_renew_error' | 'session_change' | 'session_error';
+type EventTypes = "user_logout" | "user_login" | "silent_renew_success" | "silent_renew_error" | "session_change" | "session_error";
 
 interface StateStore<T = Record<string, any>> {
     init?(): Promise<StateStore<T>>;
@@ -48,14 +48,14 @@ declare class EventEmitter<T extends string> {
 interface RequestOptions {
     body?: Record<string, string | number | null | undefined>;
     headers?: Record<string, string>;
-    method: 'GET' | 'POST' | 'PATCH' | 'TRACE' | 'OPTIONS' | 'HEAD';
-    requestType?: 'form' | 'json';
+    method: "GET" | "POST" | "PATCH" | "TRACE" | "OPTIONS" | "HEAD";
+    requestType?: "form" | "json";
     url: string;
 }
 
 declare const nonUserClaims: readonly ["iss", "aud", "exp", "nbf", "iat", "jti", "azp", "nonce", "auth_time", "at_hash", "c_hash", "acr", "amr", "sub_jwk", "cnf", "sip_from_tag", "sip_date", "sip_callid", "sip_cseq_num", "sip_via_branch", "orig", "dest", "mky", "events", "toe", "txn", "rph", "sid", "vot", "vtm", "attest", "origid", "act", "scope", "client_id", "may_act", "jcard", "at_use_nbr"];
 
-type JWTHeaderField = 'typ' | 'cty' | 'alg' | 'zip' | 'jku' | 'jwk' | 'kid' | 'x5u' | 'x5c' | 'x5t' | 'x5t#S256' | 'crit' | 'exp';
+type JWTHeaderField = "typ" | "cty" | "alg" | "zip" | "jku" | "jwk" | "kid" | "x5u" | "x5c" | "x5t" | "x5t#S256" | "crit" | "exp";
 interface AuthRequestOptions {
     acr_values?: string;
     audience?: string;
@@ -76,7 +76,7 @@ interface AuthRequestOptions {
     prompt?: string;
     redirect_uri?: string;
     registration?: string;
-    request_type?: 's' | 'p' | 'd';
+    request_type?: "s" | "p" | "d";
     response_mode?: string;
     response_type?: string;
     scope?: string;
@@ -110,7 +110,7 @@ interface IEndpointConfiguration {
     token_endpoint?: string;
     userinfo_endpoint?: string;
 }
-interface IPlusAuthClientOptions extends Omit<AuthRequestOptions, 'request_type'>, Omit<LogoutRequestOptions, 'localOnly'> {
+interface IPlusAuthClientOptions extends Omit<AuthRequestOptions, "request_type">, Omit<LogoutRequestOptions, "localOnly"> {
     authStore?: StateStore<any>;
     /**
      * Enable/disable automatic access token renewal. If enabled, access tokens will be refreshed by using silent
@@ -214,10 +214,10 @@ interface IFrameOptions {
 }
 interface ParsedJWT {
     header: Partial<Record<JWTHeaderField, any>>;
-    payload: Readonly<Record<typeof nonUserClaims[number], string | number>>;
+    payload: Readonly<Record<(typeof nonUserClaims)[number], string | number>>;
     signature?: string;
 }
-type TokenType = 'access_token' | 'refresh_token';
+type TokenType = "access_token" | "refresh_token";
 interface RevokeOptions {
     client_id?: string;
     client_secret?: string;
@@ -253,7 +253,7 @@ type StateRecord = {
     authParams: AuthRequestOptions;
     created_at: number;
     localState: Record<string, any>;
-    request_type: 'p' | 's' | any;
+    request_type: "p" | "s" | any;
 };
 type AuthRecord = {
     access_token?: string;

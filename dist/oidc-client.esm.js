@@ -1,15 +1,15 @@
 /*!
  * @plusauth/oidc-client-js v1.4.2
  * https://github.com/PlusAuth/oidc-client-js
- * (c) 2024 @plusauth/oidc-client-js Contributors
+ * (c) 2025 @plusauth/oidc-client-js Contributors
  * Released under the MIT License
  */
 /* eslint-disable @typescript-eslint/indent */ const Events = {
-    USER_LOGOUT: 'user_logout',
-    USER_LOGIN: 'user_login',
-    SILENT_RENEW_SUCCESS: 'silent_renew_success',
-    SILENT_RENEW_ERROR: 'silent_renew_error',
-    SESSION_CHANGE: 'session_change'
+    USER_LOGOUT: "user_logout",
+    USER_LOGIN: "user_login",
+    SILENT_RENEW_SUCCESS: "silent_renew_success",
+    SILENT_RENEW_ERROR: "silent_renew_error",
+    SESSION_CHANGE: "session_change"
 };
 
 function _define_property$6(obj, key, value) {
@@ -27,49 +27,44 @@ function _define_property$6(obj, key, value) {
 }
 class OIDCClientError extends Error {
     constructor(error, error_description){
-        super(`${error}${error_description && ` - ${error_description}` || ''}`);
-        _define_property$6(this, "error", void 0);
-        _define_property$6(this, "error_description", void 0);
-        this.name = 'OIDCClientError';
+        super(`${error}${error_description && ` - ${error_description}` || ""}`), _define_property$6(this, "error", undefined), _define_property$6(this, "error_description", undefined);
+        this.name = "OIDCClientError";
         this.error = error;
         this.error_description = error_description;
     }
 }
 class AuthenticationError extends OIDCClientError {
     constructor(error, error_description, state, error_uri){
-        super(error, error_description);
-        _define_property$6(this, "state", void 0);
-        _define_property$6(this, "error_uri", void 0);
-        this.name = 'AuthenticationError';
+        super(error, error_description), _define_property$6(this, "state", undefined), _define_property$6(this, "error_uri", undefined);
+        this.name = "AuthenticationError";
         this.state = state;
         this.error_uri = error_uri;
     }
 }
 class StateNotFound extends AuthenticationError {
     constructor(error, state){
-        super(error);
-        _define_property$6(this, "state", void 0);
-        this.name = 'StateNotFound';
+        super(error), _define_property$6(this, "state", undefined);
+        this.name = "StateNotFound";
         this.state = state;
     }
 }
 class InvalidJWTError extends OIDCClientError {
     constructor(details){
         super(details);
-        this.name = 'InvalidJWTError';
+        this.name = "InvalidJWTError";
         this.error_description = details;
     }
 }
 class InvalidIdTokenError extends InvalidJWTError {
     constructor(details){
         super(details);
-        this.name = 'InvalidIdTokenError';
+        this.name = "InvalidIdTokenError";
     }
 }
 class InteractionCancelled extends OIDCClientError {
     constructor(details){
         super(details);
-        this.name = 'InteractionCancelled';
+        this.name = "InteractionCancelled";
     }
 }
 
@@ -86,10 +81,10 @@ function _define_property$5(obj, key, value) {
     }
     return obj;
 }
-// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
+// biome-ignore  lint/suspicious/noUnsafeDeclarationMerging:
 class StateStore {
-    constructor(prefix = ''){
-        _define_property$5(this, "prefix", void 0);
+    constructor(prefix = ""){
+        _define_property$5(this, "prefix", undefined);
         this.prefix = prefix;
     }
 }
@@ -124,7 +119,7 @@ class LocalStorageStateStore extends StateStore {
             for(i = 0; i < window.localStorage.length; i++){
                 const key = window.localStorage.key(i);
                 // items only created by oidc client
-                if ((key === null || key === void 0 ? void 0 : key.substring(0, this.prefix.length)) == this.prefix) {
+                if ((key === null || key === undefined ? undefined : key.substring(0, this.prefix.length)) === this.prefix) {
                     storedKeys.push(key);
                 }
             }
@@ -143,7 +138,7 @@ class LocalStorageStateStore extends StateStore {
             resolve();
         });
     }
-    constructor(prefix = 'pa_oidc.'){
+    constructor(prefix = "pa_oidc."){
         super(prefix);
     }
 }
@@ -170,9 +165,8 @@ class InMemoryStateStore extends StateStore {
                 }
             });
             return Promise.resolve();
-        } else {
-            return Promise.resolve(this.map.clear());
         }
+        return Promise.resolve(this.map.clear());
     }
     del(key) {
         this.map.delete(key);
@@ -186,8 +180,7 @@ class InMemoryStateStore extends StateStore {
         return Promise.resolve();
     }
     constructor(...args){
-        super(...args);
-        _define_property$4(this, "map", new Map());
+        super(...args), _define_property$4(this, "map", new Map());
     }
 }
 
@@ -257,7 +250,7 @@ class EventEmitter {
         return this;
     }
     constructor(){
-        _define_property$3(this, "callbacks", void 0);
+        _define_property$3(this, "callbacks", undefined);
         this.callbacks = {};
     }
 }
@@ -305,22 +298,22 @@ class Timer {
         }
     }
     constructor(currentTimeInMillisFunc = ()=>Date.now()){
-        _define_property$2(this, "now", void 0);
-        _define_property$2(this, "_timerHandle", void 0);
-        _define_property$2(this, "_expiration", void 0);
+        _define_property$2(this, "now", undefined);
+        _define_property$2(this, "_timerHandle", undefined);
+        _define_property$2(this, "_expiration", undefined);
         this.now = currentTimeInMillisFunc;
     }
 }
 
 function createHiddenFrame() {
-    const iframe = window.document.createElement('iframe');
-    iframe.style.width = '0';
-    iframe.style.height = '0';
-    iframe.style.position = 'absolute';
-    iframe.style.visibility = 'hidden';
-    iframe.style.display = 'none';
-    iframe.title = '__pa_helper__hidden';
-    iframe.ariaHidden = 'true';
+    const iframe = window.document.createElement("iframe");
+    iframe.style.width = "0";
+    iframe.style.height = "0";
+    iframe.style.position = "absolute";
+    iframe.style.visibility = "hidden";
+    iframe.style.display = "none";
+    iframe.title = "__pa_helper__hidden";
+    iframe.ariaHidden = "true";
     return iframe;
 }
 function runIframe(url, options) {
@@ -328,12 +321,12 @@ function runIframe(url, options) {
         let onLoadTimeoutId = null;
         const iframe = createHiddenFrame();
         const timeoutSetTimeoutId = setTimeout(()=>{
-            reject(new OIDCClientError('Timed out'));
+            reject(new OIDCClientError("Timed out"));
             removeIframe();
         }, (options.timeout || 10) * 1000);
         const iframeEventHandler = (e)=>{
-            if (e.origin != options.eventOrigin) return;
-            if (!e.data || e.data.type !== 'authorization_response') return;
+            if (e.origin !== options.eventOrigin) return;
+            if (!e.data || e.data.type !== "authorization_response") return;
             const eventSource = e.source;
             if (eventSource) {
                 eventSource.close();
@@ -350,96 +343,195 @@ function runIframe(url, options) {
             if (window.document.body.contains(iframe)) {
                 window.document.body.removeChild(iframe);
             }
-            window.removeEventListener('message', iframeEventHandler, false);
+            window.removeEventListener("message", iframeEventHandler, false);
         };
         const onLoadTimeout = ()=>setTimeout(()=>{
-                reject(new OIDCClientError('Could not complete silent authentication', url));
+                reject(new OIDCClientError("Could not complete silent authentication", url));
                 removeIframe();
             }, 300);
-        window.addEventListener('message', iframeEventHandler, false);
+        window.addEventListener("message", iframeEventHandler, false);
         window.document.body.appendChild(iframe);
-        iframe.setAttribute('src', url);
+        iframe.setAttribute("src", url);
         /**
      * In case of wrong client id, wrong redirect_uri, in short when redirect did not happen
      * we assume flow failed.
-     */ iframe.onload = function() {
+     */ iframe.onload = ()=>{
             onLoadTimeoutId = onLoadTimeout();
         };
     });
 }
 
-var fromByteArray_1 = fromByteArray;
+var base64Js = {};
 
-var lookup = [];
+var hasRequiredBase64Js;
 
-var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-for (var i = 0, len = code.length; i < len; ++i) {
-  lookup[i] = code[i];
+function requireBase64Js () {
+	if (hasRequiredBase64Js) return base64Js;
+	hasRequiredBase64Js = 1;
+
+	base64Js.byteLength = byteLength;
+	base64Js.toByteArray = toByteArray;
+	base64Js.fromByteArray = fromByteArray;
+
+	var lookup = [];
+	var revLookup = [];
+	var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array;
+
+	var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+	for (var i = 0, len = code.length; i < len; ++i) {
+	  lookup[i] = code[i];
+	  revLookup[code.charCodeAt(i)] = i;
+	}
+
+	// Support decoding URL-safe base64 strings, as Node.js does.
+	// See: https://en.wikipedia.org/wiki/Base64#URL_applications
+	revLookup['-'.charCodeAt(0)] = 62;
+	revLookup['_'.charCodeAt(0)] = 63;
+
+	function getLens (b64) {
+	  var len = b64.length;
+
+	  if (len % 4 > 0) {
+	    throw new Error('Invalid string. Length must be a multiple of 4')
+	  }
+
+	  // Trim off extra bytes after placeholder bytes are found
+	  // See: https://github.com/beatgammit/base64-js/issues/42
+	  var validLen = b64.indexOf('=');
+	  if (validLen === -1) validLen = len;
+
+	  var placeHoldersLen = validLen === len
+	    ? 0
+	    : 4 - (validLen % 4);
+
+	  return [validLen, placeHoldersLen]
+	}
+
+	// base64 is 4/3 + up to two characters of the original data
+	function byteLength (b64) {
+	  var lens = getLens(b64);
+	  var validLen = lens[0];
+	  var placeHoldersLen = lens[1];
+	  return ((validLen + placeHoldersLen) * 3 / 4) - placeHoldersLen
+	}
+
+	function _byteLength (b64, validLen, placeHoldersLen) {
+	  return ((validLen + placeHoldersLen) * 3 / 4) - placeHoldersLen
+	}
+
+	function toByteArray (b64) {
+	  var tmp;
+	  var lens = getLens(b64);
+	  var validLen = lens[0];
+	  var placeHoldersLen = lens[1];
+
+	  var arr = new Arr(_byteLength(b64, validLen, placeHoldersLen));
+
+	  var curByte = 0;
+
+	  // if there are placeholders, only get up to the last complete 4 chars
+	  var len = placeHoldersLen > 0
+	    ? validLen - 4
+	    : validLen;
+
+	  var i;
+	  for (i = 0; i < len; i += 4) {
+	    tmp =
+	      (revLookup[b64.charCodeAt(i)] << 18) |
+	      (revLookup[b64.charCodeAt(i + 1)] << 12) |
+	      (revLookup[b64.charCodeAt(i + 2)] << 6) |
+	      revLookup[b64.charCodeAt(i + 3)];
+	    arr[curByte++] = (tmp >> 16) & 0xFF;
+	    arr[curByte++] = (tmp >> 8) & 0xFF;
+	    arr[curByte++] = tmp & 0xFF;
+	  }
+
+	  if (placeHoldersLen === 2) {
+	    tmp =
+	      (revLookup[b64.charCodeAt(i)] << 2) |
+	      (revLookup[b64.charCodeAt(i + 1)] >> 4);
+	    arr[curByte++] = tmp & 0xFF;
+	  }
+
+	  if (placeHoldersLen === 1) {
+	    tmp =
+	      (revLookup[b64.charCodeAt(i)] << 10) |
+	      (revLookup[b64.charCodeAt(i + 1)] << 4) |
+	      (revLookup[b64.charCodeAt(i + 2)] >> 2);
+	    arr[curByte++] = (tmp >> 8) & 0xFF;
+	    arr[curByte++] = tmp & 0xFF;
+	  }
+
+	  return arr
+	}
+
+	function tripletToBase64 (num) {
+	  return lookup[num >> 18 & 0x3F] +
+	    lookup[num >> 12 & 0x3F] +
+	    lookup[num >> 6 & 0x3F] +
+	    lookup[num & 0x3F]
+	}
+
+	function encodeChunk (uint8, start, end) {
+	  var tmp;
+	  var output = [];
+	  for (var i = start; i < end; i += 3) {
+	    tmp =
+	      ((uint8[i] << 16) & 0xFF0000) +
+	      ((uint8[i + 1] << 8) & 0xFF00) +
+	      (uint8[i + 2] & 0xFF);
+	    output.push(tripletToBase64(tmp));
+	  }
+	  return output.join('')
+	}
+
+	function fromByteArray (uint8) {
+	  var tmp;
+	  var len = uint8.length;
+	  var extraBytes = len % 3; // if we have 1 byte left, pad 2 bytes
+	  var parts = [];
+	  var maxChunkLength = 16383; // must be multiple of 3
+
+	  // go through the array every three bytes, we'll deal with trailing stuff later
+	  for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
+	    parts.push(encodeChunk(uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)));
+	  }
+
+	  // pad the end with zeros, but make sure to not forget the extra bytes
+	  if (extraBytes === 1) {
+	    tmp = uint8[len - 1];
+	    parts.push(
+	      lookup[tmp >> 2] +
+	      lookup[(tmp << 4) & 0x3F] +
+	      '=='
+	    );
+	  } else if (extraBytes === 2) {
+	    tmp = (uint8[len - 2] << 8) + uint8[len - 1];
+	    parts.push(
+	      lookup[tmp >> 10] +
+	      lookup[(tmp >> 4) & 0x3F] +
+	      lookup[(tmp << 2) & 0x3F] +
+	      '='
+	    );
+	  }
+
+	  return parts.join('')
+	}
+	return base64Js;
 }
 
-function tripletToBase64 (num) {
-  return lookup[num >> 18 & 0x3F] +
-    lookup[num >> 12 & 0x3F] +
-    lookup[num >> 6 & 0x3F] +
-    lookup[num & 0x3F]
-}
-
-function encodeChunk (uint8, start, end) {
-  var tmp;
-  var output = [];
-  for (var i = start; i < end; i += 3) {
-    tmp =
-      ((uint8[i] << 16) & 0xFF0000) +
-      ((uint8[i + 1] << 8) & 0xFF00) +
-      (uint8[i + 2] & 0xFF);
-    output.push(tripletToBase64(tmp));
-  }
-  return output.join('')
-}
-
-function fromByteArray (uint8) {
-  var tmp;
-  var len = uint8.length;
-  var extraBytes = len % 3; // if we have 1 byte left, pad 2 bytes
-  var parts = [];
-  var maxChunkLength = 16383; // must be multiple of 3
-
-  // go through the array every three bytes, we'll deal with trailing stuff later
-  for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
-    parts.push(encodeChunk(uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)));
-  }
-
-  // pad the end with zeros, but make sure to not forget the extra bytes
-  if (extraBytes === 1) {
-    tmp = uint8[len - 1];
-    parts.push(
-      lookup[tmp >> 2] +
-      lookup[(tmp << 4) & 0x3F] +
-      '=='
-    );
-  } else if (extraBytes === 2) {
-    tmp = (uint8[len - 2] << 8) + uint8[len - 1];
-    parts.push(
-      lookup[tmp >> 10] +
-      lookup[(tmp >> 4) & 0x3F] +
-      lookup[(tmp << 2) & 0x3F] +
-      '='
-    );
-  }
-
-  return parts.join('')
-}
+var base64JsExports = requireBase64Js();
 
 function isValidIssuer(issuer) {
     try {
         const url = new URL(issuer);
         if (![
-            'http:',
-            'https:'
+            "http:",
+            "https:"
         ].includes(url.protocol)) {
             return false;
         }
-        if (url.search !== '' || url.hash !== '') {
+        if (url.search !== "" || url.hash !== "") {
             return false;
         }
         return true;
@@ -448,44 +540,44 @@ function isValidIssuer(issuer) {
     }
 }
 function buildEncodedQueryString(obj, appendable = true) {
-    if (!obj) return '';
+    if (!obj) return "";
     const ret = [];
     for(const d in obj){
         if (obj.hasOwnProperty(d) && obj[d]) {
-            ret.push(`${encodeURIComponent(d)}=${encodeURIComponent(typeof obj[d] === 'object' ? JSON.stringify(obj[d]) : obj[d])}`);
+            ret.push(`${encodeURIComponent(d)}=${encodeURIComponent(typeof obj[d] === "object" ? JSON.stringify(obj[d]) : obj[d])}`);
         }
     }
-    return `${appendable ? '?' : ''}${ret.join('&')}`;
+    return `${appendable ? "?" : ""}${ret.join("&")}`;
 }
 function parseQueryUrl(value) {
     const result = {};
-    value = value.trim().replace(/^(\?|#|&)/, '');
-    const params = value.split('&');
+    value = value.trim().replace(/^(\?|#|&)/, "");
+    const params = value.split("&");
     for(let i = 0; i < params.length; i += 1){
         const paramAndValue = params[i];
-        const parts = paramAndValue.split('=');
+        const parts = paramAndValue.split("=");
         const key = decodeURIComponent(parts.shift());
-        const value = parts.length > 0 ? parts.join('=') : '';
+        const value = parts.length > 0 ? parts.join("=") : "";
         result[key] = decodeURIComponent(value);
     }
     return result;
 }
 function urlSafe(buffer) {
-    const encoded = fromByteArray_1(new Uint8Array(buffer));
-    return encoded.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    const encoded = base64JsExports.fromByteArray(new Uint8Array(buffer));
+    return encoded.replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
 }
 
 function request(options) {
     let body = null;
     let headers = options.headers || {};
-    if (options.method === 'POST') {
+    if (options.method === "POST") {
         headers = {
-            'Content-Type': options.requestType === 'form' ? 'application/x-www-form-urlencoded;charset=UTF-8' : 'application/json;charset=UTF-8',
+            "Content-Type": options.requestType === "form" ? "application/x-www-form-urlencoded;charset=UTF-8" : "application/json;charset=UTF-8",
             ...headers
         };
     }
     if (options.body) {
-        body = options.requestType === 'form' ? buildEncodedQueryString(options.body, false) : JSON.stringify(options.body);
+        body = options.requestType === "form" ? buildEncodedQueryString(options.body, false) : JSON.stringify(options.body);
     }
     return new Promise((resolve, reject)=>{
         fetch(options.url, {
@@ -496,10 +588,11 @@ function request(options) {
     });
 }
 
-const CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+const CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 function getRandomBytes(n) {
     // @ts-ignore
-    const crypto1 = self.crypto || self.msCrypto, QUOTA = 65536;
+    const crypto1 = self.crypto || self.msCrypto;
+    const QUOTA = 65536;
     const a = new Uint8Array(n);
     for(let i = 0; i < n; i += QUOTA){
         crypto1.getRandomValues(a.subarray(i, i + Math.min(n - i, QUOTA)));
@@ -507,7 +600,7 @@ function getRandomBytes(n) {
     return a;
 }
 function generateRandom(length) {
-    let out = '';
+    let out = "";
     const charsLen = CHARSET.length;
     const maxByte = 256 - 256 % charsLen;
     while(length > 0){
@@ -527,34 +620,34 @@ function deriveChallenge(code) {
         return Promise.reject(new OIDCClientError(`Invalid code length: ${code.length}`));
     }
     return new Promise((resolve, reject)=>{
-        crypto.subtle.digest('SHA-256', new TextEncoder().encode(code)).then((buffer)=>{
+        crypto.subtle.digest("SHA-256", new TextEncoder().encode(code)).then((buffer)=>{
             return resolve(urlSafe(new Uint8Array(buffer)));
-        }, function(error) {
+        }, (error)=>{
             /* istanbul ignore next */ return reject(error);
         });
     });
 }
 // https://datatracker.ietf.org/doc/html/rfc4648#section-5
-const urlDecodeB64 = (input)=>decodeURIComponent(atob(input.replace(/_/g, '/').replace(/-/g, '+')).split('').map((c)=>{
+const urlDecodeB64 = (input)=>decodeURIComponent(atob(input.replace(/_/g, "/").replace(/-/g, "+")).split("").map((c)=>{
         return `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`;
-    }).join(''));
+    }).join(""));
 function parseJwt(jwt) {
     try {
-        const parts = jwt.split('.');
+        const parts = jwt.split(".");
         if (parts.length !== 3) {
-            throw new Error('Wrong JWT format');
+            throw new Error("Wrong JWT format");
         }
         return {
             header: JSON.parse(urlDecodeB64(parts[0])),
             payload: JSON.parse(urlDecodeB64(parts[1]))
         };
     } catch (e) {
-        throw new InvalidJWTError('Failed to parse jwt');
+        throw new InvalidJWTError("Failed to parse jwt");
     }
 }
 function validateIdToken(id_token, nonce, options) {
     if (!nonce) {
-        throw new OIDCClientError('No nonce on state');
+        throw new OIDCClientError("No nonce on state");
     }
     try {
         const jwt = parseJwt(id_token);
@@ -563,8 +656,8 @@ function validateIdToken(id_token, nonce, options) {
         }
         validateJwt(id_token, options, true);
         // @ts-ignore
-        if (!jwt.payload['sub']) {
-            throw new Error('No Subject (sub) present in id_token');
+        if (!jwt.payload["sub"]) {
+            throw new Error("No Subject (sub) present in id_token");
         }
         return jwt.payload;
     } catch (e) {
@@ -577,20 +670,20 @@ function validateJwt(jwt, options, isIdToken = false) {
     if (!clockSkew) {
         clockSkew = 0;
     }
-    const now = (currentTimeInMillis && currentTimeInMillis() || Date.now()) / 1000;
+    const now = ((currentTimeInMillis === null || currentTimeInMillis === undefined ? undefined : currentTimeInMillis()) || Date.now()) / 1000;
     const payload = parseJwt(jwt).payload;
     if (!payload.iss) {
-        throw new InvalidJWTError('Issuer (iss) was not provided');
+        throw new InvalidJWTError("Issuer (iss) was not provided");
     }
     if (payload.iss !== issuer) {
         throw new InvalidJWTError(`Invalid Issuer (iss) in token: ${payload.iss}`);
     }
     if (!payload.aud) {
-        throw new InvalidJWTError('Audience (aud) was not provided');
+        throw new InvalidJWTError("Audience (aud) was not provided");
     }
     // Audience must be equal to client_id in id_token
     // https://openid.net/specs/openid-connect-core-1_0.html#IDToken
-    if (Array.isArray(payload.aud) ? payload.aud.indexOf(isIdToken ? client_id : audience || client_id) == -1 : payload.aud !== (isIdToken ? client_id : audience || client_id)) {
+    if (Array.isArray(payload.aud) ? payload.aud.indexOf(isIdToken ? client_id : audience || client_id) === -1 : payload.aud !== (isIdToken ? client_id : audience || client_id)) {
         throw new InvalidJWTError(`Invalid Audience (aud) in token: ${payload.aud}`);
     }
     if (payload.azp && payload.azp !== client_id) {
@@ -599,7 +692,7 @@ function validateJwt(jwt, options, isIdToken = false) {
     const lowerNow = Math.ceil(now + clockSkew);
     const upperNow = Math.floor(now - clockSkew);
     if (!payload.iat) {
-        throw new InvalidJWTError('Issued At (iat) was not provided');
+        throw new InvalidJWTError("Issued At (iat) was not provided");
     }
     if (lowerNow < Number(payload.iat)) {
         throw new InvalidJWTError(`Issued At (iat) is in the future: ${payload.iat}`);
@@ -608,7 +701,7 @@ function validateJwt(jwt, options, isIdToken = false) {
         throw new InvalidJWTError(`Not Before time (nbf) is in the future: ${payload.nbf}`);
     }
     if (!payload.exp) {
-        throw new InvalidJWTError('Expiration Time (exp) was not provided');
+        throw new InvalidJWTError("Expiration Time (exp) was not provided");
     }
     if (Number(payload.exp) < upperNow) {
         throw new InvalidJWTError(`Expiration Time (exp) is in the past: ${payload.exp}`);
@@ -617,59 +710,59 @@ function validateJwt(jwt, options, isIdToken = false) {
 }
 // Retrieved from https://www.iana.org/assignments/jwt/jwt.xhtml
 const nonUserClaims = [
-    'iss',
+    "iss",
     // 'sub',
-    'aud',
-    'exp',
-    'nbf',
-    'iat',
-    'jti',
-    'azp',
-    'nonce',
-    'auth_time',
-    'at_hash',
-    'c_hash',
-    'acr',
-    'amr',
-    'sub_jwk',
-    'cnf',
-    'sip_from_tag',
-    'sip_date',
-    'sip_callid',
-    'sip_cseq_num',
-    'sip_via_branch',
-    'orig',
-    'dest',
-    'mky',
-    'events',
-    'toe',
-    'txn',
-    'rph',
-    'sid',
-    'vot',
-    'vtm',
-    'attest',
-    'origid',
-    'act',
-    'scope',
-    'client_id',
-    'may_act',
-    'jcard',
-    'at_use_nbr'
+    "aud",
+    "exp",
+    "nbf",
+    "iat",
+    "jti",
+    "azp",
+    "nonce",
+    "auth_time",
+    "at_hash",
+    "c_hash",
+    "acr",
+    "amr",
+    "sub_jwk",
+    "cnf",
+    "sip_from_tag",
+    "sip_date",
+    "sip_callid",
+    "sip_cseq_num",
+    "sip_via_branch",
+    "orig",
+    "dest",
+    "mky",
+    "events",
+    "toe",
+    "txn",
+    "rph",
+    "sid",
+    "vot",
+    "vtm",
+    "attest",
+    "origid",
+    "act",
+    "scope",
+    "client_id",
+    "may_act",
+    "jcard",
+    "at_use_nbr"
 ];
 
 const DEFAULT_CHECK_INTERVAL = 2000;
 function createSessionCheckerFrame(options) {
     const { url, callback, client_id, checkInterval } = options;
     let internalSessionState;
-    const idx = url.indexOf('/', url.indexOf('//') + 2);
+    const idx = url.indexOf("/", url.indexOf("//") + 2);
     const frameOrigin = url.substr(0, idx);
     const frame = createHiddenFrame();
     let timer;
     const load = ()=>{
         return new Promise((resolve)=>{
             window.document.body.appendChild(frame);
-            window.addEventListener('message', iframeEventHandler, false);
+            window.addEventListener("message", iframeEventHandler, false);
             frame.onload = ()=>{
                 resolve(null);
             };
@@ -697,16 +790,16 @@ function createSessionCheckerFrame(options) {
     };
     const iframeEventHandler = (e)=>{
         if (e.origin === frameOrigin && e.source === frame.contentWindow) {
-            if (e.data === 'error') {
+            if (e.data === "error") {
                 stop();
                 callback(e.data);
-            } else if (e.data === 'changed') {
+            } else if (e.data === "changed") {
                 stop();
                 callback();
             }
         }
     };
-    frame.setAttribute('src', url);
+    frame.setAttribute("src", url);
     return {
         stop,
         start
@@ -717,7 +810,7 @@ function createSessionCheckerFrame(options) {
  * not suitable for every object but it is enough for this library
  * @param object
  */ function cleanUndefined(object) {
-    if (!object || typeof object !== 'object') {
+    if (!object || typeof object !== "object") {
         return object;
     }
     return JSON.parse(JSON.stringify(object));
@@ -725,7 +818,7 @@ function createSessionCheckerFrame(options) {
 function merge(previousValue, currentValue) {
     for(const p in currentValue){
         if (currentValue[p] !== undefined) {
-            if (typeof currentValue[p] === 'object' && currentValue[p].constructor.name === 'Object') {
+            if (typeof currentValue[p] === "object" && currentValue[p].constructor.name === "Object") {
                 previousValue[p] = merge(previousValue[p] || {}, currentValue[p]);
             } else {
                 previousValue[p] = currentValue[p];
@@ -741,12 +834,12 @@ function mergeObjects(...objects) {
 }
 
 const isResponseType = (type, response_type)=>response_type && response_type.split(/\s+/g).filter((rt)=>rt === type).length > 0;
-const isScopeIncluded = (scope, scopes)=>scopes && scopes.split(' ').indexOf(scope) > -1;
+const isScopeIncluded = (scope, scopes)=>scopes && scopes.split(" ").indexOf(scope) > -1;
 
 const openPopup = (url, width = 400, height = 600)=>{
     const left = window.screenX + (window.innerWidth - width) / 2;
     const top = window.screenY + (window.innerHeight - height) / 2;
-    return window.open(url, 'oidc-login-popup', `left=${left},top=${top},width=${width},height=${height},resizable,scrollbars=yes,status=1`);
+    return window.open(url, "oidc-login-popup", `left=${left},top=${top},width=${width},height=${height},resizable,scrollbars=yes,status=1`);
 };
 function runPopup(url, options) {
     let popup = options.popup;
@@ -756,7 +849,7 @@ function runPopup(url, options) {
         popup = openPopup(url);
     }
     if (!popup) {
-        /* istanbul ignore next */ throw new Error('Could not open popup');
+        /* istanbul ignore next */ throw new Error("Could not open popup");
     }
     let timeoutId;
     let closeId;
@@ -764,21 +857,21 @@ function runPopup(url, options) {
         function clearHandlers() {
             clearInterval(closeId);
             clearTimeout(timeoutId);
-            window.removeEventListener('message', messageListener);
+            window.removeEventListener("message", messageListener);
         }
         timeoutId = setTimeout(()=>{
             clearHandlers();
-            reject(new OIDCClientError('Timed out'));
+            reject(new OIDCClientError("Timed out"));
         }, options.timeout || 60 * 1000);
-        closeId = setInterval(function() {
+        closeId = setInterval(()=>{
             if (popup.closed) {
                 clearHandlers();
-                reject(new InteractionCancelled('user closed popup'));
+                reject(new InteractionCancelled("user closed popup"));
             }
         }, 300);
-        window.addEventListener('message', messageListener);
+        window.addEventListener("message", messageListener);
         function messageListener(e) {
-            if (!e.data || e.data.type !== 'authorization_response') return;
+            if (!e.data || e.data.type !== "authorization_response") return;
             clearHandlers();
             popup.close();
             const data = e.data.response || e.data;
@@ -814,8 +907,9 @@ class TabUtils {
     //the lock holds for 4 seconds (in case the function is async and returns right away, for example, an ajax call intiated)
     //then it is cleared
     CallOnce(lockname, fn, timeout = 3000) {
-        if (!lockname) throw 'empty lockname';
+        if (!lockname) throw "empty lockname";
         if (!window.localStorage) {
+            //no local storage. old browser. screw it, just run the function
             fn();
             return;
         }
@@ -823,10 +917,10 @@ class TabUtils {
         localStorage.setItem(localStorageKey, currentTabId);
         //re-read after a delay (after all tabs have saved their tabIDs into ls)
         setTimeout(()=>{
-            if (localStorage.getItem(localStorageKey) == currentTabId) fn();
+            if (localStorage.getItem(localStorageKey) === currentTabId) fn();
         }, 150);
         //cleanup - release the lock after 3 seconds and on window unload (just in case user closed the window while the lock is still held)
-        setTimeout(function() {
+        setTimeout(()=>{
             localStorage.removeItem(localStorageKey);
         }, timeout);
     }
@@ -834,7 +928,9 @@ class TabUtils {
         //now we also need to manually execute handler in the current tab too, because current tab does not get 'storage' events
         try {
             handlers[messageId](eventData);
-        } catch (x) {}
+        } catch (x) {
+        //"try" in case handler not found
+        }
         if (!window.localStorage) {
             this.events.emit(messageId, eventData);
             return; //no local storage. old browser
@@ -842,7 +938,8 @@ class TabUtils {
         const data = {
             data: eventData,
             timeStamp: new Date().getTime()
-        }; //add timestamp because overwriting same data does not trigger the event
+        } //add timestamp because overwriting same data does not trigger the event
+        ;
         //this triggers 'storage' event for all other tabs except the current tab
         localStorage.setItem(`${this.keyPrefix}event${messageId}`, JSON.stringify(data));
         //cleanup
@@ -857,16 +954,16 @@ class TabUtils {
             return; //no local storage. old browser
         }
         //first register a handler for "storage" event that we trigger above
-        window.addEventListener('storage', (ev)=>{
-            if (ev.key != `${this.keyPrefix}event${messageId}`) return; // ignore other keys
+        window.addEventListener("storage", (ev)=>{
+            if (ev.key !== `${this.keyPrefix}event${messageId}`) return; // ignore other keys
             if (!ev.newValue) return; //called by cleanup?
             const messageData = JSON.parse(ev.newValue);
             fn(messageData.data);
         });
     }
     constructor(kid, fallbackEvents){
-        _define_property$1(this, "keyPrefix", void 0);
-        _define_property$1(this, "events", void 0);
+        _define_property$1(this, "keyPrefix", undefined);
+        _define_property$1(this, "events", undefined);
         this.keyPrefix = kid;
         this.events = fallbackEvents;
     }
@@ -903,47 +1000,46 @@ function _define_property(obj, key, value) {
         }
         if (this.__initializePromise) {
             return this.__initializePromise;
-        } else {
-            this.__initializePromise = new Promise(async (resolve, reject)=>{
-                try {
-                    if (this.stateStore.init) {
-                        await this.stateStore.init();
-                    }
-                    if (this.authStore.init) {
-                        await this.authStore.init();
-                    }
-                    if (!this.options.endpoints || Object.keys(this.options.endpoints).length === 0) {
-                        await this.fetchFromIssuer();
-                    }
-                    this.initialized = true;
-                    if (checkLogin) {
-                        try {
-                            var _window;
-                            if (!((_window = window) === null || _window === void 0 ? void 0 : _window.frameElement)) {
-                                await this.silentLogin();
-                            }
-                        } catch (e) {
-                            this.emit(Events.SILENT_RENEW_ERROR, e);
-                            await this.authStore.clear();
-                        }
-                    } else {
-                        const localAuth = await this.authStore.get('auth');
-                        if (localAuth) {
-                            await this.onUserLogin(localAuth, true);
-                        }
-                    }
-                    resolve(this);
-                } catch (e) {
-                    if (e instanceof OIDCClientError) {
-                        reject(e);
-                    } else {
-                        reject(new OIDCClientError(e.message));
-                    }
-                } finally{
-                    this.__initializePromise = undefined;
-                }
-            });
         }
+        this.__initializePromise = new Promise(async (resolve, reject)=>{
+            try {
+                if (this.stateStore.init) {
+                    await this.stateStore.init();
+                }
+                if (this.authStore.init) {
+                    await this.authStore.init();
+                }
+                if (!this.options.endpoints || Object.keys(this.options.endpoints).length === 0) {
+                    await this.fetchFromIssuer();
+                }
+                this.initialized = true;
+                if (checkLogin) {
+                    try {
+                        var _window;
+                        if (!((_window = window) === null || _window === void 0 ? void 0 : _window.frameElement)) {
+                            await this.silentLogin();
+                        }
+                    } catch (e) {
+                        this.emit(Events.SILENT_RENEW_ERROR, e);
+                        await this.authStore.clear();
+                    }
+                } else {
+                    const localAuth = await this.authStore.get("auth");
+                    if (localAuth) {
+                        await this.onUserLogin(localAuth, true);
+                    }
+                }
+                resolve(this);
+            } catch (e) {
+                if (e instanceof OIDCClientError) {
+                    reject(e);
+                } else {
+                    reject(new OIDCClientError(e.message));
+                }
+            } finally{
+                this.__initializePromise = undefined;
+            }
+        });
         return this.__initializePromise;
     }
     /**
@@ -968,13 +1064,13 @@ function _define_property(obj, key, value) {
    * @param popupOptions
    */ async loginWithPopup(options = {}, popupOptions = {}) {
         const url = await this.createAuthRequest({
-            response_mode: 'fragment',
+            response_mode: "fragment",
             ...options,
-            display: 'popup',
-            request_type: 'p'
+            display: "popup",
+            request_type: "p"
         });
         const { response, state } = await runPopup(url, popupOptions);
-        const { authParams, localState } = !state || typeof state === 'string' ? await this.loadState(state || response.state) : state;
+        const { authParams, localState } = !state || typeof state === "string" ? await this.loadState(state || response.state) : state;
         const tokenResult = await this.handleAuthResponse(response, authParams, localState);
         const authObject = await this.handleTokenResult(tokenResult, authParams, mergeObjects(this.options, authParams));
         authObject.session_state = response.session_state;
@@ -989,10 +1085,10 @@ function _define_property(obj, key, value) {
    * @param url Full url which contains authorization request result parameters. Defaults to `window.location.href`
    */ async loginCallback(url = (()=>{
         var _window_location, _window;
-        return (_window = window) === null || _window === void 0 ? void 0 : (_window_location = _window.location) === null || _window_location === void 0 ? void 0 : _window_location.href;
+        return (_window = window) === null || _window === undefined ? undefined : (_window_location = _window.location) === null || _window_location === undefined ? undefined : _window_location.href;
     })()) {
         if (!url) {
-            return Promise.reject(new OIDCClientError('Url must be passed to handle login redirect'));
+            return Promise.reject(new OIDCClientError("Url must be passed to handle login redirect"));
         }
         let parsedUrl;
         try {
@@ -1005,36 +1101,38 @@ function _define_property(obj, key, value) {
         const { authParams, localState, request_type } = rawStoredState;
         url = url || window.location.href;
         switch(request_type){
-            case 's':
+            case "s":
                 var _window;
-                if ((_window = window) === null || _window === void 0 ? void 0 : _window.frameElement) {
+                if ((_window = window) === null || _window === undefined ? undefined : _window.frameElement) {
                     if (url) {
                         window.parent.postMessage({
-                            type: 'authorization_response',
+                            type: "authorization_response",
                             response: responseParams,
                             state: rawStoredState
                         }, `${location.protocol}//${location.host}`);
                     }
                 }
                 return;
-            case 'p':
+            case "p":
                 if (window.opener && url) {
                     window.opener.postMessage({
-                        type: 'authorization_response',
+                        type: "authorization_response",
                         response: responseParams,
                         state: rawStoredState
                     }, `${location.protocol}//${location.host}`);
                 }
                 return;
             default:
-                if (responseParams.error) {
-                    return Promise.reject(new AuthenticationError(responseParams.error, responseParams.error_description));
+                {
+                    if (responseParams.error) {
+                        return Promise.reject(new AuthenticationError(responseParams.error, responseParams.error_description));
+                    }
+                    const tokenResult = await this.handleAuthResponse(responseParams, authParams, localState);
+                    const authObject = await this.handleTokenResult(tokenResult, authParams, mergeObjects(this.options, authParams));
+                    authObject.session_state = responseParams.session_state;
+                    this.synchronizer.BroadcastMessageToAllTabs(Events.USER_LOGIN, authObject);
+                    return localState;
                 }
-                const tokenResult = await this.handleAuthResponse(responseParams, authParams, localState);
-                const authObject = await this.handleTokenResult(tokenResult, authParams, mergeObjects(this.options, authParams));
-                authObject.session_state = responseParams.session_state;
-                this.synchronizer.BroadcastMessageToAllTabs(Events.USER_LOGIN, authObject);
-                return localState;
         }
     }
     /**
@@ -1043,8 +1141,8 @@ function _define_property(obj, key, value) {
    * @param options
    */ async logout(options = {}) {
         if (!options.localOnly) {
-            const storedAuth = await this.authStore.get('auth');
-            const id_token_hint = options.id_token_hint || (storedAuth === null || storedAuth === void 0 ? void 0 : storedAuth.id_token_raw);
+            const storedAuth = await this.authStore.get("auth");
+            const id_token_hint = options.id_token_hint || (storedAuth === null || storedAuth === undefined ? undefined : storedAuth.id_token_raw);
             window.location.assign(await this.createLogoutRequest({
                 ...options,
                 id_token_hint
@@ -1057,7 +1155,7 @@ function _define_property(obj, key, value) {
    * @param token Token to be revoked
    * @param type Passed token's type. It will be used to provide `token_type_hint` parameter.
    * @param options If necessary override options passed to `OIDCClient` by defining them here.
-   */ async revokeToken(token, type = 'access_token', options = {}) {
+   */ async revokeToken(token, type = "access_token", options = {}) {
         if (!this.options.endpoints.revocation_endpoint) {
             return Promise.reject(new OIDCClientError('"revocation_endpoint" doesn\'t exist'));
         }
@@ -1068,8 +1166,8 @@ function _define_property(obj, key, value) {
             token: token
         };
         return this.http({
-            method: 'POST',
-            requestType: 'form',
+            method: "POST",
+            requestType: "form",
             url: this.options.endpoints.revocation_endpoint,
             body: finalOptions
         });
@@ -1087,17 +1185,17 @@ function _define_property(obj, key, value) {
         await this.initialize(false);
         let tokenResult;
         let finalState = {};
-        const storedAuth = await this.authStore.get('auth') || {};
+        const storedAuth = await this.authStore.get("auth") || {};
         const finalOptions = mergeObjects({
-            response_mode: 'query',
-            display: 'page',
-            prompt: 'none'
+            response_mode: "query",
+            display: "page",
+            prompt: "none"
         }, this.options, options);
         if (finalOptions.silent_redirect_uri) {
             finalOptions.redirect_uri = finalOptions.silent_redirect_uri;
         }
-        if (this.options.useRefreshToken && (storedAuth === null || storedAuth === void 0 ? void 0 : storedAuth.refresh_token)) {
-            finalState.authParams = mergeObjects((storedAuth === null || storedAuth === void 0 ? void 0 : storedAuth.authParams) || {}, finalState.authParams || {});
+        if (this.options.useRefreshToken && (storedAuth === null || storedAuth === undefined ? undefined : storedAuth.refresh_token)) {
+            finalState.authParams = mergeObjects((storedAuth === null || storedAuth === undefined ? undefined : storedAuth.authParams) || {}, finalState.authParams || {});
             tokenResult = await this.exchangeRefreshToken({
                 ...finalOptions,
                 refresh_token: storedAuth.refresh_token
@@ -1105,7 +1203,7 @@ function _define_property(obj, key, value) {
         } else {
             const authUrl = await this.createAuthRequest({
                 ...finalOptions,
-                request_type: 's'
+                request_type: "s"
             }, localState);
             const { response, state } = await runIframe(authUrl, {
                 timeout: finalOptions.silentRequestTimeout,
@@ -1124,43 +1222,43 @@ function _define_property(obj, key, value) {
    * Retrieve logged in user's access token if it exists.
    */ async getAccessToken() {
         var _this;
-        return (_this = await this.authStore.get('auth')) === null || _this === void 0 ? void 0 : _this.access_token;
+        return (_this = await this.authStore.get("auth")) === null || _this === undefined ? undefined : _this.access_token;
     }
     /**
    * Retrieve logged in user's refresh token if it exists.
    */ async getRefreshToken() {
         var _this;
-        return (_this = await this.authStore.get('auth')) === null || _this === void 0 ? void 0 : _this.refresh_token;
+        return (_this = await this.authStore.get("auth")) === null || _this === undefined ? undefined : _this.refresh_token;
     }
     /**
    * Retrieve logged in user's parsed id token if it exists.
    */ async getIdToken() {
         var _this;
-        return (_this = await this.authStore.get('auth')) === null || _this === void 0 ? void 0 : _this.id_token;
+        return (_this = await this.authStore.get("auth")) === null || _this === undefined ? undefined : _this.id_token;
     }
     /**
    * Retrieve access token's expiration.
    */ async getExpiresIn() {
         var _this;
-        return (_this = await this.authStore.get('auth')) === null || _this === void 0 ? void 0 : _this.expires_in;
+        return (_this = await this.authStore.get("auth")) === null || _this === undefined ? undefined : _this.expires_in;
     }
     /**
    * Retrieve logged in user's id token in raw format if it exists.
    */ async getIdTokenRaw() {
         var _this;
-        return (_this = await this.authStore.get('auth')) === null || _this === void 0 ? void 0 : _this.id_token_raw;
+        return (_this = await this.authStore.get("auth")) === null || _this === undefined ? undefined : _this.id_token_raw;
     }
     /**
    * Retrieve logged in user's scopes if it exists.
    */ async getScopes() {
         var _scope, _this;
-        return (_this = await this.authStore.get('auth')) === null || _this === void 0 ? void 0 : (_scope = _this.scope) === null || _scope === void 0 ? void 0 : _scope.split(' ');
+        return (_this = await this.authStore.get("auth")) === null || _this === undefined ? undefined : (_scope = _this.scope) === null || _scope === undefined ? undefined : _scope.split(" ");
     }
     /**
    * Retrieve logged in user's profile.
    */ async getUser() {
         var _this;
-        return (_this = await this.authStore.get('auth')) === null || _this === void 0 ? void 0 : _this.user;
+        return (_this = await this.authStore.get("auth")) === null || _this === undefined ? undefined : _this.user;
     }
     /**
    * If there is a user stored locally return true. Otherwise it will make a silentLogin to check if End-User is
@@ -1186,8 +1284,8 @@ function _define_property(obj, key, value) {
    * @param localState
    * @private
    */ async createAuthRequest(options = {}, localState = {}) {
-        var _this_options_endpoints;
-        if (!((_this_options_endpoints = this.options.endpoints) === null || _this_options_endpoints === void 0 ? void 0 : _this_options_endpoints.authorization_endpoint)) {
+        var _this_options_endpoints, _this_options_currentTimeInMillis, _this_options;
+        if (!((_this_options_endpoints = this.options.endpoints) === null || _this_options_endpoints === undefined ? undefined : _this_options_endpoints.authorization_endpoint)) {
             await this.initialize(false);
         }
         // TODO: deep merge for extra params
@@ -1200,7 +1298,7 @@ function _define_property(obj, key, value) {
             audience: finalOptions.audience,
             redirect_uri: finalOptions.redirect_uri,
             response_mode: finalOptions.response_mode,
-            response_type: finalOptions.response_type || 'code',
+            response_type: finalOptions.response_type || "code",
             ui_locales: finalOptions.ui_locales,
             prompt: finalOptions.prompt,
             display: finalOptions.display,
@@ -1214,15 +1312,15 @@ function _define_property(obj, key, value) {
             web_message_target: finalOptions.web_message_target,
             ...finalOptions.extraParams && finalOptions.extraParams
         };
-        if (isResponseType('id_token', authParams.response_type) || isScopeIncluded('openid', authParams.scope)) {
+        if (isResponseType("id_token", authParams.response_type) || isScopeIncluded("openid", authParams.scope)) {
             authParams.nonce = generateRandom(finalOptions.nonceLength);
         }
-        if (isResponseType('code', authParams.response_type)) {
+        if (isResponseType("code", authParams.response_type)) {
             authParams.code_challenge = await deriveChallenge(localState.code_verifier);
-            authParams.code_challenge_method = finalOptions.code_challenge_method || 'S256';
+            authParams.code_challenge_method = finalOptions.code_challenge_method || "S256";
         }
-        const now = this.options.currentTimeInMillis && this.options.currentTimeInMillis() || Date.now();
-        const fragment = finalOptions.fragment ? `#${finalOptions.fragment}` : '';
+        const now = ((_this_options_currentTimeInMillis = (_this_options = this.options).currentTimeInMillis) === null || _this_options_currentTimeInMillis === undefined ? undefined : _this_options_currentTimeInMillis.call(_this_options)) || Date.now();
+        const fragment = finalOptions.fragment ? `#${finalOptions.fragment}` : "";
         const authParamsString = buildEncodedQueryString(authParams);
         const url = `${this.options.endpoints.authorization_endpoint}${authParamsString}${fragment}`;
         // clear 1 day old state entries
@@ -1242,7 +1340,7 @@ function _define_property(obj, key, value) {
    * @private
    */ async createLogoutRequest(options = {}) {
         var _this_options_endpoints;
-        if (!((_this_options_endpoints = this.options.endpoints) === null || _this_options_endpoints === void 0 ? void 0 : _this_options_endpoints.end_session_endpoint)) {
+        if (!((_this_options_endpoints = this.options.endpoints) === null || _this_options_endpoints === undefined ? undefined : _this_options_endpoints.end_session_endpoint)) {
             await this.fetchFromIssuer();
         }
         const finalOptions = mergeObjects(this.options, options);
@@ -1259,7 +1357,7 @@ function _define_property(obj, key, value) {
    * @private
    */ async exchangeAuthorizationCode(options) {
         var _this_options_endpoints;
-        if (!((_this_options_endpoints = this.options.endpoints) === null || _this_options_endpoints === void 0 ? void 0 : _this_options_endpoints.token_endpoint)) {
+        if (!((_this_options_endpoints = this.options.endpoints) === null || _this_options_endpoints === undefined ? undefined : _this_options_endpoints.token_endpoint)) {
             await this.fetchFromIssuer();
         }
         const finalOptions = mergeObjects(this.options, options);
@@ -1267,13 +1365,13 @@ function _define_property(obj, key, value) {
         const mergedOptions = {
             ...rest,
             ...extraTokenParams || {},
-            grant_type: 'authorization_code'
+            grant_type: "authorization_code"
         };
         for (const req of [
-            'code',
-            'redirect_uri',
-            'code_verifier',
-            'client_id'
+            "code",
+            "redirect_uri",
+            "code_verifier",
+            "client_id"
         ]){
             if (!mergedOptions[req]) {
                 return Promise.reject(new Error(`"${req}" is required`));
@@ -1281,8 +1379,8 @@ function _define_property(obj, key, value) {
         }
         return this.http({
             url: `${this.options.endpoints.token_endpoint}`,
-            method: 'POST',
-            requestType: 'form',
+            method: "POST",
+            requestType: "form",
             body: mergedOptions,
             headers: extraTokenHeaders
         });
@@ -1293,20 +1391,20 @@ function _define_property(obj, key, value) {
    * @private
    */ async exchangeRefreshToken(options) {
         var _this_options_endpoints;
-        if (!((_this_options_endpoints = this.options.endpoints) === null || _this_options_endpoints === void 0 ? void 0 : _this_options_endpoints.token_endpoint)) {
+        if (!((_this_options_endpoints = this.options.endpoints) === null || _this_options_endpoints === undefined ? undefined : _this_options_endpoints.token_endpoint)) {
             await this.fetchFromIssuer();
         }
         const { extraTokenHeaders, extraTokenParams, ...rest } = options;
         const mergedOptions = {
-            grant_type: 'refresh_token',
+            grant_type: "refresh_token",
             client_id: this.options.client_id,
             client_secret: this.options.client_secret,
             ...rest,
             ...extraTokenParams || {}
         };
         for (const req of [
-            'refresh_token',
-            'client_id'
+            "refresh_token",
+            "client_id"
         ]){
             if (!mergedOptions[req]) {
                 return Promise.reject(new Error(`"${req}" is required`));
@@ -1314,8 +1412,8 @@ function _define_property(obj, key, value) {
         }
         return this.http({
             url: `${this.options.endpoints.token_endpoint}`,
-            method: 'POST',
-            requestType: 'form',
+            method: "POST",
+            requestType: "form",
             body: mergedOptions,
             headers: extraTokenHeaders
         });
@@ -1327,20 +1425,20 @@ function _define_property(obj, key, value) {
             const requestUrl = `${this.options.issuer}/.well-known/openid-configuration`;
             const response = await this.http({
                 url: requestUrl,
-                method: 'GET',
-                requestType: 'json'
+                method: "GET",
+                requestType: "json"
             });
             this.issuer_metadata = response;
             const endpoints = {};
             for (const prop of Object.keys(this.issuer_metadata)){
-                if (prop.endsWith('_endpoint') || prop.indexOf('_session') > -1 || prop.indexOf('_uri') > -1) {
+                if (prop.endsWith("_endpoint") || prop.indexOf("_session") > -1 || prop.indexOf("_uri") > -1) {
                     endpoints[prop] = this.issuer_metadata[prop];
                 }
             }
             this.options.endpoints = endpoints;
             return this.issuer_metadata;
         } catch (e) {
-            throw new OIDCClientError('Loading metadata failed', e.message);
+            throw new OIDCClientError("Loading metadata failed", e.message);
         }
     }
     /**
@@ -1355,12 +1453,11 @@ function _define_property(obj, key, value) {
                 redirect_uri: finalOptions.redirect_uri,
                 client_id: finalOptions.client_id,
                 code_verifier: localState.code_verifier,
-                grant_type: 'authorization_code',
+                grant_type: "authorization_code",
                 code: response.code
             });
-        } else {
-            return response;
         }
+        return response;
     }
     /**
    * Handle OAuth2 auth request result
@@ -1378,7 +1475,7 @@ function _define_property(obj, key, value) {
         if (tokenResult.id_token) {
             parsedIDToken = await validateIdToken(tokenResult.id_token, authParams.nonce, finalOptions);
             if (finalOptions.idTokenValidator && !await finalOptions.idTokenValidator(tokenResult.id_token)) {
-                return Promise.reject(new InvalidIdTokenError('Id Token validation failed'));
+                return Promise.reject(new InvalidIdTokenError("Id Token validation failed"));
             }
             Object.keys(parsedIDToken).forEach((key)=>{
                 if (!nonUserClaims.includes(key)) {
@@ -1388,7 +1485,7 @@ function _define_property(obj, key, value) {
         }
         if (tokenResult.access_token) {
             var _this_options_endpoints;
-            if (finalOptions.requestUserInfo && ((_this_options_endpoints = this.options.endpoints) === null || _this_options_endpoints === void 0 ? void 0 : _this_options_endpoints.userinfo_endpoint)) {
+            if (finalOptions.requestUserInfo && ((_this_options_endpoints = this.options.endpoints) === null || _this_options_endpoints === undefined ? undefined : _this_options_endpoints.userinfo_endpoint)) {
                 const userInfoResult = await this.fetchUserInfo(tokenResult.access_token);
                 if (!userInfoResult.error) {
                     user = {
@@ -1415,10 +1512,9 @@ function _define_property(obj, key, value) {
    */ async loadState(state) {
         const rawStoredState = await this.stateStore.get(state);
         if (!rawStoredState) {
-            return Promise.reject(new StateNotFound('Local state not found', state));
-        } else {
-            await this.stateStore.del(state);
+            return Promise.reject(new StateNotFound("Local state not found", state));
         }
+        await this.stateStore.del(state);
         return rawStoredState;
     }
     /**
@@ -1428,11 +1524,11 @@ function _define_property(obj, key, value) {
    * @private
    */ async fetchUserInfo(accessToken) {
         return this.http({
-            method: 'GET',
+            method: "GET",
             url: `${this.options.endpoints.userinfo_endpoint}`,
-            requestType: 'json',
+            requestType: "json",
             headers: {
-                'Authorization': `Bearer ${accessToken}`
+                Authorization: `Bearer ${accessToken}`
             }
         });
     }
@@ -1444,7 +1540,7 @@ function _define_property(obj, key, value) {
    * @param session_state string that represents the End-User's login state at the OP
    */ monitorSession({ sub, session_state }) {
         const { client_id, endpoints } = this.options;
-        if (!(endpoints === null || endpoints === void 0 ? void 0 : endpoints.check_session_iframe)) {
+        if (!(endpoints === null || endpoints === undefined ? undefined : endpoints.check_session_iframe)) {
             console.warn('"check_session_iframe" endpoint missing or session management is not supported by provider');
             return;
         }
@@ -1456,7 +1552,7 @@ function _define_property(obj, key, value) {
                     this.emit(Events.SESSION_CHANGE);
                     try {
                         await this.silentLogin({}, {});
-                        const storedAuth = await this.authStore.get('auth');
+                        const storedAuth = await this.authStore.get("auth");
                         if (storedAuth) {
                             var _storedAuth_user;
                             if (((_storedAuth_user = storedAuth.user) === null || _storedAuth_user === void 0 ? void 0 : _storedAuth_user.sub) === sub && storedAuth.session_state) {
@@ -1483,9 +1579,9 @@ function _define_property(obj, key, value) {
     async onUserLogin(authObj, isInternal = false) {
         var _window;
         const { expires_in, user, scope, access_token, id_token, refresh_token, session_state, id_token_raw } = authObj;
-        await this.authStore.set('auth', authObj);
+        await this.authStore.set("auth", authObj);
         this.user = user;
-        this.scopes = scope === null || scope === void 0 ? void 0 : scope.split(' ');
+        this.scopes = scope === null || scope === undefined ? undefined : scope.split(" ");
         this.accessToken = access_token;
         this.idToken = id_token;
         this.idTokenRaw = id_token_raw;
@@ -1493,7 +1589,7 @@ function _define_property(obj, key, value) {
         if (!isInternal) {
             this.emit(Events.USER_LOGIN, authObj);
         }
-        if (!((_window = window) === null || _window === void 0 ? void 0 : _window.frameElement)) {
+        if (!((_window = window) === null || _window === undefined ? undefined : _window.frameElement)) {
             if (this.options.checkSession) {
                 this.monitorSession({
                     sub: user.sub || user.id,
@@ -1503,7 +1599,7 @@ function _define_property(obj, key, value) {
             if (expires_in !== undefined && this.options.autoSilentRenew) {
                 const expiration = Number(expires_in) - this.options.secondsToRefreshAccessTokenBeforeExp;
                 const renew = ()=>{
-                    this.synchronizer.CallOnce('silent-login', async ()=>{
+                    this.synchronizer.CallOnce("silent-login", async ()=>{
                         try {
                             await this.silentLogin();
                             this.emit(Events.SILENT_RENEW_SUCCESS, null);
@@ -1523,23 +1619,7 @@ function _define_property(obj, key, value) {
         }
     }
     constructor(options){
-        super();
-        _define_property(this, "options", void 0);
-        _define_property(this, "user", void 0);
-        _define_property(this, "scopes", void 0);
-        _define_property(this, "accessToken", void 0);
-        _define_property(this, "refreshToken", void 0);
-        _define_property(this, "idToken", void 0);
-        _define_property(this, "idTokenRaw", void 0);
-        _define_property(this, "issuer_metadata", void 0);
-        _define_property(this, "http", void 0);
-        _define_property(this, "synchronizer", void 0);
-        _define_property(this, "stateStore", void 0);
-        _define_property(this, "authStore", void 0);
-        _define_property(this, "sessionCheckerFrame", void 0);
-        _define_property(this, "_accessTokenExpireTimer", void 0);
-        _define_property(this, "initialized", void 0);
-        _define_property(this, "__initializePromise", void 0);
+        super(), _define_property(this, "options", undefined), _define_property(this, "user", undefined), _define_property(this, "scopes", undefined), _define_property(this, "accessToken", undefined), _define_property(this, "refreshToken", undefined), _define_property(this, "idToken", undefined), _define_property(this, "idTokenRaw", undefined), _define_property(this, "issuer_metadata", undefined), _define_property(this, "http", undefined), _define_property(this, "synchronizer", undefined), _define_property(this, "stateStore", undefined), _define_property(this, "authStore", undefined), _define_property(this, "sessionCheckerFrame", undefined), _define_property(this, "_accessTokenExpireTimer", undefined), _define_property(this, "initialized", undefined), _define_property(this, "__initializePromise", undefined);
         if (!isValidIssuer(options.issuer)) {
             throw new OIDCClientError('"issuer" must be a valid uri.');
         }
@@ -1552,10 +1632,10 @@ function _define_property(obj, key, value) {
             nonceLength: 10
         }, options, {
             // remove last slash for consistency across the lib
-            issuer: options.issuer.endsWith('/') ? options.issuer.slice(0, -1) : options.issuer
+            issuer: options.issuer.endsWith("/") ? options.issuer.slice(0, -1) : options.issuer
         });
         this.http = this.options.httpClient || request;
-        this.stateStore = this.options.stateStore || new LocalStorageStateStore('pa_oidc.state.');
+        this.stateStore = this.options.stateStore || new LocalStorageStateStore("pa_oidc.state.");
         this.authStore = this.options.authStore || new InMemoryStateStore();
         if (this.options.autoSilentRenew) {
             this._accessTokenExpireTimer = new Timer();

@@ -11,24 +11,24 @@
 </template>
 
 <script>
-import AppSidebar from './components/AppSidebar.vue';
-import AppHeader from './components/AppHeader.vue';
+import AppHeader from "./components/AppHeader.vue"
+import AppSidebar from "./components/AppSidebar.vue"
 export default {
-  name: 'App',
-  components: {AppSidebar, AppHeader},
+  name: "App",
+  components: { AppSidebar, AppHeader },
   data() {
     return {
-      user: null
+      user: null,
     }
   },
   async beforeCreate() {
     this.user = await this.$auth.getUser()
   },
   mounted() {
-    this.$auth.on('user_login', ( { user })=>{
+    this.$auth.on("user_login", ({ user }) => {
       this.user = user
     })
-    this.$auth.on('silent_renew_error', console.error)
+    this.$auth.on("silent_renew_error", console.error)
   },
 }
 </script>

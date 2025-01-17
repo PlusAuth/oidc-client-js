@@ -1,75 +1,73 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import Home from './views/Home.vue'
-import AuthCallback from './views/AuthCallback.vue'
-import UserProfile from "@/views/UserProfile";
-import Secured from "@/views/Secured";
-import Public from "@/views/Public";
-import Unauthorized from "@/views/Unauthorized";
-import NotFound from "@/views/NotFound";
-import auth from "./auth";
+import NotFound from "@/views/NotFound"
+import Public from "@/views/Public"
+import Secured from "@/views/Secured"
+import Unauthorized from "@/views/Unauthorized"
+import UserProfile from "@/views/UserProfile"
+import Vue from "vue"
+import VueRouter from "vue-router"
+import auth from "./auth"
+import AuthCallback from "./views/AuthCallback.vue"
+import Home from "./views/Home.vue"
 
 Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/',
-    name: 'Home',
-    component: Home
+    path: "/",
+    name: "Home",
+    component: Home,
   },
   {
-    path: '/secured',
+    path: "/secured",
     meta: {
-      auth: 'secure'
+      auth: "secure",
     },
-    name: 'SecuredPage',
-    component: Secured
+    name: "SecuredPage",
+    component: Secured,
   },
   {
-    path: '/public',
-    name: 'PublicPage',
-    component: Public
+    path: "/public",
+    name: "PublicPage",
+    component: Public,
   },
   {
-    path: '/me',
-    name: 'UserProfile',
-    component: UserProfile
+    path: "/me",
+    name: "UserProfile",
+    component: UserProfile,
   },
   {
-    path: '/callback',
-    name: 'AuthCallback',
-    component: AuthCallback
+    path: "/callback",
+    name: "AuthCallback",
+    component: AuthCallback,
   },
   {
-    path: '/401',
-    name: 'Unauthorized',
-    component: Unauthorized
+    path: "/401",
+    name: "Unauthorized",
+    component: Unauthorized,
   },
   {
-    path: '*',
-    name: 'NotFound',
-    component: NotFound
-  }
+    path: "*",
+    name: "NotFound",
+    component: NotFound,
+  },
 ]
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: "history",
   base: process.env.BASE_URL,
   routes,
 })
 
-router.beforeEach( async (to, from, next) => {
-  if(to.meta.auth){
-    if (await auth.isLoggedIn(true)){
+router.beforeEach(async (to, from, next) => {
+  if (to.meta.auth) {
+    if (await auth.isLoggedIn(true)) {
       const scopes = await auth.getScopes()
-      if(scopes.includes(to.meta.auth)){
+      if (scopes.includes(to.meta.auth)) {
         return next()
-      }else{
-        return next({ name: 'Unauthorized'})
       }
-    }else {
-      return next({ name: 'Unauthorized'})
+      return next({ name: "Unauthorized" })
     }
+    return next({ name: "Unauthorized" })
   }
   return next()
 })

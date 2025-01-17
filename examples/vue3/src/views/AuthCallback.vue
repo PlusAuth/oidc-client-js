@@ -7,15 +7,15 @@ export default {
   async mounted() {
     try {
       const localState = await this.$auth.loginCallback(window.location.href)
-      if (localState && localState.location) {
+      if (localState?.location) {
         window.location.replace(localState.location)
       } else {
-        this.$router.replace('/')
+        this.$router.replace("/")
       }
     } catch (e) {
       console.error(e)
     }
-  }
+  },
 }
 </script>
 

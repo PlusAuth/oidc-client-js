@@ -1,3 +1,3 @@
-import { OIDCClient } from '../../..';
+import { OIDCClient } from "../../.."
 
-new OIDCClient({}).loginCallback();
+new OIDCClient({}).loginCallback()

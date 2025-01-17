@@ -1,99 +1,93 @@
-import {runPopup} from "../../src/utils/popup";
-import {OIDCClientError} from "../../src";
+import { OIDCClientError } from "../../src"
+import { runPopup } from "../../src/utils/popup"
 
-describe('runPopup', () => {
+describe("runPopup", () => {
   const TIMEOUT_ERROR = {
-    error: 'timeout',
-    error_description: 'Timeout',
-    message: 'Timeout'
-  };
+    error: "timeout",
+    error_description: "Timeout",
+    message: "Timeout",
+  }
 
-  const url = 'https://authorize.com';
+  const url = "https://authorize.com"
 
   const setup = (customMessage: any) => {
     const popup = {
       location: { href: url },
-      close: jest.fn()
-    };
+      close: jest.fn(),
+    }
 
     window.addEventListener = <any>jest.fn((message, callback) => {
-      expect(message).toBe('message');
-      callback(customMessage);
-    });
+      expect(message).toBe("message")
+      callback(customMessage)
+    })
 
-    return { popup, url };
-  };
+    return { popup, url }
+  }
 
-  describe('with invalid messages', () => {
-
+  describe("with invalid messages", () => {
     afterEach(() => {
       jest.clearAllTimers()
-      jest.useRealTimers();
-    });
-    ['', {}, { data: 'test' }, { data: { type: 'other-type' } }].forEach(
-      m => {
+      jest.useRealTimers()
+    })
+    ;["", {}, { data: "test" }, { data: { type: "other-type" } }].forEach((m) => {
+      it(`ignores invalid messages: ${JSON.stringify(m)}`, async () => {
+        const { popup, url } = setup(m)
+        /**
+         * We need to run the timers after we start `runPopup` to simulate
+         * the window event listener, but we also need to use `jest.useFakeTimers`
+         * to trigger the timeout. That's why we're using a real `setTimeout`,
+         * then using fake timers then rolling back to real timers
+         */
+        setTimeout(() => {
+          jest.runOnlyPendingTimers()
+        }, 10)
+        jest.useFakeTimers()
+        // @ts-ignore
+        await expect(runPopup(url, { popup })).rejects.toThrow(OIDCClientError)
+      })
+    })
+  })
 
-        it(`ignores invalid messages: ${JSON.stringify(m)}`, async () => {
-          const { popup, url } = setup(m);
-          /**
-           * We need to run the timers after we start `runPopup` to simulate
-           * the window event listener, but we also need to use `jest.useFakeTimers`
-           * to trigger the timeout. That's why we're using a real `setTimeout`,
-           * then using fake timers then rolling back to real timers
-           */
-          setTimeout(() => {
-            jest.runOnlyPendingTimers();
-          }, 10);
-          jest.useFakeTimers();
-          // @ts-ignore
-          await expect(runPopup(url, { popup })).rejects.toThrow(OIDCClientError);
-        });
-      }
-    );
-  });
-
-  it('returns authorization response message', async () => {
+  it("returns authorization response message", async () => {
     const message = {
       data: {
-        type: 'authorization_response',
-        response: { id_token: 'id_token' }
-      }
-    };
+        type: "authorization_response",
+        response: { id_token: "id_token" },
+      },
+    }
 
-    const { popup, url } = setup(message);
+    const { popup, url } = setup(message)
 
     // @ts-ignore
-    await expect(runPopup(url, { popup })).resolves.toMatchObject(
-      message.data
-    );
+    await expect(runPopup(url, { popup })).resolves.toMatchObject(message.data)
 
-    expect(popup.location.href).toBe(url);
-    expect(popup.close).toHaveBeenCalled();
-  });
+    expect(popup.location.href).toBe(url)
+    expect(popup.close).toHaveBeenCalled()
+  })
 
-  it('returns authorization error message', async () => {
+  it("returns authorization error message", async () => {
     const message = {
       data: {
-        type: 'authorization_response',
+        type: "authorization_response",
         response: {
-          error: 'error',
-          error_description: 'error_description'
-        }
-      }
-    };
+          error: "error",
+          error_description: "error_description",
+        },
+      },
+    }
 
-    const { popup, url } = setup(message);
+    const { popup, url } = setup(message)
 
     // @ts-ignore
-    await expect(runPopup(url, { popup })).rejects.toThrow(OIDCClientError);
+    await expect(runPopup(url, { popup })).rejects.toThrow(OIDCClientError)
 
-    expect(popup.location.href).toBe(url);
-    expect(popup.close).toHaveBeenCalled();
-  });
+    expect(popup.location.href).toBe(url)
+    expect(popup.close).toHaveBeenCalled()
+  })
 
-  it('times out after config.timeout', async () => {
-    const { popup, url } = setup('');
-    const seconds = 10;
+  it("times out after config.timeout", async () => {
+    const { popup, url } = setup("")
+    const seconds = 10
 
     /**
      * We need to run the timers after we start `runPopup`, but we also
@@ -102,23 +96,23 @@ describe('runPopup', () => {
      * then rolling back to real timers
      */
     setTimeout(() => {
-      jest.advanceTimersByTime(seconds * 1000);
-    }, 10);
+      jest.advanceTimersByTime(seconds * 1000)
+    }, 10)
 
-    jest.useFakeTimers();
+    jest.useFakeTimers()
 
     await expect(
       runPopup(url, {
         timeout: seconds,
         // @ts-ignore
-        popup
-      })
-    ).rejects.toThrow(OIDCClientError);
+        popup,
+      }),
+    ).rejects.toThrow(OIDCClientError)
 
-    jest.useRealTimers();
-  });
-  it('times out after DEFAULT_AUTHORIZE_TIMEOUT_IN_SECONDS if config is not defined', async () => {
-    const { popup, url } = setup('');
+    jest.useRealTimers()
+  })
+  it("times out after DEFAULT_AUTHORIZE_TIMEOUT_IN_SECONDS if config is not defined", async () => {
+    const { popup, url } = setup("")
 
     /**
      * We need to run the timers after we start `runPopup`, but we also
@@ -127,37 +121,35 @@ describe('runPopup', () => {
      * then rolling back to real timers
      */
     setTimeout(() => {
-      jest.advanceTimersByTime(60 * 1000);
-    }, 10);
+      jest.advanceTimersByTime(60 * 1000)
+    }, 10)
 
-    jest.useFakeTimers();
+    jest.useFakeTimers()
 
     // @ts-ignore
-    await expect(runPopup(url, { popup })).rejects.toThrow(OIDCClientError);
+    await expect(runPopup(url, { popup })).rejects.toThrow(OIDCClientError)
 
-    jest.useRealTimers();
-  });
+    jest.useRealTimers()
+  })
 
-  it('creates and uses a popup window if none was given', async () => {
+  it("creates and uses a popup window if none was given", async () => {
     const message = {
       data: {
-        type: 'authorization_response',
-        response: { id_token: 'id_token' }
-      }
-    };
+        type: "authorization_response",
+        response: { id_token: "id_token" },
+      },
+    }
 
-    const { popup, url } = setup(message);
-    const oldOpenFn = window.open;
+    const { popup, url } = setup(message)
+    const oldOpenFn = window.open
 
-    window.open = <any>jest.fn(() => popup);
+    window.open = <any>jest.fn(() => popup)
 
-    await expect(runPopup(url, {})).resolves.toMatchObject(
-      message.data
-    );
+    await expect(runPopup(url, {})).resolves.toMatchObject(message.data)
 
-    expect(popup.location.href).toBe(url);
-    expect(popup.close).toHaveBeenCalled();
+    expect(popup.location.href).toBe(url)
+    expect(popup.close).toHaveBeenCalled()
 
-    window.open = oldOpenFn;
-  });
-});
+    window.open = oldOpenFn
+  })
+})

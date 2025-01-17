@@ -1,0 +1,146 @@
+{
+  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "vcs": {
+    "enabled": true,
+    "defaultBranch": "main",
+    "useIgnoreFile": true,
+    "clientKind": "git"
+  },
+  "files": {
+    "ignoreUnknown": true,
+    "ignore": [
+      ".nx/",
+      "node_modules",
+      "**/*/node_modules",
+      "dist/",
+      "docs/",
+      "**/*/dist",
+      "*.timestamp-*",
+      "components.d.ts"
+    ]
+  },
+  "organizeImports": {
+    "enabled": true
+  },
+  "javascript": {
+    "formatter": {
+      "arrowParentheses": "always",
+      "bracketSameLine": false,
+      "bracketSpacing": true,
+      "jsxQuoteStyle": "double",
+      "quoteProperties": "asNeeded",
+      "semicolons": "asNeeded",
+      "trailingCommas": "all"
+    }
+  },
+  "formatter": {
+    "enabled": true,
+    "formatWithErrors": false,
+    "attributePosition": "multiline",
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100,
+    "lineEnding": "lf"
+  },
+  "linter": {
+    "enabled": true,
+    "ignore": ["*.d.ts"],
+    "rules": {
+      "a11y": {
+        "useKeyWithClickEvents": "off"
+      },
+      "recommended": true,
+      "performance": {
+        "noDelete": "off"
+      },
+      "correctness": {
+        "noUnknownFunction": {
+          "level": "off"
+        },
+        "noUnusedImports": {
+          "level": "error"
+        },
+        "noSwitchDeclarations": {
+          "level": "error",
+          "fix": "safe"
+        }
+      },
+      "complexity": {
+        "noBannedTypes": "off",
+        "noForEach": "off",
+        "useOptionalChain": {
+          "level": "error",
+          "fix": "safe"
+        },
+        "useLiteralKeys": {
+          "level": "info"
+        }
+      },
+      "style": {
+        "noArguments": "off",
+        "noNonNullAssertion": "off",
+        "noParameterAssign": "off",
+        "noUnusedTemplateLiteral": "off",
+        "noUselessElse": {
+          "level": "error",
+          "fix": "safe"
+        },
+        "useImportType": "error",
+        "useSingleVarDeclarator": {
+          "level": "error",
+          "fix": "safe"
+        },
+        "useNodejsImportProtocol": {
+          "level": "error",
+          "fix": "safe"
+        },
+        "useTemplate": {
+          "level": "error",
+          "fix": "safe"
+        }
+      },
+      "suspicious": {
+        "noAsyncPromiseExecutor": "off",
+        "noPrototypeBuiltins": "off",
+        "noAssignInExpressions": "off",
+        "noExplicitAny": "off",
+        "noConfusingVoidType": "off",
+        "noGlobalIsFinite": {
+          "level": "error",
+          "fix": "safe"
+        },
+        "noGlobalIsNan": {
+          "level": "error",
+          "fix": "safe"
+        },
+        "noImplicitAnyLet": "off"
+      }
+    }
+  },
+  "overrides": [
+    {
+      "include": ["test"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noImportAssign": "off"
+          }
+        }
+      }
+    },
+    {
+      "include": ["*.vue"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useImportType": "off",
+            "useConst": "off"
+          },
+          "correctness": {
+            "noUnusedImports": "off"
+          }
+        }
+      }
+    }
+  ]
+}
