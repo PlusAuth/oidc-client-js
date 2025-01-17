@@ -49,7 +49,7 @@ OpenID Connect (OIDC) and OAuth2 library for browser based JavaScript applicatio
 From the CDN:
 
 ```html
-<script src="https://unpkg.com/@plusauth/oidc-client-js@1.3.0/dist/oidc-client.min.js"></script>
+<script src="https://unpkg.com/@plusauth/oidc-client-js@1.5.0/dist/oidc-client.min.js"></script>
 ```
 
 Using package managers:
