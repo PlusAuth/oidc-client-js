@@ -1,7 +1,6 @@
 import { InvalidIdTokenError, InvalidJWTError, OIDCClientError } from "../errors"
 import type { IPlusAuthClientOptions, JWTValidationOptions, ParsedJWT } from "../interfaces"
-
-import { urlSafe } from "./url"
+import { sha256 } from "./crypto"
 
 const CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 
@@ -33,22 +32,11 @@ export function generateRandom(length: number) {
   return out
 }
 
-export function deriveChallenge(code: string): Promise<string> {
+export async function deriveChallenge(code: string): Promise<string> {
   if (code.length < 43 || code.length > 128) {
     return Promise.reject(new OIDCClientError(`Invalid code length: ${code.length}`))
   }
-
-  return new Promise((resolve, reject) => {
-    crypto.subtle.digest("SHA-256", new TextEncoder().encode(code)).then(
-      (buffer) => {
-        return resolve(urlSafe(new Uint8Array(buffer)))
-      },
-      (error) => {
-        /* istanbul ignore next */
-        return reject(error)
-      },
-    )
-  })
+  return await sha256(code)
 }
 // https://datatracker.ietf.org/doc/html/rfc4648#section-5
 export const urlDecodeB64 = (input: string) =>

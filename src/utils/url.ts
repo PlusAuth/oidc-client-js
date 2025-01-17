@@ -43,7 +43,7 @@ export function parseQueryUrl(value: string) {
   return result
 }
 
-export function urlSafe(buffer: Uint8Array): string {
-  const encoded = fromByteArray(new Uint8Array(buffer))
+export function urlSafe(data: Uint8Array | string): string {
+  const encoded = typeof data === "string" ? data : fromByteArray(new Uint8Array(data))
   return encoded.replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "")
 }
