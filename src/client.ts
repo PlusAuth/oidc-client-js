@@ -733,7 +733,7 @@ export class OIDCClient extends EventEmitter<EventTypes> {
       ...tokenResult,
       id_token: parsedIDToken,
       id_token_raw: tokenResult.id_token,
-      scope: tokenResult.scope || authParams.scope,
+      scope: tokenResult.scope !== undefined ? tokenResult.scope : authParams.scope,
     }
   }
 
