@@ -1,5 +1,5 @@
 /*!
- * @plusauth/oidc-client-js v1.5.0
+ * @plusauth/oidc-client-js v1.6.0
  * https://github.com/PlusAuth/oidc-client-js
  * (c) 2025 @plusauth/oidc-client-js Contributors
  * Released under the MIT License
@@ -27,7 +27,7 @@ function _define_property$6(obj, key, value) {
 }
 class OIDCClientError extends Error {
     constructor(error, error_description){
-        super(`${error}${error_description && ` - ${error_description}` || ""}`), _define_property$6(this, "error", undefined), _define_property$6(this, "error_description", undefined);
+        super(`${error}${error_description && ` - ${error_description}` || ""}`), _define_property$6(this, "error", void 0), _define_property$6(this, "error_description", void 0);
         this.name = "OIDCClientError";
         this.error = error;
         this.error_description = error_description;
@@ -35,7 +35,7 @@ class OIDCClientError extends Error {
 }
 class AuthenticationError extends OIDCClientError {
     constructor(error, error_description, state, error_uri){
-        super(error, error_description), _define_property$6(this, "state", undefined), _define_property$6(this, "error_uri", undefined);
+        super(error, error_description), _define_property$6(this, "state", void 0), _define_property$6(this, "error_uri", void 0);
         this.name = "AuthenticationError";
         this.state = state;
         this.error_uri = error_uri;
@@ -43,7 +43,7 @@ class AuthenticationError extends OIDCClientError {
 }
 class StateNotFound extends AuthenticationError {
     constructor(error, state){
-        super(error), _define_property$6(this, "state", undefined);
+        super(error), _define_property$6(this, "state", void 0);
         this.name = "StateNotFound";
         this.state = state;
     }
@@ -84,7 +84,7 @@ function _define_property$5(obj, key, value) {
 // biome-ignore  lint/suspicious/noUnsafeDeclarationMerging:
 class StateStore {
     constructor(prefix = ""){
-        _define_property$5(this, "prefix", undefined);
+        _define_property$5(this, "prefix", void 0);
         this.prefix = prefix;
     }
 }
@@ -119,7 +119,7 @@ class LocalStorageStateStore extends StateStore {
             for(i = 0; i < window.localStorage.length; i++){
                 const key = window.localStorage.key(i);
                 // items only created by oidc client
-                if ((key === null || key === undefined ? undefined : key.substring(0, this.prefix.length)) === this.prefix) {
+                if ((key === null || key === void 0 ? void 0 : key.substring(0, this.prefix.length)) === this.prefix) {
                     storedKeys.push(key);
                 }
             }
@@ -250,7 +250,7 @@ class EventEmitter {
         return this;
     }
     constructor(){
-        _define_property$3(this, "callbacks", undefined);
+        _define_property$3(this, "callbacks", void 0);
         this.callbacks = {};
     }
 }
@@ -298,9 +298,9 @@ class Timer {
         }
     }
     constructor(currentTimeInMillisFunc = ()=>Date.now()){
-        _define_property$2(this, "now", undefined);
-        _define_property$2(this, "_timerHandle", undefined);
-        _define_property$2(this, "_expiration", undefined);
+        _define_property$2(this, "now", void 0);
+        _define_property$2(this, "_timerHandle", void 0);
+        _define_property$2(this, "_expiration", void 0);
         this.now = currentTimeInMillisFunc;
     }
 }
@@ -751,7 +751,7 @@ function validateJwt(jwt, options, isIdToken = false) {
     if (!clockSkew) {
         clockSkew = 0;
     }
-    const now = ((currentTimeInMillis === null || currentTimeInMillis === undefined ? undefined : currentTimeInMillis()) || Date.now()) / 1000;
+    const now = ((currentTimeInMillis === null || currentTimeInMillis === void 0 ? void 0 : currentTimeInMillis()) || Date.now()) / 1000;
     const payload = parseJwt(jwt).payload;
     if (!payload.iss) {
         throw new InvalidJWTError("Issuer (iss) was not provided");
@@ -1043,8 +1043,8 @@ class TabUtils {
         });
     }
     constructor(kid, fallbackEvents){
-        _define_property$1(this, "keyPrefix", undefined);
-        _define_property$1(this, "events", undefined);
+        _define_property$1(this, "keyPrefix", void 0);
+        _define_property$1(this, "events", void 0);
         this.keyPrefix = kid;
         this.events = fallbackEvents;
     }
@@ -1166,7 +1166,7 @@ function _define_property(obj, key, value) {
    * @param url Full url which contains authorization request result parameters. Defaults to `window.location.href`
    */ async loginCallback(url = (()=>{
         var _window_location, _window;
-        return (_window = window) === null || _window === undefined ? undefined : (_window_location = _window.location) === null || _window_location === undefined ? undefined : _window_location.href;
+        return (_window = window) === null || _window === void 0 ? void 0 : (_window_location = _window.location) === null || _window_location === void 0 ? void 0 : _window_location.href;
     })()) {
         if (!url) {
             return Promise.reject(new OIDCClientError("Url must be passed to handle login redirect"));
@@ -1184,7 +1184,7 @@ function _define_property(obj, key, value) {
         switch(request_type){
             case "s":
                 var _window;
-                if ((_window = window) === null || _window === undefined ? undefined : _window.frameElement) {
+                if ((_window = window) === null || _window === void 0 ? void 0 : _window.frameElement) {
                     if (url) {
                         window.parent.postMessage({
                             type: "authorization_response",
@@ -1223,7 +1223,7 @@ function _define_property(obj, key, value) {
    */ async logout(options = {}) {
         if (!options.localOnly) {
             const storedAuth = await this.authStore.get("auth");
-            const id_token_hint = options.id_token_hint || (storedAuth === null || storedAuth === undefined ? undefined : storedAuth.id_token_raw);
+            const id_token_hint = options.id_token_hint || (storedAuth === null || storedAuth === void 0 ? void 0 : storedAuth.id_token_raw);
             window.location.assign(await this.createLogoutRequest({
                 ...options,
                 id_token_hint
@@ -1275,8 +1275,8 @@ function _define_property(obj, key, value) {
         if (finalOptions.silent_redirect_uri) {
             finalOptions.redirect_uri = finalOptions.silent_redirect_uri;
         }
-        if (this.options.useRefreshToken && (storedAuth === null || storedAuth === undefined ? undefined : storedAuth.refresh_token)) {
-            finalState.authParams = mergeObjects((storedAuth === null || storedAuth === undefined ? undefined : storedAuth.authParams) || {}, finalState.authParams || {});
+        if (this.options.useRefreshToken && (storedAuth === null || storedAuth === void 0 ? void 0 : storedAuth.refresh_token)) {
+            finalState.authParams = mergeObjects((storedAuth === null || storedAuth === void 0 ? void 0 : storedAuth.authParams) || {}, finalState.authParams || {});
             tokenResult = await this.exchangeRefreshToken({
                 ...finalOptions,
                 refresh_token: storedAuth.refresh_token
@@ -1303,43 +1303,43 @@ function _define_property(obj, key, value) {
    * Retrieve logged in user's access token if it exists.
    */ async getAccessToken() {
         var _this;
-        return (_this = await this.authStore.get("auth")) === null || _this === undefined ? undefined : _this.access_token;
+        return (_this = await this.authStore.get("auth")) === null || _this === void 0 ? void 0 : _this.access_token;
     }
     /**
    * Retrieve logged in user's refresh token if it exists.
    */ async getRefreshToken() {
         var _this;
-        return (_this = await this.authStore.get("auth")) === null || _this === undefined ? undefined : _this.refresh_token;
+        return (_this = await this.authStore.get("auth")) === null || _this === void 0 ? void 0 : _this.refresh_token;
     }
     /**
    * Retrieve logged in user's parsed id token if it exists.
    */ async getIdToken() {
         var _this;
-        return (_this = await this.authStore.get("auth")) === null || _this === undefined ? undefined : _this.id_token;
+        return (_this = await this.authStore.get("auth")) === null || _this === void 0 ? void 0 : _this.id_token;
     }
     /**
    * Retrieve access token's expiration.
    */ async getExpiresIn() {
         var _this;
-        return (_this = await this.authStore.get("auth")) === null || _this === undefined ? undefined : _this.expires_in;
+        return (_this = await this.authStore.get("auth")) === null || _this === void 0 ? void 0 : _this.expires_in;
     }
     /**
    * Retrieve logged in user's id token in raw format if it exists.
    */ async getIdTokenRaw() {
         var _this;
-        return (_this = await this.authStore.get("auth")) === null || _this === undefined ? undefined : _this.id_token_raw;
+        return (_this = await this.authStore.get("auth")) === null || _this === void 0 ? void 0 : _this.id_token_raw;
     }
     /**
    * Retrieve logged in user's scopes if it exists.
    */ async getScopes() {
         var _scope, _this;
-        return (_this = await this.authStore.get("auth")) === null || _this === undefined ? undefined : (_scope = _this.scope) === null || _scope === undefined ? undefined : _scope.split(" ");
+        return (_this = await this.authStore.get("auth")) === null || _this === void 0 ? void 0 : (_scope = _this.scope) === null || _scope === void 0 ? void 0 : _scope.split(" ").filter(Boolean);
     }
     /**
    * Retrieve logged in user's profile.
    */ async getUser() {
         var _this;
-        return (_this = await this.authStore.get("auth")) === null || _this === undefined ? undefined : _this.user;
+        return (_this = await this.authStore.get("auth")) === null || _this === void 0 ? void 0 : _this.user;
     }
     /**
    * If there is a user stored locally return true. Otherwise it will make a silentLogin to check if End-User is
@@ -1366,7 +1366,7 @@ function _define_property(obj, key, value) {
    * @private
    */ async createAuthRequest(options = {}, localState = {}) {
         var _this_options_endpoints, _this_options_currentTimeInMillis, _this_options;
-        if (!((_this_options_endpoints = this.options.endpoints) === null || _this_options_endpoints === undefined ? undefined : _this_options_endpoints.authorization_endpoint)) {
+        if (!((_this_options_endpoints = this.options.endpoints) === null || _this_options_endpoints === void 0 ? void 0 : _this_options_endpoints.authorization_endpoint)) {
             await this.initialize(false);
         }
         // TODO: deep merge for extra params
@@ -1400,7 +1400,7 @@ function _define_property(obj, key, value) {
             authParams.code_challenge = await deriveChallenge(localState.code_verifier);
             authParams.code_challenge_method = finalOptions.code_challenge_method || "S256";
         }
-        const now = ((_this_options_currentTimeInMillis = (_this_options = this.options).currentTimeInMillis) === null || _this_options_currentTimeInMillis === undefined ? undefined : _this_options_currentTimeInMillis.call(_this_options)) || Date.now();
+        const now = ((_this_options_currentTimeInMillis = (_this_options = this.options).currentTimeInMillis) === null || _this_options_currentTimeInMillis === void 0 ? void 0 : _this_options_currentTimeInMillis.call(_this_options)) || Date.now();
         const fragment = finalOptions.fragment ? `#${finalOptions.fragment}` : "";
         const authParamsString = buildEncodedQueryString(authParams);
         const url = `${this.options.endpoints.authorization_endpoint}${authParamsString}${fragment}`;
@@ -1421,7 +1421,7 @@ function _define_property(obj, key, value) {
    * @private
    */ async createLogoutRequest(options = {}) {
         var _this_options_endpoints;
-        if (!((_this_options_endpoints = this.options.endpoints) === null || _this_options_endpoints === undefined ? undefined : _this_options_endpoints.end_session_endpoint)) {
+        if (!((_this_options_endpoints = this.options.endpoints) === null || _this_options_endpoints === void 0 ? void 0 : _this_options_endpoints.end_session_endpoint)) {
             await this.fetchFromIssuer();
         }
         const finalOptions = mergeObjects(this.options, options);
@@ -1438,7 +1438,7 @@ function _define_property(obj, key, value) {
    * @private
    */ async exchangeAuthorizationCode(options) {
         var _this_options_endpoints;
-        if (!((_this_options_endpoints = this.options.endpoints) === null || _this_options_endpoints === undefined ? undefined : _this_options_endpoints.token_endpoint)) {
+        if (!((_this_options_endpoints = this.options.endpoints) === null || _this_options_endpoints === void 0 ? void 0 : _this_options_endpoints.token_endpoint)) {
             await this.fetchFromIssuer();
         }
         const finalOptions = mergeObjects(this.options, options);
@@ -1472,7 +1472,7 @@ function _define_property(obj, key, value) {
    * @private
    */ async exchangeRefreshToken(options) {
         var _this_options_endpoints;
-        if (!((_this_options_endpoints = this.options.endpoints) === null || _this_options_endpoints === undefined ? undefined : _this_options_endpoints.token_endpoint)) {
+        if (!((_this_options_endpoints = this.options.endpoints) === null || _this_options_endpoints === void 0 ? void 0 : _this_options_endpoints.token_endpoint)) {
             await this.fetchFromIssuer();
         }
         const { extraTokenHeaders, extraTokenParams, ...rest } = options;
@@ -1566,7 +1566,7 @@ function _define_property(obj, key, value) {
         }
         if (tokenResult.access_token) {
             var _this_options_endpoints;
-            if (finalOptions.requestUserInfo && ((_this_options_endpoints = this.options.endpoints) === null || _this_options_endpoints === undefined ? undefined : _this_options_endpoints.userinfo_endpoint)) {
+            if (finalOptions.requestUserInfo && ((_this_options_endpoints = this.options.endpoints) === null || _this_options_endpoints === void 0 ? void 0 : _this_options_endpoints.userinfo_endpoint)) {
                 const userInfoResult = await this.fetchUserInfo(tokenResult.access_token);
                 if (!userInfoResult.error) {
                     user = {
@@ -1582,7 +1582,7 @@ function _define_property(obj, key, value) {
             ...tokenResult,
             id_token: parsedIDToken,
             id_token_raw: tokenResult.id_token,
-            scope: tokenResult.scope || authParams.scope
+            scope: tokenResult.scope !== undefined ? tokenResult.scope : authParams.scope
         };
     }
     /**
@@ -1621,7 +1621,7 @@ function _define_property(obj, key, value) {
    * @param session_state string that represents the End-User's login state at the OP
    */ monitorSession({ sub, session_state }) {
         const { client_id, endpoints } = this.options;
-        if (!(endpoints === null || endpoints === undefined ? undefined : endpoints.check_session_iframe)) {
+        if (!(endpoints === null || endpoints === void 0 ? void 0 : endpoints.check_session_iframe)) {
             console.warn('"check_session_iframe" endpoint missing or session management is not supported by provider');
             return;
         }
@@ -1662,7 +1662,7 @@ function _define_property(obj, key, value) {
         const { expires_in, user, scope, access_token, id_token, refresh_token, session_state, id_token_raw } = authObj;
         await this.authStore.set("auth", authObj);
         this.user = user;
-        this.scopes = scope === null || scope === undefined ? undefined : scope.split(" ");
+        this.scopes = scope === null || scope === void 0 ? void 0 : scope.split(" ").filter(Boolean);
         this.accessToken = access_token;
         this.idToken = id_token;
         this.idTokenRaw = id_token_raw;
@@ -1670,7 +1670,7 @@ function _define_property(obj, key, value) {
         if (!isInternal) {
             this.emit(Events.USER_LOGIN, authObj);
         }
-        if (!((_window = window) === null || _window === undefined ? undefined : _window.frameElement)) {
+        if (!((_window = window) === null || _window === void 0 ? void 0 : _window.frameElement)) {
             if (this.options.checkSession) {
                 this.monitorSession({
                     sub: user.sub || user.id,
@@ -1700,7 +1700,7 @@ function _define_property(obj, key, value) {
         }
     }
     constructor(options){
-        super(), _define_property(this, "options", undefined), _define_property(this, "user", undefined), _define_property(this, "scopes", undefined), _define_property(this, "accessToken", undefined), _define_property(this, "refreshToken", undefined), _define_property(this, "idToken", undefined), _define_property(this, "idTokenRaw", undefined), _define_property(this, "issuer_metadata", undefined), _define_property(this, "http", undefined), _define_property(this, "synchronizer", undefined), _define_property(this, "stateStore", undefined), _define_property(this, "authStore", undefined), _define_property(this, "sessionCheckerFrame", undefined), _define_property(this, "_accessTokenExpireTimer", undefined), _define_property(this, "initialized", undefined), _define_property(this, "__initializePromise", undefined);
+        super(), _define_property(this, "options", void 0), _define_property(this, "user", void 0), _define_property(this, "scopes", void 0), _define_property(this, "accessToken", void 0), _define_property(this, "refreshToken", void 0), _define_property(this, "idToken", void 0), _define_property(this, "idTokenRaw", void 0), _define_property(this, "issuer_metadata", void 0), _define_property(this, "http", void 0), _define_property(this, "synchronizer", void 0), _define_property(this, "stateStore", void 0), _define_property(this, "authStore", void 0), _define_property(this, "sessionCheckerFrame", void 0), _define_property(this, "_accessTokenExpireTimer", void 0), _define_property(this, "initialized", void 0), _define_property(this, "__initializePromise", void 0);
         if (!isValidIssuer(options.issuer)) {
             throw new OIDCClientError('"issuer" must be a valid uri.');
         }

@@ -1,5 +1,17 @@
 # Changelog
 
+# [1.6.0](https://github.com/PlusAuth/oidc-client-js/compare/v1.5.0...v1.6.0) (2025-04-03)
+
+
+### Bug Fixes
+
+* scopes method returns requested scopes if the AS returns empty scope ([8a2deb1](https://github.com/PlusAuth/oidc-client-js/commit/8a2deb1c4fa6a1eaf8e57653d29f3229ad44ad4a))
+
+
+### Features
+
+* filter empty strings from scopes ([807d28d](https://github.com/PlusAuth/oidc-client-js/commit/807d28dd7eadb55be01571b51cbe0c0324d6995d))
+
 # [1.5.0](https://github.com/PlusAuth/oidc-client-js/compare/v1.4.2...v1.5.0) (2025-01-17)
 
 
