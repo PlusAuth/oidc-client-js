@@ -447,7 +447,7 @@ export class OIDCClient extends EventEmitter<EventTypes> {
    * Retrieve logged in user's scopes if it exists.
    */
   async getScopes() {
-    return (await this.authStore.get("auth"))?.scope?.split(" ")
+    return (await this.authStore.get("auth"))?.scope?.split(" ").filter(Boolean)
   }
 
   /**
@@ -833,7 +833,7 @@ export class OIDCClient extends EventEmitter<EventTypes> {
     await this.authStore.set("auth", authObj)
 
     this.user = user
-    this.scopes = scope?.split(" ")
+    this.scopes = scope?.split(" ").filter(Boolean)
     this.accessToken = access_token
     this.idToken = id_token
     this.idTokenRaw = id_token_raw
