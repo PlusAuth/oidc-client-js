@@ -1166,7 +1166,7 @@ describe("oidc client", () => {
         expect(e.message).toBe("Url must be passed to handle login redirect")
         done()
       })
-      window.location = oldWindow
+      window.location = oldWindow as any
     })
     it("should fail if wrong url is passed", (done) => {
       const oidc = new OIDCClient(dummyOpts)
@@ -1400,7 +1400,7 @@ describe("oidc client", () => {
       jest.spyOn(window.location, "assign")
     })
     afterEach(() => {
-      window.location = oldLocation
+      window.location = oldLocation as any
     })
 
     it("should redirect window to logout uri", (done) => {
