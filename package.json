@@ -10,16 +10,8 @@
   "types": "./dist/types.d.ts",
   "jsdelivr": "./dist/oidc-client.min.js",
   "unpkg": "./dist/oidc-client.min.js",
-  "files": [
-    "dist"
-  ],
-  "keywords": [
-    "openid-connect",
-    "oidc",
-    "oidc client",
-    "oauth2",
-    "plusauth"
-  ],
+  "files": ["dist"],
+  "keywords": ["openid-connect", "oidc", "oidc client", "oauth2", "plusauth"],
   "repository": {
     "type": "git",
     "url": "https://github.com/PlusAuth/oidc-client-js"
@@ -74,9 +66,7 @@
     "whatwg-fetch": "^3.6.20"
   },
   "commitlint": {
-    "extends": [
-      "@commitlint/config-conventional"
-    ],
+    "extends": ["@commitlint/config-conventional"],
     "rules": {
       "type-enum": [
         2,
@@ -96,14 +86,8 @@
           "types"
         ]
       ],
-      "header-max-length": [
-        0,
-        "always",
-        100
-      ],
-      "scope-case": [
-        0
-      ]
+      "header-max-length": [0, "always", 100],
+      "scope-case": [0]
     }
   },
   "lint-staged": {
