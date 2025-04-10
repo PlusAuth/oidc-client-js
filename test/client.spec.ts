@@ -545,6 +545,8 @@ describe("oidc client", () => {
     it("should include passed options in request", (done) => {
       const authParams: Record<string, string> = {
         acr_values: "test",
+        state: "state",
+        nonce: "nonce",
         audience: "test",
         claims_locales: "test",
         client_id: "test",

@@ -496,7 +496,7 @@ export class OIDCClient extends EventEmitter<EventTypes> {
 
     const authParams = {
       client_id: finalOptions.client_id,
-      state: generateRandom(finalOptions.stateLength!),
+      state: finalOptions.state || generateRandom(finalOptions.stateLength!),
       scope: finalOptions.scope,
       audience: finalOptions.audience,
       redirect_uri: finalOptions.redirect_uri,
@@ -508,6 +508,7 @@ export class OIDCClient extends EventEmitter<EventTypes> {
       claims: finalOptions.claims,
       claims_locales: finalOptions.claims_locales,
       acr_values: finalOptions.acr_values,
+      nonce: finalOptions.nonce,
       registration: finalOptions.registration,
       login_hint: finalOptions.login_hint,
       id_token_hint: finalOptions.id_token_hint,
@@ -517,8 +518,9 @@ export class OIDCClient extends EventEmitter<EventTypes> {
     } as AuthRequestOptions
 
     if (
-      isResponseType("id_token", authParams.response_type) ||
-      isScopeIncluded("openid", authParams.scope)
+      !authParams.nonce &&
+      (isResponseType("id_token", authParams.response_type) ||
+        isScopeIncluded("openid", authParams.scope))
     ) {
       authParams.nonce = generateRandom(finalOptions.nonceLength!)
     }
