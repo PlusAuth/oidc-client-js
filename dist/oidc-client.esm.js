@@ -1,5 +1,5 @@
 /*!
- * @plusauth/oidc-client-js v1.6.0
+ * @plusauth/oidc-client-js v1.7.0
  * https://github.com/PlusAuth/oidc-client-js
  * (c) 2025 @plusauth/oidc-client-js Contributors
  * Released under the MIT License
@@ -1374,7 +1374,7 @@ function _define_property(obj, key, value) {
         localState.code_verifier = generateRandom(72);
         const authParams = {
             client_id: finalOptions.client_id,
-            state: generateRandom(finalOptions.stateLength),
+            state: finalOptions.state || generateRandom(finalOptions.stateLength),
             scope: finalOptions.scope,
             audience: finalOptions.audience,
             redirect_uri: finalOptions.redirect_uri,
@@ -1386,6 +1386,7 @@ function _define_property(obj, key, value) {
             claims: finalOptions.claims,
             claims_locales: finalOptions.claims_locales,
             acr_values: finalOptions.acr_values,
+            nonce: finalOptions.nonce,
             registration: finalOptions.registration,
             login_hint: finalOptions.login_hint,
             id_token_hint: finalOptions.id_token_hint,
@@ -1393,7 +1394,7 @@ function _define_property(obj, key, value) {
             web_message_target: finalOptions.web_message_target,
             ...finalOptions.extraParams && finalOptions.extraParams
         };
-        if (isResponseType("id_token", authParams.response_type) || isScopeIncluded("openid", authParams.scope)) {
+        if (!authParams.nonce && (isResponseType("id_token", authParams.response_type) || isScopeIncluded("openid", authParams.scope))) {
             authParams.nonce = generateRandom(finalOptions.nonceLength);
         }
         if (isResponseType("code", authParams.response_type)) {

@@ -1,5 +1,12 @@
 # Changelog
 
+# [1.7.0](https://github.com/PlusAuth/oidc-client-js/compare/v1.6.0...v1.7.0) (2025-04-10)
+
+
+### Features
+
+* allow user provided state and nonce values ([362df49](https://github.com/PlusAuth/oidc-client-js/commit/362df495914e39c8b3a1c0ecad16561ce659752d)), closes [#21](https://github.com/PlusAuth/oidc-client-js/issues/21)
+
 # [1.6.0](https://github.com/PlusAuth/oidc-client-js/compare/v1.5.0...v1.6.0) (2025-04-03)
 
 
