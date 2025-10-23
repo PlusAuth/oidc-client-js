@@ -36,20 +36,18 @@ export function runPopup(url: string, options: PopupOptions) {
       window.removeEventListener("message", messageListener)
     }
 
-    timeoutId = setTimeout(
-      () => {
-        clearHandlers()
-        reject(new OIDCClientError("Timed out"))
-      },
-      options.timeout || 60 * 1000,
-    )
+    const timeoutMs = (options.timeout || 60) * 1000
+    timeoutId = setTimeout(() => {
+      clearHandlers()
+      reject(new OIDCClientError("Timed out"))
+    }, timeoutMs)
 
     closeId = setInterval(() => {
       if (popup!.closed) {
         clearHandlers()
         reject(new InteractionCancelled("user closed popup"))
       }
-    }, 300)
+    }, timeoutMs)
 
     window.addEventListener("message", messageListener)
 

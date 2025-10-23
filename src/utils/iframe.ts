@@ -18,15 +18,13 @@ export function createHiddenFrame() {
 export function runIframe(url: string, options: IFrameOptions) {
   return new Promise<any>((resolve, reject) => {
     let onLoadTimeoutId: any = null
+    const timeoutMs = (options.timeout || 10) * 1000
     const iframe = createHiddenFrame()
 
-    const timeoutSetTimeoutId = setTimeout(
-      () => {
-        reject(new OIDCClientError("Timed out"))
-        removeIframe()
-      },
-      (options.timeout || 10) * 1000,
-    )
+    const timeoutSetTimeoutId = setTimeout(() => {
+      reject(new OIDCClientError("Timed out"))
+      removeIframe()
+    }, timeoutMs)
 
     const iframeEventHandler = (e: MessageEvent) => {
       if (e.origin !== options.eventOrigin) return
@@ -60,7 +58,7 @@ export function runIframe(url: string, options: IFrameOptions) {
       setTimeout(() => {
         reject(new OIDCClientError("Could not complete silent authentication", url))
         removeIframe()
-      }, 300)
+      }, timeoutMs)
 
     window.addEventListener("message", iframeEventHandler, false)
     window.document.body.appendChild(iframe)
