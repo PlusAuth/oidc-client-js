@@ -1,5 +1,5 @@
 /*!
- * @plusauth/oidc-client-js v1.7.0
+ * @plusauth/oidc-client-js v1.7.1
  * https://github.com/PlusAuth/oidc-client-js
  * (c) 2025 @plusauth/oidc-client-js Contributors
  * Released under the MIT License
@@ -319,11 +319,12 @@ function createHiddenFrame() {
 function runIframe(url, options) {
     return new Promise((resolve, reject)=>{
         let onLoadTimeoutId = null;
+        const timeoutMs = (options.timeout || 10) * 1000;
         const iframe = createHiddenFrame();
         const timeoutSetTimeoutId = setTimeout(()=>{
             reject(new OIDCClientError("Timed out"));
             removeIframe();
-        }, (options.timeout || 10) * 1000);
+        }, timeoutMs);
         const iframeEventHandler = (e)=>{
             if (e.origin !== options.eventOrigin) return;
             if (!e.data || e.data.type !== "authorization_response") return;
@@ -348,7 +349,7 @@ function runIframe(url, options) {
         const onLoadTimeout = ()=>setTimeout(()=>{
                 reject(new OIDCClientError("Could not complete silent authentication", url));
                 removeIframe();
-            }, 300);
+            }, timeoutMs);
         window.addEventListener("message", iframeEventHandler, false);
         window.document.body.appendChild(iframe);
         iframe.setAttribute("src", url);
@@ -940,16 +941,17 @@ function runPopup(url, options) {
             clearTimeout(timeoutId);
             window.removeEventListener("message", messageListener);
         }
+        const timeoutMs = (options.timeout || 60) * 1000;
         timeoutId = setTimeout(()=>{
             clearHandlers();
             reject(new OIDCClientError("Timed out"));
-        }, options.timeout || 60 * 1000);
+        }, timeoutMs);
         closeId = setInterval(()=>{
             if (popup.closed) {
                 clearHandlers();
                 reject(new InteractionCancelled("user closed popup"));
             }
-        }, 300);
+        }, timeoutMs);
         window.addEventListener("message", messageListener);
         function messageListener(e) {
             if (!e.data || e.data.type !== "authorization_response") return;

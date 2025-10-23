@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.1](https://github.com/PlusAuth/oidc-client-js/compare/v1.7.0...v1.7.1) (2025-10-23)
+
+
+### Bug Fixes
+
+* iframe timeout is not applied to load timer ([d6a7df6](https://github.com/PlusAuth/oidc-client-js/commit/d6a7df65085c3f15d5ff978ce10a98ebad509c26))
+
 # [1.7.0](https://github.com/PlusAuth/oidc-client-js/compare/v1.6.0...v1.7.0) (2025-04-10)
 
 
