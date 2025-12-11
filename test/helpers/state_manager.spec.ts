@@ -53,7 +53,6 @@ describe("state manager", () => {
           expect(window.localStorage.length).toBe(5)
           for (let i = 0; i < window.localStorage.length; i++) {
             const key = window.localStorage.key(i)
-            // @ts-expect-error
             const storedObj = JSON.parse(window.localStorage.getItem(key))
             if (storedObj.created_at) {
               expect(storedObj.created_at).toBeGreaterThanOrEqual(7000)
@@ -110,6 +109,7 @@ describe("state manager", () => {
       Promise.all(objects.map((obj, ind) => inMemory.set(String(ind), obj))).then(() => {
         inMemory.clear(7000).then(() => {
           expect(inMemory.map.size).toBe(5)
+          // @ts-expect-error
           for (const key of inMemory.map.keys()) {
             const storedObj = inMemory.map.get(key)
             if (storedObj.created_at) {
