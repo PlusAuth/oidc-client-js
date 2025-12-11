@@ -1,7 +1,7 @@
 export interface StateStore<T = Record<string, any>> {
   init?(): Promise<StateStore<T>>
 }
-// biome-ignore  lint/suspicious/noUnsafeDeclarationMerging:
+
 export abstract class StateStore<T = Record<string, any>> {
   prefix: string
 

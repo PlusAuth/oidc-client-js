@@ -5,7 +5,7 @@ import { sha256 } from "./crypto"
 const CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 
 function getRandomBytes(n: number) {
-  // @ts-ignore
+  // @ts-expect-error
   const crypto = self.crypto || self.msCrypto
   const QUOTA = 65536
   const a = new Uint8Array(n)
@@ -59,7 +59,7 @@ export function parseJwt(jwt: string): ParsedJWT {
       header: JSON.parse(urlDecodeB64(parts[0])),
       payload: JSON.parse(urlDecodeB64(parts[1])),
     }
-  } catch (e) {
+  } catch {
     throw new InvalidJWTError("Failed to parse jwt")
   }
 }
@@ -78,8 +78,8 @@ export function validateIdToken(id_token: string, nonce: string, options: IPlusA
 
     validateJwt(id_token, options, true)
 
-    // @ts-ignore
-    if (!jwt.payload["sub"]) {
+    // @ts-expect-error
+    if (!jwt.payload.sub) {
       throw new Error("No Subject (sub) present in id_token")
     }
 

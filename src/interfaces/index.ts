@@ -1,5 +1,5 @@
 import type { StateStore } from "../helpers"
-import type { RequestOptions, nonUserClaims } from "../utils"
+import type { nonUserClaims, RequestOptions } from "../utils"
 
 // https://tools.ietf.org/html/draft-ietf-jose-json-web-encryption-40
 // https://tools.ietf.org/html/draft-ietf-jose-json-web-signature-41

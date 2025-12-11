@@ -48,7 +48,7 @@ export class LocalStorageStateStore<T = any> extends StateStore<T> {
             if (storedItem.created_at < before) {
               window.localStorage.removeItem(storedKeys[i])
             }
-          } catch (e) {}
+          } catch {}
         } else {
           window.localStorage.removeItem(storedKeys[i])
         }

@@ -4,7 +4,7 @@ import { OIDCClientError } from "../../src"
 import { runPopup } from "../../src/utils/popup"
 
 describe("runPopup", () => {
-  const TIMEOUT_ERROR = {
+  const _TIMEOUT_ERROR = {
     error: "timeout",
     error_description: "Timeout",
     message: "Timeout",

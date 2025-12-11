@@ -1,11 +1,11 @@
 import { OIDCClient } from "./client"
 import type { IPlusAuthClientOptions } from "./interfaces"
 
-export * from "./interfaces"
 export * from "./client"
 export * from "./constants"
-export * from "./helpers"
 export * from "./errors"
+export * from "./helpers"
+export * from "./interfaces"
 
 /**
  * Create OIDC client with initializing it. It resolves issuer metadata, jwks keys and check if user is

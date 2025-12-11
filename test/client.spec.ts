@@ -253,12 +253,12 @@ describe("oidc client", () => {
       // @ts-expect-error internal
       const origFn = oidc.synchronizer.CallOnce
       // @ts-expect-error internal
-      oidc.synchronizer.CallOnce = vi.fn((ss: any, fn: () => void) => fn())
+      oidc.synchronizer.CallOnce = vi.fn((_ss: any, fn: () => void) => fn())
 
       oidc.silentLogin = vi.fn(async () => Promise.resolve())
       // @ts-expect-error override internal timer
       oidc._accessTokenExpireTimer = {
-        start: vi.fn((exp: number, cb: () => void) => {
+        start: vi.fn((_exp: number, cb: () => void) => {
           cb()
         }),
       }
@@ -782,13 +782,9 @@ describe("oidc client", () => {
     it("should retrieve stored state", async () => {
       const oidc = new OIDCClient(dummyOpts)
       // @ts-expect-error
-      const mockedGet = (oidc.stateStore.get = vi.fn(async (state) =>
-        state === "exist" ? true : false,
-      ))
+      const mockedGet = (oidc.stateStore.get = vi.fn(async (state) => state === "exist"))
       // @ts-expect-error
-      const mockedDel = (oidc.stateStore.del = vi.fn(async (state) =>
-        state === "exist" ? true : false,
-      ))
+      const mockedDel = (oidc.stateStore.del = vi.fn(async (state) => state === "exist"))
 
       // @ts-expect-error
       await oidc.loadState("exist")
@@ -800,9 +796,7 @@ describe("oidc client", () => {
     it("should fail if state does not exist", async () => {
       const oidc = new OIDCClient(dummyOpts)
       // @ts-expect-error
-      const mockedGet = (oidc.stateStore.get = vi.fn(async (state) =>
-        state === "exist" ? true : false,
-      ))
+      const mockedGet = (oidc.stateStore.get = vi.fn(async (state) => state === "exist"))
 
       await expect(
         // @ts-expect-error
@@ -1075,7 +1069,6 @@ describe("oidc client", () => {
       const oldWindowLocation = window.location
 
       // force window.location to be undefined to simulate missing url param usage
-      // @ts-expect-error
       delete (window as any).location
 
       await expect(oidc.loginCallback()).rejects.toMatchObject({
@@ -1182,7 +1175,6 @@ describe("oidc client", () => {
       // @ts-expect-error
       oidc.loadState = vi.fn(async () => state)
 
-      // @ts-expect-error
       window.opener.postMessage = vi.fn()
 
       await oidc.loginCallback("http://example.com?code=1q2w3e4r&state=123456")

@@ -10,7 +10,7 @@ export function isValidIssuer(issuer: string) {
       return false
     }
     return true
-  } catch (e) {
+  } catch {
     return false
   }
 }

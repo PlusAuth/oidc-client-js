@@ -1,4 +1,4 @@
-import NodeJsCrypto from "node:crypto"
+import * as NodeJsCrypto from "node:crypto"
 import { describe, expect, it } from "vitest"
 import { sha256 } from "../../src/utils/crypto"
 
@@ -39,7 +39,6 @@ describe("crypto utils", () => {
     }
 
     for (const value of values) {
-      // @ts-expect-error
       const hash = await NodeJsCrypto.createHash("sha256").update(value).digest("base64url")
       expect(
         [await sha256(value), await withoutWindowCrypto(value)].every((v) => v === hash),

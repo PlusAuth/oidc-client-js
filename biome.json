@@ -15,8 +15,8 @@
       "!**/*/node_modules",
       "!**/dist/",
       "!**/examples",
-      "!**/docs/",
-      "!**/*/dist",
+      "!docs",
+      "!dist",
       "!**/*.timestamp-*",
       "!**/components.d.ts"
     ]

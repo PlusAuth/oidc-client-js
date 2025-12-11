@@ -242,7 +242,7 @@ export class OIDCClient extends EventEmitter<EventTypes> {
     let parsedUrl: URL
     try {
       parsedUrl = new URL(url)
-    } catch (e) {
+    } catch {
       return Promise.reject(new OIDCClientError(`Invalid callback url passed: "${url}"`))
     }
 
@@ -469,7 +469,7 @@ export class OIDCClient extends EventEmitter<EventTypes> {
       try {
         await this.silentLogin()
         return true
-      } catch (e) {
+      } catch (_e) {
         return false
       }
     }
@@ -803,7 +803,7 @@ export class OIDCClient extends EventEmitter<EventTypes> {
             } else {
               this.emit(Events.USER_LOGOUT, null)
             }
-          } catch (e) {
+          } catch (_e) {
             this.emit(Events.USER_LOGOUT)
             return
           }

@@ -52,9 +52,7 @@ export class TabUtils {
     //now we also need to manually execute handler in the current tab too, because current tab does not get 'storage' events
     try {
       handlers[messageId](eventData)
-    } catch (x) {
-      //"try" in case handler not found
-    }
+    } catch {}
 
     if (!window.localStorage) {
       this.events.emit(messageId, eventData)
@@ -63,7 +61,7 @@ export class TabUtils {
 
     const data = {
       data: eventData,
-      timeStamp: new Date().getTime(),
+      timeStamp: Date.now(),
     } //add timestamp because overwriting same data does not trigger the event
 
     //this triggers 'storage' event for all other tabs except the current tab

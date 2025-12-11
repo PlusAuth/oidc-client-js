@@ -31,9 +31,9 @@ function _sha256(data: string, base64 = true) {
   const words = [] as number[]
   const asciiBitLength = data[lengthProperty] * 8
 
-  // @ts-ignore
+  // @ts-expect-error
   let hash = (sha256.h = sha256.h || [])
-  // @ts-ignore
+  // @ts-expect-error
   const k = (sha256.k = sha256.k || [])
   let primeCounter = k[lengthProperty]
   const isComposite = {} as Record<number, number>

@@ -159,7 +159,7 @@ describe("Emitter", () => {
 
     it("should remove event array to avoid memory leak", () => {
       const emitter = new Emitter()
-      const calls = []
+      const _calls = []
 
       function cb() {}
 
@@ -171,7 +171,7 @@ describe("Emitter", () => {
 
     it("should only remove the event array when the last subscriber unsubscribes", () => {
       const emitter = new Emitter()
-      const calls = []
+      const _calls = []
 
       function cb1() {}
       function cb2() {}

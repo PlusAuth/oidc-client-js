@@ -17,7 +17,7 @@ const issuedAt = notBefore
 const expiresIn = 1459130201
 const clientId = "cid"
 const expectedNonce = "S1MIYRbKC33BDbyz"
-const rsaKey = JSON.parse(fs.readFileSync(`${__dirname}/rsa.pub.json`).toString("utf-8"))
+const _rsaKey = JSON.parse(fs.readFileSync(`${__dirname}/rsa.pub.json`).toString("utf-8"))
 const expectedNow = (remove = 0) => (notBefore - remove) * 1000
 
 type createJWTOptions = {
@@ -72,7 +72,7 @@ function createJWT(
 
 describe("jose utils", () => {
   it("should generate random string", () => {
-    const randoms = [...Array(100)].map((v) => generateRandom(12))
+    const randoms = [...Array(100)].map((_v) => generateRandom(12))
     expect(randoms.some((value, index) => randoms.indexOf(value) !== index)).toBeFalsy()
   })
 

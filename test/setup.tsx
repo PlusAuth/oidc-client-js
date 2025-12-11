@@ -2,7 +2,7 @@ const webCrypt = require("@peculiar/webcrypto")
 const nodeCrypto = require("node:crypto")
 const cryptModule = new webCrypt.Crypto()
 
-global.self["crypto"] = window["crypto"] = cryptModule
+global.self.crypto = window.crypto = cryptModule
 
 let cryptoShim = cryptModule
 Object.defineProperty(window, "crypto", {
@@ -15,6 +15,6 @@ Object.defineProperty(window, "crypto", {
 })
 
 const x = require("node:util")
-global.self["TextEncoder"] = window["TextEncoder"] = x.TextEncoder
+global.self.TextEncoder = window.TextEncoder = x.TextEncoder
 // @ts-expect-error
-global.self["NodeJsCrypto"] = window["NodeJsCrypto"] = nodeCrypto
+global.self.NodeJsCrypto = window.NodeJsCrypto = nodeCrypto
