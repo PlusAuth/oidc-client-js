@@ -31,7 +31,7 @@
   "scripts": {
     "test": "vitest",
     "test:coverage": "vitest --coverage",
-    "build": "rollup -c",
+    "build": "tsdown",
     "docs": "typedoc --tsconfig tsconfig-doc.json src/index.ts",
     "lint": "biome check --fix",
     "release": "cross-env GITHUB_TOKEN=$GITHUB_TOKEN release-it",
