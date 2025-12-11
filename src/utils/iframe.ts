@@ -1,6 +1,50 @@
 import { AuthenticationError, OIDCClientError } from "../errors"
 import type { IFrameOptions } from "../interfaces"
 
+/**
+ * Default HTML attributes applied to every hidden iframe created by
+ * {@link createHiddenFrame} and used internally by {@link runIframe}.
+ *
+ * These attributes control accessibility and identification of the iframe
+ * used during silent authentication and session-related operations.
+ *
+ * ## Customization
+ * This object is **intentionally mutable** and acts as a global extension point.
+ * Applications may modify or extend the attributes to adjust how the iframe is
+ * rendered—for example, to add monitoring hooks, test selectors, or custom
+ * accessibility attributes.
+ *
+ * Modifications must be applied **before** any iframe-related `OIDCClient`
+ * methods are called (such as {@link OIDCClient.silentLogin}), because each
+ * iframe is created using a snapshot of `DefaultIframeAttributes` at creation time.
+ *
+ * ### Example: Adding a custom attribute
+ *
+ * ```ts
+ * import { DefaultIframeAttributes, OIDCClient } from "@plusauth/oidc-client-js";
+ *
+ * // Add a custom data attribute to all future hidden iframes
+ * DefaultIframeAttributes["data-myapp"] = "example";
+ *
+ * const oidc = new OIDCClient({ ... });
+ * await oidc.silentLogin();
+ *
+ * // The silent login iframe now includes: <iframe data-myapp="example" ...>
+ * ```
+ *
+ * Typical use cases include:
+ *  - Adding `data-*` attributes for debugging or testing
+ *  - Adding custom accessibility metadata
+ *  - Integrating with CSP / monitoring tools requiring tagged iframe elements
+ *
+ * @see createHiddenFrame
+ * @see runIframe
+ */
+export const DefaultIframeAttributes = {
+  title: "__pa_helper__hidden",
+  "aria-hidden": "true",
+} as Record<string, string>
+
 export function createHiddenFrame() {
   const iframe = window.document.createElement("iframe")
   iframe.style.width = "0"
@@ -9,8 +53,9 @@ export function createHiddenFrame() {
   iframe.style.visibility = "hidden"
   iframe.style.display = "none"
 
-  iframe.title = "__pa_helper__hidden"
-  iframe.ariaHidden = "true"
+  for (const [key, value] of Object.entries(DefaultIframeAttributes)) {
+    iframe.setAttribute(key, value)
+  }
 
   return iframe
 }

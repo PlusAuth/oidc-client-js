@@ -6,6 +6,7 @@ export * from "./constants"
 export * from "./errors"
 export * from "./helpers"
 export * from "./interfaces"
+export { DefaultIframeAttributes } from "./utils"
 
 /**
  * Create OIDC client with initializing it. It resolves issuer metadata, jwks keys and check if user is

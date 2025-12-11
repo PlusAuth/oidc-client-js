@@ -276,6 +276,46 @@ login popup you must call `loginWithPopup` in an event handler listening for a u
   </div>
 </div>
 
+## Customizing Hidden IFrame Attributes
+
+During silent authentication and session management, the library creates a hidden
+`<iframe>` element to complete OIDC flows without interrupting the user.
+By default, this iframe is rendered with a minimal set of attributes ensuring it
+stays invisible and accessible.
+
+You can customize these attributes using the exported
+`DefaultIframeAttributes` object.
+
+### Why customize?
+
+Some applications may need to:
+
+- Attach custom `data-*` attributes for testing or monitoring
+- Integrate with security tools that require tagged iframe elements
+- Add accessibility metadata
+- Adjust iframe behavior for specific environments or frameworks
+
+`DefaultIframeAttributes` is **intentionally mutable**, and your changes will
+apply to all hidden iframes created by the library.
+
+### Example
+
+```js
+import { DefaultIframeAttributes, OIDCClient } from "@plusauth/oidc-client-js";
+
+// Add custom attribute before any iframe is created
+DefaultIframeAttributes["data-myapp"] = "example";
+
+const oidc = new OIDCClient({
+  issuer: "YOUR_OIDC_PROVIDER",
+  client_id: "YOUR_CLIENT_ID",
+});
+
+await oidc.silentLogin();
+
+// Hidden iframe now includes: <iframe data-myapp="example" ...>
+```
+
 ## Additional methods
 You can access user, access token, refresh token, id token and scopes with followings. Using getter methods are always the
 safe bet as they will read from store. Direct access of those variables may result unexpectedly if you modify them in your app.

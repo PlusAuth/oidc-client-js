@@ -15,6 +15,29 @@ describe("createHiddenIframe", () => {
     expect(iframe.style.display).toBe("none")
   })
 })
+describe("DefaultIframeAttributes customization", () => {
+  it("should allow modifying DefaultIframeAttributes before creating iframe", () => {
+    // Backup original defaults
+    const original = { ...DefaultIframeAttributes }
+
+    // Modify attributes (simulate application customization)
+    DefaultIframeAttributes["data-custom"] = "custom-value"
+    DefaultIframeAttributes.title = "custom-title"
+
+    // Create iframe AFTER modifications
+    const iframe = createHiddenFrame()
+
+    // Validate modifications appear on the iframe
+    expect(iframe.getAttribute("data-custom")).toBe("custom-value")
+    expect(iframe.getAttribute("title")).toBe("custom-title")
+
+    // Clean up: restore original values
+    for (const key of Object.keys(DefaultIframeAttributes)) {
+      delete (DefaultIframeAttributes as any)[key]
+    }
+    Object.assign(DefaultIframeAttributes, original)
+  })
+})
 
 describe("runIframe", () => {
   const setup = (customMessage?: MessageEvent) => {
@@ -38,6 +61,7 @@ describe("runIframe", () => {
     window.document.body.removeChild = vi.fn()
     return { iframe, url, origin }
   }
+
   it("handles iframe correctly", async () => {
     const origin = "https://origin.com"
     const message: MessageEvent = {
@@ -64,6 +88,7 @@ describe("runIframe", () => {
     ])
     expect(iframe.style.display).toBe("none")
   })
+
   describe("with invalid messages", () => {
     ;[
       "",
@@ -82,6 +107,7 @@ describe("runIframe", () => {
       })
     })
   })
+
   it("returns authorization response message", async () => {
     const origin = "https://origin.com"
     const message: MessageEvent = {
