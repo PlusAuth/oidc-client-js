@@ -1,4 +1,5 @@
 import * as VueRouter from "vue-router"
+import auth from "./auth.js"
 import AuthCallback from "./views/AuthCallback.vue"
 import Home from "./views/Home.vue"
 import NotFound from "./views/NotFound.vue"
@@ -7,8 +8,6 @@ import Secured from "./views/Secured.vue"
 import SilentRenew from "./views/SilentRenew.vue"
 import Unauthorized from "./views/Unauthorized.vue"
 import UserProfile from "./views/UserProfile.vue"
-
-import auth from "./auth.js"
 
 const routes = [
   {
