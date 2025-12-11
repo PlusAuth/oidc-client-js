@@ -1,3 +1,5 @@
+import { describe, expect, it } from "vitest"
+
 import { buildEncodedQueryString, parseQueryUrl } from "../../src/utils"
 
 describe("url util", () => {
@@ -36,7 +38,7 @@ describe("url util", () => {
         a: 1,
         b: "str",
       }
-      // @ts-ignore
+      // @ts-expect-error
       obj.__proto__.c = "something"
       expect(buildEncodedQueryString(obj)).toEqual("?a=1&b=str")
     })

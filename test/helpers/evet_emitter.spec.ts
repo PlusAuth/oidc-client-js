@@ -1,13 +1,20 @@
+import { describe, expect, it } from "vitest"
 import { EventEmitter as Emitter } from "../../src/helpers"
 
 class Custom extends Emitter<any> {}
 
 describe("Custom", () => {
   describe("with Emitter.call(this)", () => {
-    it("should work", (done) => {
+    it("should work", async () => {
       const emitter = new Custom()
-      emitter.on("foo", done)
+
+      const p = new Promise<void>((resolve) => {
+        emitter.on("foo", resolve)
+      })
+
       emitter.emit("foo")
+
+      await p
     })
   })
 })

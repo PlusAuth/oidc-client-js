@@ -1,5 +1,7 @@
+import { describe, expect, it, vi } from "vitest"
+
 import { OIDCClientError } from "../../src"
-import { createHiddenFrame, runIframe } from "../../src/utils"
+import { createHiddenFrame, DefaultIframeAttributes, runIframe } from "../../src/utils"
 
 describe("createHiddenIframe", () => {
   it("should create hidden iframe", () => {
@@ -17,45 +19,49 @@ describe("createHiddenIframe", () => {
 describe("runIframe", () => {
   const setup = (customMessage?: MessageEvent) => {
     const iframe = {
-      setAttribute: jest.fn(),
+      setAttribute: vi.fn(),
       style: { display: "" },
     }
     const url = "https://authorize.com"
     const origin = customMessage?.origin || "https://origin.com"
-    window.addEventListener = <any>jest.fn((message, callback) => {
+    window.addEventListener = <any>vi.fn((message, callback) => {
       expect(message).toBe("message")
       callback(customMessage)
     })
-    window.removeEventListener = jest.fn()
-    window.document.createElement = <any>jest.fn((type) => {
+    window.removeEventListener = vi.fn()
+    window.document.createElement = <any>vi.fn((type) => {
       expect(type).toBe("iframe")
       return iframe
     })
     window.document.body.contains = () => true
-    window.document.body.appendChild = jest.fn()
-    window.document.body.removeChild = jest.fn()
+    window.document.body.appendChild = vi.fn()
+    window.document.body.removeChild = vi.fn()
     return { iframe, url, origin }
   }
   it("handles iframe correctly", async () => {
     const origin = "https://origin.com"
     const message: MessageEvent = {
       origin,
-      // @ts-ignore
-      source: { close: jest.fn() },
+      // @ts-expect-error
+      source: { close: vi.fn() },
       data: {
         type: "authorization_response",
         response: { id_token: "id_token" },
       },
     }
     const { iframe, url } = setup(message)
-    jest.useFakeTimers()
+    vi.useFakeTimers()
     await runIframe(url, { eventOrigin: origin })
-    jest.runAllTimers()
-    // @ts-ignore
+    vi.runAllTimers()
+    // @ts-expect-error
     expect(message.source.close).toHaveBeenCalled()
     expect(window.document.body.appendChild).toHaveBeenCalledWith(iframe)
     expect(window.document.body.removeChild).toHaveBeenCalledWith(iframe)
-    expect(iframe.setAttribute.mock.calls).toMatchObject([["src", url]])
+
+    expect(iframe.setAttribute.mock.calls).toMatchObject([
+      ...Object.entries(DefaultIframeAttributes),
+      ["src", url],
+    ])
     expect(iframe.style.display).toBe("none")
   })
   describe("with invalid messages", () => {
@@ -68,9 +74,9 @@ describe("runIframe", () => {
     ].forEach((m) => {
       it(`ignores invalid messages: ${JSON.stringify(m)}`, async () => {
         const { iframe, url, origin } = setup(m as any)
-        jest.useFakeTimers()
+        vi.useFakeTimers()
         const promise = runIframe(url, { eventOrigin: origin })
-        jest.runAllTimers()
+        vi.runAllTimers()
         await expect(promise).rejects.toThrow(OIDCClientError)
         expect(window.document.body.removeChild).toHaveBeenCalledWith(iframe)
       })
@@ -80,18 +86,18 @@ describe("runIframe", () => {
     const origin = "https://origin.com"
     const message: MessageEvent = {
       origin,
-      // @ts-ignore
-      source: { close: jest.fn() },
+      // @ts-expect-error
+      source: { close: vi.fn() },
       data: {
         type: "authorization_response",
         response: { id_token: "id_token" },
       },
     }
     const { iframe, url } = setup(message)
-    jest.useFakeTimers()
+    vi.useFakeTimers()
     await expect(runIframe(url, { eventOrigin: origin })).resolves.toMatchObject(message.data)
-    jest.runAllTimers()
-    // @ts-ignore
+    vi.runAllTimers()
+    // @ts-expect-error
     expect(message.source!.close).toHaveBeenCalled()
     expect(window.document.body.removeChild).toHaveBeenCalledWith(iframe)
   })
@@ -101,8 +107,8 @@ describe("runIframe", () => {
 
     const message: MessageEvent = {
       origin,
-      // @ts-ignore
-      source: { close: jest.fn() },
+      // @ts-expect-error
+      source: { close: vi.fn() },
       data: {
         type: "authorization_response",
         response: {
@@ -113,10 +119,10 @@ describe("runIframe", () => {
     }
 
     const { iframe, url } = setup(message)
-    jest.useFakeTimers()
+    vi.useFakeTimers()
     await expect(runIframe(url, { eventOrigin: origin })).rejects.toThrow(OIDCClientError)
-    jest.runAllTimers()
-    // @ts-ignore
+    vi.runAllTimers()
+    // @ts-expect-error
     expect(message.source.close).toHaveBeenCalled()
     expect(window.document.body.removeChild).toHaveBeenCalledWith(iframe)
   })
@@ -124,9 +130,9 @@ describe("runIframe", () => {
   it("times out after timeout", async () => {
     const { iframe, url, origin } = setup("" as any)
     const timeout = 10
-    jest.useFakeTimers()
+    vi.useFakeTimers()
     const promise = runIframe(url, { eventOrigin: origin, timeout: timeout })
-    jest.advanceTimersByTime(timeout * 1000)
+    vi.advanceTimersByTime(timeout * 1000)
     await expect(promise).rejects.toThrow(OIDCClientError)
     expect(window.document.body.removeChild).toHaveBeenCalledWith(iframe)
   })

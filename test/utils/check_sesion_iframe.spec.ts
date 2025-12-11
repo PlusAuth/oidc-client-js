@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest"
 import { createSessionCheckerFrame } from "../../src/utils"
 
 describe("checkSessionIframe", () => {

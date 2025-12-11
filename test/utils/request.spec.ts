@@ -1,4 +1,6 @@
-window.fetch = jest.fn().mockReturnValue(
+import { beforeEach, describe, expect, it, type Mock, vi } from "vitest"
+
+window.fetch = vi.fn().mockReturnValue(
   new Promise((resolve) => {
     resolve({
       json: () => ({}),
@@ -6,10 +8,9 @@ window.fetch = jest.fn().mockReturnValue(
   }),
 )
 
-import { type RequestOptions, buildEncodedQueryString, request } from "../../src/utils"
+import { buildEncodedQueryString, type RequestOptions, request } from "../../src/utils"
 
-//  @ts-ignore
-const mockFetch = <jest.Mock>fetch
+const mockFetch = <Mock>fetch
 describe("request", () => {
   beforeEach(() => {
     mockFetch.mockClear()
@@ -23,7 +24,7 @@ describe("request", () => {
     }
 
     await request(opts)
-    expect(mockFetch).toBeCalledWith(opts.url, {
+    expect(mockFetch).toHaveBeenCalledWith(opts.url, {
       method: opts.method,
       body: null,
       headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
@@ -42,7 +43,7 @@ describe("request", () => {
     }
 
     await request(opts)
-    expect(mockFetch).toBeCalledWith(opts.url, {
+    expect(mockFetch).toHaveBeenCalledWith(opts.url, {
       method: opts.method,
       body: buildEncodedQueryString(opts.body, false),
       headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
@@ -57,7 +58,7 @@ describe("request", () => {
     }
 
     await request(opts)
-    expect(mockFetch).toBeCalledWith(opts.url, {
+    expect(mockFetch).toHaveBeenCalledWith(opts.url, {
       method: opts.method,
       body: null,
       headers: { "Content-Type": "application/json;charset=UTF-8" },
@@ -76,7 +77,7 @@ describe("request", () => {
     }
 
     await request(opts)
-    expect(mockFetch).toBeCalledWith(opts.url, {
+    expect(mockFetch).toHaveBeenCalledWith(opts.url, {
       method: opts.method,
       body: JSON.stringify(opts.body),
       headers: { "Content-Type": "application/json;charset=UTF-8" },
@@ -94,7 +95,7 @@ describe("request", () => {
     }
 
     await request(opts)
-    expect(mockFetch).toBeCalledWith(opts.url, {
+    expect(mockFetch).toHaveBeenCalledWith(opts.url, {
       method: opts.method,
       body: null,
       headers: { "Content-Type": "application/json;charset=UTF-8", "X-Test": "test" },

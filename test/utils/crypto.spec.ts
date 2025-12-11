@@ -1,7 +1,9 @@
+import NodeJsCrypto from "node:crypto"
+import { describe, expect, it } from "vitest"
 import { sha256 } from "../../src/utils/crypto"
 
 describe("crypto utils", () => {
-  test("sha-256", async () => {
+  it("sha-256", async () => {
     const values = [
       "Pp%Dq#jMV$A3^AEo8^7U*p@5",
       "vcJj#g71VvGN$4^8q&SblIU@",
@@ -17,16 +19,27 @@ describe("crypto utils", () => {
     ]
 
     async function withoutWindowCrypto(v: string) {
-      const _orig = window.crypto
-      // @ts-ignore
-      window.crypto = {}
-      const res = await sha256(v)
-      window.crypto = _orig
-      return res
+      const originalCrypto = window.crypto
+
+      // Redefine crypto as undefined (or empty object)
+      Object.defineProperty(window, "crypto", {
+        value: undefined,
+        configurable: true,
+      })
+
+      try {
+        return await sha256(v)
+      } finally {
+        // Restore original value
+        Object.defineProperty(window, "crypto", {
+          value: originalCrypto,
+          configurable: true,
+        })
+      }
     }
 
     for (const value of values) {
-      // @ts-ignore
+      // @ts-expect-error
       const hash = await NodeJsCrypto.createHash("sha256").update(value).digest("base64url")
       expect(
         [await sha256(value), await withoutWindowCrypto(value)].every((v) => v === hash),

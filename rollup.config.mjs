@@ -10,7 +10,7 @@ const { version, homepage, browser, module, types } = JSON.parse(readFileSync(".
 const banner = `/*!
  * @plusauth/oidc-client-js v${version}
  * ${homepage}
- * (c) ${(new Date(process.env.SOURCE_DATE_EPOCH ? process.env.SOURCE_DATE_EPOCH * 1000 : new Date().getTime())).getFullYear()} @plusauth/oidc-client-js Contributors
+ * (c) ${(new Date(process.env.SOURCE_DATE_EPOCH ? process.env.SOURCE_DATE_EPOCH * 1000 : Date.now())).getFullYear()} @plusauth/oidc-client-js Contributors
  * Released under the MIT License
  */`
 const plugins = (min) => [

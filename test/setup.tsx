@@ -16,5 +16,5 @@ Object.defineProperty(window, "crypto", {
 
 const x = require("node:util")
 global.self["TextEncoder"] = window["TextEncoder"] = x.TextEncoder
-// @ts-ignore
+// @ts-expect-error
 global.self["NodeJsCrypto"] = window["NodeJsCrypto"] = nodeCrypto

@@ -1,3 +1,6 @@
+import * as fs from "node:fs"
+import { type Algorithm, sign } from "jsonwebtoken"
+import { describe, expect, it } from "vitest"
 import { InvalidIdTokenError, InvalidJWTError, OIDCClientError } from "../../src"
 import {
   deriveChallenge,
@@ -6,9 +9,6 @@ import {
   validateIdToken,
   validateJwt,
 } from "../../src/utils"
-
-import * as fs from "node:fs"
-import { type Algorithm, sign } from "jsonwebtoken"
 
 const expectedIssuer = "https://localhost:44333/core"
 const expectedAudience = "js.tokenmanager"
@@ -76,22 +76,16 @@ describe("jose utils", () => {
     expect(randoms.some((value, index) => randoms.indexOf(value) !== index)).toBeFalsy()
   })
 
-  it("should fail if code length is not in accepted range", (done) => {
-    deriveChallenge(new Array(11).join("a"))
-      .then(done.bind(null, "should fail"))
-      .catch((e) => {
-        expect(e.message).toBe(`Invalid code length: 10`)
-        done()
-      })
+  it("should fail if code length is not in accepted range", async () => {
+    await expect(deriveChallenge("a".repeat(10))).rejects.toThrow("Invalid code length: 10")
   })
 
-  it("should consume generated random string", (done) => {
+  it("should consume generated random string", () => {
     deriveChallenge(new Array(12).join("test"))
       .then((value) => {
         expect(value).toBe("MM2_1QPyiAvVfPjvMOuJUXU7CbDFDeUZtDK74EbtMGw")
-        done()
       })
-      .catch(done)
+      .catch()
   })
   describe("parseJwt", () => {
     it("should parse a jwt", () => {

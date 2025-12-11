@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.3.8/schema.json",
   "vcs": {
     "enabled": true,
     "defaultBranch": "main",
@@ -8,20 +8,20 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "ignore": [
-      ".nx/",
-      "node_modules",
-      "**/*/node_modules",
-      "dist/",
-      "docs/",
-      "**/*/dist",
-      "*.timestamp-*",
-      "components.d.ts"
+    "includes": [
+      "**",
+      "!**/.nx/",
+      "!**/node_modules",
+      "!**/*/node_modules",
+      "!**/dist/",
+      "!**/examples",
+      "!**/docs/",
+      "!**/*/dist",
+      "!**/*.timestamp-*",
+      "!**/components.d.ts"
     ]
   },
-  "organizeImports": {
-    "enabled": true
-  },
+  "assist": { "actions": { "source": { "organizeImports": "on" } } },
   "javascript": {
     "formatter": {
       "arrowParentheses": "always",
@@ -44,7 +44,6 @@
   },
   "linter": {
     "enabled": true,
-    "ignore": ["*.d.ts"],
     "rules": {
       "a11y": {
         "useKeyWithClickEvents": "off"
@@ -58,6 +57,7 @@
           "level": "off"
         },
         "noUnusedImports": {
+          "fix": "safe",
           "level": "error"
         },
         "noSwitchDeclarations": {
@@ -74,10 +74,10 @@
         },
         "useLiteralKeys": {
           "level": "info"
-        }
+        },
+        "noArguments": "off"
       },
       "style": {
-        "noArguments": "off",
         "noNonNullAssertion": "off",
         "noParameterAssign": "off",
         "noUnusedTemplateLiteral": "off",
@@ -100,6 +100,7 @@
         }
       },
       "suspicious": {
+        "noUnsafeDeclarationMerging": "off",
         "noAsyncPromiseExecutor": "off",
         "noPrototypeBuiltins": "off",
         "noAssignInExpressions": "off",
@@ -119,7 +120,7 @@
   },
   "overrides": [
     {
-      "include": ["test"],
+      "includes": ["**/test/**"],
       "linter": {
         "rules": {
           "suspicious": {
@@ -129,7 +130,7 @@
       }
     },
     {
-      "include": ["*.vue"],
+      "includes": ["**/*.vue"],
       "linter": {
         "rules": {
           "style": {

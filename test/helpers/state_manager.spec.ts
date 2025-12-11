@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest"
 import { InMemoryStateStore, LocalStorageStateStore } from "../../src/helpers"
 
 const store = new LocalStorageStateStore("test:")
@@ -5,48 +6,43 @@ const inMemory = new InMemoryStateStore()
 
 describe("state manager", () => {
   describe("localStorage", () => {
-    it("should set", (done) => {
+    it("should set", () => {
       const obj = { a: 1 }
       store.set("x", obj).then(() => {
         expect(window.localStorage.getItem("test:x")).toBe(JSON.stringify(obj))
-        done()
       })
     })
 
-    it("should get", (done) => {
+    it("should get", () => {
       store.get("notExisted").then((val) => {
         expect(val).toBeNull()
-        done()
       })
     })
-    it("should get (2)", (done) => {
+    it("should get (2)", () => {
       store.get("x").then((val) => {
         const obj = { a: 1 }
         expect(val).toStrictEqual(obj)
-        done()
       })
     })
 
-    it("should delete", (done) => {
+    it("should delete", () => {
       store.del("x").then(() => {
         store.get("x").then((v) => {
           expect(v).toBeNull()
-          done()
         })
       })
     })
 
-    it("should clear all", (done) => {
+    it("should clear all", () => {
       const objects = Array(10).fill({ x: "x" })
       Promise.all(objects.map((obj, ind) => store.set(String(ind), obj))).then(() => {
         store.clear().then(() => {
           expect(window.localStorage.length).toBe(0)
-          done()
         })
       })
     })
 
-    it("should clear expired", (done) => {
+    it("should clear expired", () => {
       const objects = []
       window.localStorage.setItem("shouldNotDelete", '{ "a": "b"}')
       for (let i = 1; i <= 10; i++) {
@@ -57,61 +53,55 @@ describe("state manager", () => {
           expect(window.localStorage.length).toBe(5)
           for (let i = 0; i < window.localStorage.length; i++) {
             const key = window.localStorage.key(i)
-            // @ts-ignore
+            // @ts-expect-error
             const storedObj = JSON.parse(window.localStorage.getItem(key))
             if (storedObj.created_at) {
               expect(storedObj.created_at).toBeGreaterThanOrEqual(7000)
             }
           }
-          done()
         })
       })
     })
   })
 
   describe("inMemory", () => {
-    it("should set", (done) => {
+    it("should set", () => {
       const obj = { a: 1 }
       inMemory.set("x", obj).then(() => {
         expect(inMemory.map.get("x")).toBe(obj)
-        done()
       })
     })
 
-    it("should get", (done) => {
+    it("should get", () => {
       inMemory.get("notExisted").then((val) => {
         expect(val).toBeNull()
-        done()
       })
     })
-    it("should get (2)", (done) => {
+    it("should get (2)", () => {
       inMemory.get("x").then((val) => {
         const obj = { a: 1 }
         expect(val).toStrictEqual(obj)
-        done()
       })
     })
 
-    it("should delete", (done) => {
+    it("should delete", () => {
       inMemory.del("x").then(() => {
         inMemory.get("x").then((v) => {
           expect(v).toBeNull()
-          done()
         })
       })
     })
 
-    it("should clear all", (done) => {
+    it("should clear all", () => {
       const objects = Array(10).fill({ x: "x" })
       Promise.all(objects.map((obj, ind) => inMemory.set(String(ind), obj))).then(() => {
         inMemory.clear().then(() => {
           expect(inMemory.map.size).toBe(0)
-          done()
         })
       })
     })
 
-    it("should clear expired", (done) => {
+    it("should clear expired", () => {
       const objects = []
       inMemory.map.set("shouldNotDelete", '{ "a": "b"}')
       for (let i = 1; i <= 10; i++) {
@@ -126,7 +116,6 @@ describe("state manager", () => {
               expect(storedObj.created_at).toBeGreaterThanOrEqual(7000)
             }
           }
-          done()
         })
       })
     })

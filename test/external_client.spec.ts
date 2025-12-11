@@ -1,14 +1,11 @@
 import "whatwg-fetch"
+import { expect, it } from "vitest"
 import { OIDCClient } from "../src"
 
-it("should fetch issuer metadata when endpoints not provided ", (done) => {
+it("initializes OIDC and loads issuer metadata", async () => {
   const oidc = new OIDCClient({ issuer: "https://accounts.google.com", client_id: "test" })
 
-  oidc
-    .initialize(false)
-    .then(() => {
-      expect(oidc.issuer_metadata).toHaveProperty("authorization_endpoint")
-      done()
-    })
-    .catch(done.fail)
+  await oidc.initialize(false)
+
+  expect(oidc.issuer_metadata).toHaveProperty("authorization_endpoint")
 })

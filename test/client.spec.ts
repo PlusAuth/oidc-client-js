@@ -1,15 +1,59 @@
-import * as checkSessionUtils from "../src/utils/check_session_iframe"
-import * as iframeUtils from "../src/utils/iframe"
-import * as joseUtils from "../src/utils/jose"
-import * as popupUtils from "../src/utils/popup"
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type Mock,
+  vi,
+} from "vitest"
 
-window.fetch = jest.fn().mockReturnValue(
-  new Promise((resolve) => {
-    resolve({
-      json: () => ({}),
-    })
-  }),
-)
+// --- Module mocks (ESM-safe, partial mocks) ---
+
+vi.mock("../src/utils/jose", async () => {
+  const actual = await vi.importActual<typeof import("../src/utils/jose")>("../src/utils/jose")
+
+  return {
+    ...actual,
+    // used in .createAuthRequest()
+    deriveChallenge: vi.fn().mockResolvedValue("code_challenge"),
+    // used in .handleTokenResult()
+    validateIdToken: vi.fn(),
+  }
+})
+
+vi.mock("../src/utils/iframe", async () => {
+  const actual = await vi.importActual<typeof import("../src/utils/iframe")>("../src/utils/iframe")
+
+  return {
+    ...actual,
+    runIframe: vi.fn(),
+  }
+})
+
+vi.mock("../src/utils/popup", async () => {
+  const actual = await vi.importActual<typeof import("../src/utils/popup")>("../src/utils/popup")
+
+  return {
+    ...actual,
+    runPopup: vi.fn(),
+  }
+})
+
+vi.mock("../src/utils/check_session_iframe", async () => {
+  const actual = await vi.importActual<typeof import("../src/utils/check_session_iframe")>(
+    "../src/utils/check_session_iframe",
+  )
+
+  return {
+    ...actual,
+    createSessionCheckerFrame: vi.fn(),
+  }
+})
+
+// --- Imports AFTER mocks ---
 
 import {
   AuthenticationError,
@@ -24,9 +68,21 @@ import {
   StateStore,
 } from "../src"
 import { Timer } from "../src/helpers/timer"
-import { deriveChallenge } from "../src/utils/jose"
+import * as checkSessionUtils from "../src/utils/check_session_iframe"
+import * as iframeUtils from "../src/utils/iframe"
+import { deriveChallenge, validateIdToken } from "../src/utils/jose"
+import * as popupUtils from "../src/utils/popup"
 
-const mockedFetch = <jest.Mock>fetch
+// --- Global fetch mock ---
+
+const fetchMock = vi.fn().mockResolvedValue({
+  json: () => ({}),
+})
+
+;(globalThis as any).fetch = fetchMock
+const mockedFetch = fetchMock as Mock
+
+// --- Shared dummy options ---
 
 const dummyOpts = {
   issuer: "https://test.plusauth.com/",
@@ -37,13 +93,14 @@ const dummyOpts = {
     end_session_endpoint: "dummy_end_session",
   },
 }
+
 describe("oidc client", () => {
   afterEach(() => {
     mockedFetch.mockClear()
   })
 
   describe("[constructor]", () => {
-    it("should accept valid issuer", (done) => {
+    it("should accept valid issuer", () => {
       const validIssuers = [
         "http://openid.net/specs/connect/1.0/issuer",
         "http://localhost:45543/specs/connect/1.0/issuer",
@@ -57,17 +114,12 @@ describe("oidc client", () => {
         "https://test.plusauth.com",
       ]
 
-      validIssuers.forEach((issuer) => {
-        try {
-          new OIDCClient({ issuer, client_id: "" })
-        } catch (e) {
-          done(`${e} : ${issuer}`)
-        }
-      })
-      done()
+      for (const issuer of validIssuers) {
+        expect(() => new OIDCClient({ issuer, client_id: "" })).not.toThrow()
+      }
     })
 
-    it("should fail with invalid issuers", (done) => {
+    it("should fail with invalid issuers", () => {
       const invalidIssuers = [
         "ftp://something",
         "something.co",
@@ -79,16 +131,16 @@ describe("oidc client", () => {
         "http://www.example.com?test=search",
         "http://www.example.com#hashquery",
       ]
-      invalidIssuers.forEach((issuer) => {
+
+      for (const issuer of invalidIssuers) {
         try {
           new OIDCClient({ issuer, client_id: "" })
-          done(`should fail with: ${issuer}`)
-        } catch (e) {
+          throw new Error(`Should fail with issuer: ${issuer}`)
+        } catch (e: any) {
           expect(e).toBeInstanceOf(OIDCClientError)
           expect(e.message).toBe('"issuer" must be a valid uri.')
         }
-      })
-      done()
+      }
     })
 
     it("should remove last slash from issuer uri", () => {
@@ -113,24 +165,24 @@ describe("oidc client", () => {
       expect(oidc.options.secondsToRefreshAccessTokenBeforeExp).toBe(60)
       expect(oidc.options.autoSilentRenew).toBe(true)
       expect(oidc.options.checkSession).toBe(true)
-      // @ts-expect-error
+      // @ts-expect-error internal properties
       expect(oidc.authStore).toBeInstanceOf(InMemoryStateStore)
-      // @ts-expect-error
+      // @ts-expect-error internal properties
       expect(oidc.stateStore).toBeInstanceOf(LocalStorageStateStore)
     })
 
     it("should create access token timer if `autoSilentRenew` enabled", () => {
       const oidc = new OIDCClient({ ...dummyOpts, autoSilentRenew: true })
-      // @ts-expect-error
+      // @ts-expect-error internal properties
       expect(oidc._accessTokenExpireTimer).toBeInstanceOf(Timer)
     })
 
     it("should allow custom state stores", () => {
       class CustomStateStore extends StateStore {
-        get = jest.fn()
-        set = jest.fn()
-        clear = jest.fn()
-        del = jest.fn()
+        get = vi.fn()
+        set = vi.fn()
+        clear = vi.fn()
+        del = vi.fn()
       }
       const oidcClient = new OIDCClient({
         issuer: "https://testoidcuri.com",
@@ -142,10 +194,10 @@ describe("oidc client", () => {
 
     it("should allow custom auth stores", () => {
       class CustomStateStore extends StateStore {
-        get = jest.fn()
-        set = jest.fn()
-        clear = jest.fn()
-        del = jest.fn()
+        get = vi.fn()
+        set = vi.fn()
+        clear = vi.fn()
+        del = vi.fn()
       }
       const oidcClient = new OIDCClient({
         issuer: "https://testoidcuri.com",
@@ -155,7 +207,7 @@ describe("oidc client", () => {
       expect(oidcClient.options.authStore).toBeInstanceOf(CustomStateStore)
     })
 
-    it("should set/clear direct variables on login/logout", (done) => {
+    it("should set/clear direct variables on login/logout", async () => {
       const oidc = new OIDCClient(dummyOpts)
       const authObj = {
         expires_in: "e",
@@ -165,59 +217,65 @@ describe("oidc client", () => {
         id_token: "it",
         refresh_token: "rt",
       }
-      // @ts-expect-error
+      // @ts-expect-error internal
       oidc.onUserLogin(authObj)
-      setTimeout(() => {
-        expect(oidc.user).toBeTruthy()
-        expect(oidc.accessToken).toBeTruthy()
-        expect(oidc.idToken).toBeTruthy()
-        expect(oidc.scopes).toBeTruthy()
-        expect(oidc.refreshToken).toBeTruthy()
+      await new Promise<void>((resolve) =>
+        setTimeout(() => {
+          console.log("2")
+          expect(oidc.user).toBeTruthy()
+          expect(oidc.accessToken).toBeTruthy()
+          expect(oidc.idToken).toBeTruthy()
+          expect(oidc.scopes).toBeTruthy()
+          expect(oidc.refreshToken).toBeTruthy()
+          resolve()
+        }),
+      )
+      oidc.emit("user_logout")
 
-        oidc.emit("user_logout")
-
+      await new Promise<void>((resolve) =>
         setTimeout(() => {
           expect(oidc.user).toBeFalsy()
           expect(oidc.accessToken).toBeFalsy()
           expect(oidc.idToken).toBeFalsy()
           expect(oidc.scopes).toBeFalsy()
           expect(oidc.refreshToken).toBeFalsy()
-          done()
-        })
-      })
+          resolve()
+        }),
+      )
     })
 
-    it('should start accessTokenRefresh timer when "autoSilentRenew" = true', (done) => {
+    it('should start accessTokenRefresh timer when "autoSilentRenew" = true', async () => {
       const oidc = new OIDCClient({
         ...dummyOpts,
         autoSilentRenew: true,
         secondsToRefreshAccessTokenBeforeExp: 120,
       })
-      // @ts-expect-error
+      // @ts-expect-error internal
       const origFn = oidc.synchronizer.CallOnce
-      // @ts-expect-error
-      oidc.synchronizer.CallOnce = jest.fn((ss, fn) => fn())
+      // @ts-expect-error internal
+      oidc.synchronizer.CallOnce = vi.fn((ss: any, fn: () => void) => fn())
 
-      oidc.silentLogin = jest.fn(async () => {
-        return Promise.resolve()
-      })
-      // @ts-ignore
+      oidc.silentLogin = vi.fn(async () => Promise.resolve())
+      // @ts-expect-error override internal timer
       oidc._accessTokenExpireTimer = {
-        start: jest.fn((exp, cb) => {
+        start: vi.fn((exp: number, cb: () => void) => {
           cb()
         }),
       }
 
-      // @ts-expect-error
+      // @ts-expect-error internal
       oidc.onUserLogin({ access_token: "dummyToken", expires_in: 120, user: {} })
+
       setTimeout(() => {
-        //@ts-expect-error
-        expect(oidc._accessTokenExpireTimer.start).toBeCalled()
-        // @ts-expect-error
-        expect(oidc.synchronizer.CallOnce).toBeCalled()
-        expect(oidc.silentLogin).toBeCalled()
-        done()
-        // @ts-expect-error
+        // everything is synchronous now
+        // @ts-expect-error internal
+        expect(oidc._accessTokenExpireTimer.start).toHaveBeenCalled()
+        // @ts-expect-error internal
+        expect(oidc.synchronizer.CallOnce).toHaveBeenCalled()
+        expect(oidc.silentLogin).toHaveBeenCalled()
+
+        // restore original
+        // @ts-expect-error internal
         oidc.synchronizer.CallOnce = origFn
       })
     })
@@ -277,272 +335,230 @@ describe("oidc client", () => {
         id_token_raw: "test",
         refresh_token: "test",
       }
-      oidc.authStore.get = jest.fn(() => Promise.resolve(storeEntry))
+      oidc.authStore.get = vi.fn(() => Promise.resolve(storeEntry))
 
       for (const getter of getters) {
         expect(oidc).toHaveProperty(getter)
+        // eslint-disable-next-line no-await-in-loop
         expect(await oidc[getter]()).toBeTruthy()
       }
-      expect(oidc.authStore.get).toBeCalledTimes(getters.length)
+      expect(oidc.authStore.get).toHaveBeenCalledTimes(getters.length)
     })
   })
 
   describe(".initialize()", () => {
-    it("should return initialized instance if it is already initialized", (done) => {
+    it("should return initialized instance if it is already initialized", async () => {
       const oidc = new OIDCClient({ issuer: "http://test.com", client_id: "test" })
-      // @ts-expect-error
+      // @ts-expect-error internal
       expect(oidc.initialized).toBeFalsy()
-      // @ts-expect-error
-      oidc.fetchFromIssuer = jest.fn(async () => ({}))
+      // @ts-expect-error internal
+      oidc.fetchFromIssuer = vi.fn(async () => ({}))
 
-      oidc
-        .initialize(false)
-        .then((client) => {
-          // @ts-expect-error
-          expect(oidc.initialized).toBe(true)
+      const client = await oidc.initialize(false)
+      // @ts-expect-error internal
+      expect(oidc.initialized).toBe(true)
+      expect(client).toBe(oidc)
 
-          oidc
-            .initialize(false)
-            .then((newClient) => {
-              // @ts-expect-error
-              expect(oidc.fetchFromIssuer).toBeCalledTimes(1)
-              done()
-            })
-            .catch(done)
-        })
-        .catch(done)
+      const newClient = await oidc.initialize(false)
+      expect(newClient).toBe(oidc)
+      // @ts-expect-error internal
+      expect(oidc.fetchFromIssuer).toHaveBeenCalledTimes(1)
     })
 
-    it("should fetch issuer metadata when endpoints not provided", (done) => {
+    it("should fetch issuer metadata when endpoints not provided", async () => {
       const oidc = new OIDCClient({ issuer: "http://test.com", client_id: "test" })
-      // @ts-expect-error
-      oidc.fetchFromIssuer = jest.fn(async () => ({}))
+      // @ts-expect-error internal
+      oidc.fetchFromIssuer = vi.fn(async () => ({}))
 
-      oidc
-        .initialize(false)
-        .then(() => {
-          // @ts-expect-error
-          expect(oidc.fetchFromIssuer).toBeCalled()
-          done()
-        })
-        .catch(done)
+      await oidc.initialize(false)
+      // @ts-expect-error internal
+      expect(oidc.fetchFromIssuer).toHaveBeenCalled()
     })
 
-    it("should fail when metadata loading fails", (done) => {
+    it("should fail when metadata loading fails", async () => {
       const oidc = new OIDCClient({ issuer: "http://test.com", client_id: "test" })
-      // @ts-expect-error
+      // @ts-expect-error internal
       expect(oidc.initialized).toBeFalsy()
-      // @ts-expect-error
-      oidc.fetchFromIssuer = jest.fn(async () => {
+      // @ts-expect-error internal
+      oidc.fetchFromIssuer = vi.fn(async () => {
         throw new OIDCClientError("failed")
       })
 
-      oidc
-        .initialize(false)
-        .then((client) => {
-          done("should fail")
-        })
-        .catch((err) => {
-          expect(err).toBeInstanceOf(OIDCClientError)
-          expect(err).toHaveProperty("error", "failed")
-          done()
-        })
+      await expect(oidc.initialize(false)).rejects.toMatchObject({
+        error: "failed",
+      })
     })
 
-    it("should fail with generic error", (done) => {
+    it("should fail with generic error", async () => {
       const oidc = new OIDCClient({ issuer: "http://test.com", client_id: "test" })
-      // @ts-expect-error
+      // @ts-expect-error internal
       expect(oidc.initialized).toBeFalsy()
-      // @ts-expect-error
-      oidc.fetchFromIssuer = jest.fn(async () => {
+      // @ts-expect-error internal
+      oidc.fetchFromIssuer = vi.fn(async () => {
         throw new Error("fails")
       })
 
-      oidc
-        .initialize(false)
-        .then((client) => {
-          done("should fail")
-        })
-        .catch((err) => {
-          expect(err).toBeInstanceOf(OIDCClientError)
-          expect(err).toHaveProperty("error", "fails")
-          done()
-        })
+      await expect(oidc.initialize(false)).rejects.toMatchObject({
+        error: "fails",
+      })
     })
 
-    it("should initialize stores", (done) => {
-      // @ts-ignore
-      const mockedModule = jest.genMockFromModule("../src").LocalStorageStateStore as any
-      const mockStore = new mockedModule()
-      mockStore.init = jest.fn()
+    it("should initialize stores", async () => {
+      class MockStore {
+        init = vi.fn()
+        get = vi.fn()
+      }
+
+      const mockStore = new MockStore() as any
+
       const oidc = new OIDCClient({
         ...dummyOpts,
         stateStore: mockStore,
         authStore: mockStore,
       })
-      oidc
-        .initialize(false)
-        .then((value) => {
-          expect(mockStore.init).toBeCalledTimes(2)
-          done()
-        })
-        .catch(done)
+
+      await oidc.initialize(false)
+
+      expect(mockStore.init).toHaveBeenCalledTimes(2)
     })
 
-    it("should silentLogin if `checkLogin` true", (done) => {
+    it("should silentLogin if `checkLogin` true", async () => {
       const oidc = new OIDCClient(dummyOpts)
-      oidc.silentLogin = jest.fn(async () => {
-        return Promise.resolve()
-      })
-      oidc
-        .initialize()
-        .then(() => {
-          expect(oidc.silentLogin).toBeCalled()
-          done()
-        })
-        .catch(done)
+      oidc.silentLogin = vi.fn(async () => Promise.resolve())
+
+      await oidc.initialize()
+
+      expect(oidc.silentLogin).toHaveBeenCalled()
     })
-    it("should clear authStore if login check fails", (done) => {
+
+    it("should clear authStore if login check fails", async () => {
       const oidc = new OIDCClient(dummyOpts)
       // @ts-expect-error
-      oidc.authStore.clear = jest.fn()
-      oidc.silentLogin = jest.fn(async () => {
-        return Promise.reject()
-      })
-      oidc
-        .initialize()
-        .then(() => {
-          expect(oidc.silentLogin).toBeCalled()
-          // @ts-expect-error
-          expect(oidc.authStore.clear).toBeCalled()
-          done()
-        })
-        .catch(done)
+      oidc.authStore.clear = vi.fn()
+      oidc.silentLogin = vi.fn(async () => Promise.reject(new Error("fail")))
+
+      await oidc.initialize()
+
+      expect(oidc.silentLogin).toHaveBeenCalled()
+      // @ts-expect-error
+      expect(oidc.authStore.clear).toHaveBeenCalled()
     })
   })
 
   describe(".isLoggedIn()", () => {
-    it("should return local user if it exists", (done) => {
+    it("should return local user if it exists", async () => {
       const oidc = new OIDCClient(dummyOpts)
-      oidc.getUser = jest.fn(() => Promise.resolve({ user: "x" }))
+      oidc.getUser = vi.fn(() => Promise.resolve({ user: "x" } as any))
 
-      oidc
-        .isLoggedIn()
-        .then((value) => {
-          expect(oidc.getUser).toBeCalled()
-          expect(value).toBe(true)
-          done()
-        })
-        .catch(done)
+      const value = await oidc.isLoggedIn()
+
+      expect(oidc.getUser).toHaveBeenCalled()
+      expect(value).toBe(true)
     })
 
-    it("should silent login if local user does not exist", (done) => {
+    it("should silent login if local user does not exist", async () => {
       const oidc = new OIDCClient(dummyOpts)
-      oidc.silentLogin = jest.fn(() => Promise.resolve({ user: "x" }))
+      oidc.getUser = vi.fn(() => Promise.resolve(null as any))
+      oidc.silentLogin = vi.fn(() => Promise.resolve({ user: "x" } as any))
 
-      oidc
-        .isLoggedIn()
-        .then((value) => {
-          expect(oidc.silentLogin).toBeCalled()
-          expect(value).toBe(true)
-          done()
-        })
-        .catch(done)
+      const value = await oidc.isLoggedIn()
+
+      expect(oidc.silentLogin).toHaveBeenCalled()
+      expect(value).toBe(true)
     })
 
-    it("should return false when silent login fails", (done) => {
+    it("should return false when silent login fails", async () => {
       const oidc = new OIDCClient(dummyOpts)
-      oidc.silentLogin = jest.fn(() => Promise.reject())
+      oidc.getUser = vi.fn(() => Promise.resolve(null as any))
+      oidc.silentLogin = vi.fn(() => Promise.reject(new Error("fail")))
 
-      oidc
-        .isLoggedIn()
-        .then((value) => {
-          expect(oidc.silentLogin).toBeCalled()
-          expect(value).toBe(false)
-          done()
-        })
-        .catch(done)
+      const value = await oidc.isLoggedIn()
+
+      expect(oidc.silentLogin).toHaveBeenCalled()
+      expect(value).toBe(false)
     })
   })
 
   describe(".createAuthRequest()", () => {
-    it("should try to fetch authorization endpoint uri", (done) => {
-      const oidc = new OIDCClient({ ...dummyOpts, endpoints: {} })
-      // @ts-expect-error
-      oidc.fetchFromIssuer = jest.fn(() => {
+    it("should try to fetch authorization endpoint uri", async () => {
+      const oidc = new OIDCClient({ ...dummyOpts, endpoints: {} as any })
+      // @ts-expect-error internal
+      oidc.fetchFromIssuer = vi.fn(() => {
         oidc.options.endpoints = dummyOpts.endpoints
       })
 
       // @ts-expect-error
-      oidc.createAuthRequest().then(() => {
-        // @ts-expect-error
-        expect(oidc.fetchFromIssuer).toBeCalledTimes(1)
-        done()
-      })
-    })
-    it("should build uri", (done) => {
-      const oidc = new OIDCClient(dummyOpts)
-      // @ts-expect-error
-      oidc.createAuthRequest().then((uri) => {
-        expect(typeof uri).toBe("string")
-        done()
-      })
-    })
-    it("should store to state store", (done) => {
-      const oidc = new OIDCClient(dummyOpts)
-      // @ts-expect-error
-      oidc.stateStore.set = jest.fn()
+      await oidc.createAuthRequest()
 
       // @ts-expect-error
-      oidc.createAuthRequest().then((uri) => {
-        // @ts-expect-error
-        expect(oidc.stateStore.set).toBeCalled()
-        done()
-      })
+      expect(oidc.fetchFromIssuer).toHaveBeenCalledTimes(1)
     })
 
-    it('should generate nonce if response type includes "id_token"', (done) => {
+    it("should build uri", async () => {
+      const oidc = new OIDCClient(dummyOpts)
+      // @ts-expect-error
+      const uri = await oidc.createAuthRequest()
+      expect(typeof uri).toBe("string")
+    })
+
+    it("should store to state store", async () => {
+      const oidc = new OIDCClient(dummyOpts)
+      // @ts-expect-error
+      oidc.stateStore.set = vi.fn()
+
+      // @ts-expect-error
+      await oidc.createAuthRequest()
+
+      // @ts-expect-error
+      expect(oidc.stateStore.set).toHaveBeenCalled()
+    })
+
+    it('should generate nonce if response type includes "id_token"', async () => {
       const oidc = new OIDCClient({ ...dummyOpts, response_type: "id_token" })
 
       // @ts-expect-error
-      oidc.createAuthRequest().then((uri) => {
-        expect(uri).toMatch(/\&nonce=\w+\&?/)
-        done()
-      })
+      const uri = await oidc.createAuthRequest()
+      expect(uri).toMatch(/&nonce=\w+&?/)
     })
 
-    it("should use provided state length", (done) => {
-      const oidc = new OIDCClient({ ...dummyOpts, stateLength: 16, response_type: "id_token" })
+    it("should use provided state length", async () => {
+      const oidc = new OIDCClient({
+        ...dummyOpts,
+        stateLength: 16,
+        response_type: "id_token",
+      })
 
       // @ts-expect-error
-      oidc.createAuthRequest().then((uri) => {
-        expect(uri).toMatch(/\&state=\w+\&?/)
-        expect(uri.match(/\&state=(\w+)\&?/)![1].length).toBe(16)
-        done()
-      })
+      const uri = await oidc.createAuthRequest()
+      expect(uri).toMatch(/&state=\w+&?/)
+      expect(uri.match(/&state=(\w+)&?/)![1].length).toBe(16)
     })
 
-    it("should use provided nonce length", (done) => {
-      const oidc = new OIDCClient({ ...dummyOpts, nonceLength: 16, response_type: "id_token" })
+    it("should use provided nonce length", async () => {
+      const oidc = new OIDCClient({
+        ...dummyOpts,
+        nonceLength: 16,
+        response_type: "id_token",
+      })
 
       // @ts-expect-error
-      oidc.createAuthRequest().then((uri) => {
-        expect(uri).toMatch(/\&nonce=\w+\&?/)
-        expect(uri.match(/\&nonce=(\w+)\&?/)![1].length).toBe(16)
-        done()
-      })
+      const uri = await oidc.createAuthRequest()
+      expect(uri).toMatch(/&nonce=\w+&?/)
+      expect(uri.match(/&nonce=(\w+)&?/)![1].length).toBe(16)
     })
 
-    it('should generate nonce if scope includes "openid"', (done) => {
-      const oidc = new OIDCClient({ ...dummyOpts, response_type: "code", scope: "openid profile" })
+    it('should generate nonce if scope includes "openid"', async () => {
+      const oidc = new OIDCClient({
+        ...dummyOpts,
+        response_type: "code",
+        scope: "openid profile",
+      })
       // @ts-expect-error
-      oidc.createAuthRequest().then((uri) => {
-        expect(uri).toMatch(/\&nonce=\w+\&?/)
-        done()
-      })
+      const uri = await oidc.createAuthRequest()
+      expect(uri).toMatch(/&nonce=\w+&?/)
     })
 
-    it("should include passed options in request", (done) => {
+    it("should include passed options in request", async () => {
       const authParams: Record<string, string> = {
         acr_values: "test",
         state: "state",
@@ -568,15 +584,14 @@ describe("oidc client", () => {
         ...authParams,
       })
       // @ts-expect-error
-      oidc.createAuthRequest().then((uri) => {
-        Object.keys(authParams).forEach((param) => {
-          expect(uri).toMatch(new RegExp(`\\&?${param}=${authParams[param]}\\&?`))
-        })
-        done()
-      })
+      const uri = await oidc.createAuthRequest()
+
+      for (const param of Object.keys(authParams)) {
+        expect(uri).toMatch(new RegExp(`\\&?${param}=${authParams[param]}\\&?`))
+      }
     })
 
-    it("should include extra params in auth query", (done) => {
+    it("should include extra params in auth query", async () => {
       const extraParams: Record<string, any> = {
         test: 1,
         test2: 2,
@@ -587,36 +602,24 @@ describe("oidc client", () => {
         extraParams,
       })
       // @ts-expect-error
-      oidc.createAuthRequest().then((uri) => {
-        Object.keys(extraParams).forEach((param) => {
-          expect(uri).toMatch(new RegExp(`\\&?${param}=${extraParams[param]}\\&?`))
-        })
-        done()
-      })
+      const uri = await oidc.createAuthRequest()
+      for (const param of Object.keys(extraParams)) {
+        expect(uri).toMatch(new RegExp(`\\&?${param}=${extraParams[param]}\\&?`))
+      }
     })
 
-    it('should generate code_challenge if response type includes "code"', (done) => {
+    it('should generate code_challenge if response type includes "code"', async () => {
       const oidc = new OIDCClient(dummyOpts)
-      // @ts-expect-error
-      oidc.stateStore.set = jest.fn()
 
-      // @ts-ignore
-      deriveChallenge = jest.fn(async () => "code_challenge")
-      oidc
-        // @ts-expect-error
-        .createAuthRequest()
-        .then((uri) => {
-          expect(uri).toMatch(/\&code_challenge=code_challenge\&/)
-          expect(uri).toMatch(/\&code_challenge_method=S256+\&?/)
-          expect(deriveChallenge).toBeCalled()
-          // @ts-ignore
-          deriveChallenge.mockRestore()
-          done()
-        })
-        .catch(() => {
-          // @ts-ignore
-          deriveChallenge.mockRestore()
-        })
+      // @ts-expect-error
+      oidc.stateStore.set = vi.fn()
+
+      // @ts-expect-error
+      const uri = await oidc.createAuthRequest()
+
+      expect(uri).toMatch(/&code_challenge=code_challenge&/)
+      expect(uri).toMatch(/&code_challenge_method=S256&?/)
+      expect(deriveChallenge).toHaveBeenCalled()
     })
   })
 
@@ -630,373 +633,287 @@ describe("oidc client", () => {
   })
 
   describe(".exchangeAuthorizationCode()", () => {
-    it("should fail without `code`", (done) => {
+    it("should fail without `code`", async () => {
       const oidc = new OIDCClient(dummyOpts)
-      oidc
-        // @ts-expect-error
-        .exchangeAuthorizationCode({})
-        .then(done.bind(null, "should not succeed"))
-        .catch((err) => {
-          expect(err).toBeInstanceOf(Error)
-          expect(err.message).toBe('"code" is required')
-          done()
-        })
+      // @ts-expect-error
+      await expect(oidc.exchangeAuthorizationCode({})).rejects.toThrow('"code" is required')
     })
 
-    it("should fail without `redirect_uri`", (done) => {
+    it("should fail without `redirect_uri`", async () => {
       const oidc = new OIDCClient(dummyOpts)
-      oidc
+      await expect(
         // @ts-expect-error
-        .exchangeAuthorizationCode({ code: "test" })
-        .then(done.bind(null, "should not succeed"))
-        .catch((err) => {
-          expect(err).toBeInstanceOf(Error)
-          expect(err.message).toBe('"redirect_uri" is required')
-          done()
-        })
+        oidc.exchangeAuthorizationCode({ code: "test" }),
+      ).rejects.toThrow('"redirect_uri" is required')
     })
 
-    it("should fail without `code_verifier`", (done) => {
+    it("should fail without `code_verifier`", async () => {
       const oidc = new OIDCClient(dummyOpts)
-      oidc
+      await expect(
         // @ts-expect-error
-        .exchangeAuthorizationCode({ code: "test", redirect_uri: "test" })
-        .then(done.bind(null, "should not succeed"))
-        .catch((err) => {
-          expect(err).toBeInstanceOf(Error)
-          expect(err.message).toBe('"code_verifier" is required')
-          done()
-        })
+        oidc.exchangeAuthorizationCode({ code: "test", redirect_uri: "test" }),
+      ).rejects.toThrow('"code_verifier" is required')
     })
 
-    it("should fail without `client_id`", (done) => {
+    it("should fail without `client_id`", async () => {
       // @ts-expect-error
       const oidc = new OIDCClient({ issuer: "http://test.com/" })
-      oidc
+      await expect(
         // @ts-expect-error
-        .exchangeAuthorizationCode({ code: "test", redirect_uri: "test", code_verifier: "test" })
-        .then(done.bind(null, "should not succeed"))
-        .catch((err) => {
-          expect(err).toBeInstanceOf(Error)
-          expect(err.message).toBe('"client_id" is required')
-          done()
-        })
+        oidc.exchangeAuthorizationCode({
+          code: "test",
+          redirect_uri: "test",
+          code_verifier: "test",
+        }),
+      ).rejects.toThrow('"client_id" is required')
     })
 
-    it("should exchange code", (done) => {
+    it("should exchange code", async () => {
       const oidc = new OIDCClient(dummyOpts)
 
-      oidc
-        // @ts-expect-error
-        .exchangeAuthorizationCode({ code: "test", redirect_uri: "test", code_verifier: "test" })
-        .then(() => {
-          expect(mockedFetch).toBeCalledTimes(1)
-          done()
-        })
-        .catch(done)
+      // @ts-expect-error
+      await oidc.exchangeAuthorizationCode({
+        code: "test",
+        redirect_uri: "test",
+        code_verifier: "test",
+      })
+
+      expect(mockedFetch).toHaveBeenCalledTimes(1)
     })
 
-    it("should use client_secret", (done) => {
+    it("should use client_secret", async () => {
       const oidc = new OIDCClient({
         ...dummyOpts,
         client_secret: "test_secret",
         redirect_uri: "http://localhost:8080",
       })
 
-      oidc
-        // @ts-expect-error
-        .handleAuthResponse({ code: "test" }, {}, { code_verifier: "test" })
-        .then(() => {
-          expect(mockedFetch).toBeCalledTimes(1)
-          done()
-        })
-        .catch(done)
+      // @ts-expect-error
+      await oidc.handleAuthResponse({ code: "test" }, {}, { code_verifier: "test" })
+
+      expect(mockedFetch).toHaveBeenCalledTimes(1)
     })
   })
 
   describe(".exchangeRefreshToken()", () => {
-    it("should fail without `refresh_token`", (done) => {
+    it("should fail without `refresh_token`", async () => {
       const oidc = new OIDCClient(dummyOpts)
-      oidc
-        // @ts-expect-error
-        .exchangeRefreshToken({})
-        .then(() => done("should not succeed"))
-        .catch((err) => {
-          expect(err).toBeInstanceOf(Error)
-          expect(err.message).toBe('"refresh_token" is required')
-          done()
-        })
+      // @ts-expect-error
+      await expect(oidc.exchangeRefreshToken({})).rejects.toThrow('"refresh_token" is required')
     })
 
-    it("should fail without `client_id`", (done) => {
+    it("should fail without `client_id`", async () => {
       // @ts-expect-error
       const oidc = new OIDCClient({ issuer: "http://test.com/" })
-      oidc
+      await expect(
         // @ts-expect-error
-        .exchangeRefreshToken({ refresh_token: "test" })
-        .then(() => done("should not succeed"))
-        .catch((err) => {
-          expect(err).toBeInstanceOf(Error)
-          expect(err.message).toBe('"client_id" is required')
-          done()
-        })
+        oidc.exchangeRefreshToken({ refresh_token: "test" }),
+      ).rejects.toThrow('"client_id" is required')
     })
 
-    it("should exchange refresh token", (done) => {
+    it("should exchange refresh token", async () => {
       const oidc = new OIDCClient(dummyOpts)
 
-      oidc
-        // @ts-expect-error
-        .exchangeRefreshToken({ refresh_token: "test" })
-        .then(() => {
-          expect(mockedFetch).toBeCalledTimes(1)
-          done()
-        })
-        .catch(done)
+      // @ts-expect-error
+      await oidc.exchangeRefreshToken({ refresh_token: "test" })
+
+      expect(mockedFetch).toHaveBeenCalledTimes(1)
     })
   })
 
   describe(".fetchFromIssuer()", () => {
-    it("should fetch", () => {
+    it("should fetch", async () => {
       const oidc = new OIDCClient(dummyOpts)
 
       // @ts-expect-error
-      oidc.fetchFromIssuer().then(() => {
-        expect(mockedFetch).toBeCalledTimes(1)
-      })
+      await oidc.fetchFromIssuer()
+
+      expect(mockedFetch).toHaveBeenCalledTimes(1)
     })
 
-    it("should fail with generic error", (done) => {
+    it("should fail with generic error", async () => {
       const oidc = new OIDCClient(dummyOpts)
       // @ts-expect-error
-      oidc.http = jest.fn(async () => {
+      oidc.http = vi.fn(async () => {
         throw new Error("fails")
       })
-      oidc
-        // @ts-expect-error
-        .fetchFromIssuer()
-        .then(() => {
-          done("should not succeed")
-        })
-        .catch((err) => {
-          expect(err).toBeInstanceOf(OIDCClientError)
-          expect(err).toHaveProperty("error", "Loading metadata failed")
-          expect(err).toHaveProperty("error_description", "fails")
-          done()
-        })
+
+      // @ts-expect-error
+      await expect(oidc.fetchFromIssuer()).rejects.toMatchObject({
+        error: "Loading metadata failed",
+        error_description: "fails",
+      })
     })
   })
 
   describe(".fetchUserInfo()", () => {
-    it("should fetch", () => {
+    it("should fetch", async () => {
       const oidc = new OIDCClient(dummyOpts)
 
       // @ts-expect-error
-      oidc.fetchUserInfo("token").then(() => {
-        expect(mockedFetch).toBeCalledTimes(1)
-      })
+      await oidc.fetchUserInfo("token")
+
+      expect(mockedFetch).toHaveBeenCalledTimes(1)
     })
   })
 
   describe(".revokeToken()", () => {
-    it("should revoke", (done) => {
+    it("should revoke", async () => {
       const oidc = new OIDCClient({
         ...dummyOpts,
         endpoints: {
           revocation_endpoint: "dummy_revoke",
         },
       })
-      oidc
-        .revokeToken("token")
-        .then(() => {
-          expect(mockedFetch).toBeCalledTimes(1)
-          done()
-        })
-        .catch(done)
+      await oidc.revokeToken("token")
+
+      expect(mockedFetch).toHaveBeenCalledTimes(1)
     })
 
-    it('should fail without "revocation_endpoint"', (done) => {
+    it('should fail without "revocation_endpoint"', async () => {
       const oidc = new OIDCClient(dummyOpts)
-      oidc
-        .revokeToken("token")
-        .then(() => done("should not succeed"))
-        .catch((err) => {
-          expect(err).toBeInstanceOf(OIDCClientError)
-          expect(err.message).toBe('"revocation_endpoint" doesn\'t exist')
-          done()
-        })
+      await expect(oidc.revokeToken("token")).rejects.toMatchObject({
+        message: '"revocation_endpoint" doesn\'t exist',
+      })
     })
   })
 
   describe(".loadState()", () => {
-    it("should retrieve stored state", (done) => {
+    it("should retrieve stored state", async () => {
       const oidc = new OIDCClient(dummyOpts)
       // @ts-expect-error
-      const mockedGet = (oidc.stateStore.get = jest.fn(async (state) => {
-        if (state === "exist") {
-          return true
-        }
-        return false
-      }))
+      const mockedGet = (oidc.stateStore.get = vi.fn(async (state) =>
+        state === "exist" ? true : false,
+      ))
       // @ts-expect-error
-      const mockedDel = (oidc.stateStore.del = jest.fn(async (state) => {
-        if (state === "exist") {
-          return true
-        }
-        return false
-      }))
+      const mockedDel = (oidc.stateStore.del = vi.fn(async (state) =>
+        state === "exist" ? true : false,
+      ))
 
-      oidc
-        // @ts-expect-error
-        .loadState("exist")
-        .then((storedState) => {
-          expect(mockedGet).toBeCalled()
-          expect(mockedDel).toBeCalled()
-          done()
-        })
-        .catch(done)
+      // @ts-expect-error
+      await oidc.loadState("exist")
+
+      expect(mockedGet).toHaveBeenCalled()
+      expect(mockedDel).toHaveBeenCalled()
     })
 
-    it("should fail if state does not exist", (done) => {
+    it("should fail if state does not exist", async () => {
       const oidc = new OIDCClient(dummyOpts)
       // @ts-expect-error
-      const mockedGet = (oidc.stateStore.get = jest.fn(async (state) => {
-        if (state === "exist") {
-          return true
-        }
-        return false
-      }))
+      const mockedGet = (oidc.stateStore.get = vi.fn(async (state) =>
+        state === "exist" ? true : false,
+      ))
 
-      oidc
+      await expect(
         // @ts-expect-error
-        .loadState("notExists")
-        .then(done)
-        .catch((err) => {
-          expect(mockedGet).toBeCalled()
-          expect(err).toBeInstanceOf(StateNotFound)
-          expect(err.message).toBe("Local state not found")
-          done()
-        })
+        oidc.loadState("notExists"),
+      ).rejects.toBeInstanceOf(StateNotFound)
+
+      expect(mockedGet).toHaveBeenCalled()
     })
   })
 
   describe(".handleAuthResponse()", () => {
-    it("should handle", (done) => {
-      const oidc = new OIDCClient(dummyOpts)
-
-      oidc
-        // @ts-expect-error
-        .handleAuthResponse({ param: "value" }, {}, {})
-        .then((resp) => {
-          expect(resp).toStrictEqual({ param: "value" })
-          done()
-        })
-        .catch(done)
-    })
-
-    it("should exchange code", (done) => {
+    it("should handle", async () => {
       const oidc = new OIDCClient(dummyOpts)
 
       // @ts-expect-error
-      oidc.exchangeAuthorizationCode = jest.fn(async () => ({}))
-      oidc
-        // @ts-expect-error
-        .handleAuthResponse({ code: "code" }, {}, {})
-        .then((resp) => {
-          // @ts-expect-error
-          expect(oidc.exchangeAuthorizationCode).toBeCalled()
-          done()
-        })
-        .catch(done)
+      const resp = await oidc.handleAuthResponse({ param: "value" }, {}, {})
+
+      expect(resp).toStrictEqual({ param: "value" })
+    })
+
+    it("should exchange code", async () => {
+      const oidc = new OIDCClient(dummyOpts)
+
+      // @ts-expect-error
+      oidc.exchangeAuthorizationCode = vi.fn(async () => ({}))
+
+      // @ts-expect-error
+      await oidc.handleAuthResponse({ code: "code" }, {}, {})
+
+      // @ts-expect-error
+      expect(oidc.exchangeAuthorizationCode).toHaveBeenCalled()
     })
   })
 
   describe(".handleTokenResult()", () => {
-    let mockedValidator: jest.Mock<any, any>
+    let mockedValidator: Mock
+
     beforeAll(() => {
-      mockedValidator = jest.fn().mockReturnValue(
-        Promise.resolve({
-          nonce: "nonUserClaim",
-          first_name: "first",
-        }),
-      )
-      // @ts-ignore
-      joseUtils.validateIdToken = mockedValidator
+      mockedValidator = validateIdToken as Mock
+      mockedValidator.mockResolvedValue({
+        nonce: "nonUserClaim",
+        first_name: "first",
+      })
     })
 
     afterEach(() => mockedValidator.mockClear())
-    afterAll(() => mockedValidator.mockRestore())
+    afterAll(() => mockedValidator.mockReset())
 
-    it("should handle", (done) => {
+    it("should handle", async () => {
       const oidc = new OIDCClient(dummyOpts)
 
-      oidc
-        // @ts-expect-error
-        .handleTokenResult({}, {}, {})
-        .then((resp) => {
-          expect(resp).toEqual({ authParams: {}, scope: undefined, user: {} })
-          done()
-        })
-        .catch(done)
+      // @ts-expect-error
+      const resp = await oidc.handleTokenResult({}, {}, {})
+
+      expect(resp).toEqual({ authParams: {}, scope: undefined, user: {} })
     })
 
-    it('should handle "id_token"', (done) => {
+    it('should handle "id_token"', async () => {
       const oidc = new OIDCClient(dummyOpts)
-      oidc
-        // @ts-expect-error
-        .handleTokenResult({ id_token: "test" }, {}, {})
-        .then((resp) => {
-          expect(mockedValidator).toBeCalled()
-          expect(resp).toEqual({
-            authParams: {},
-            id_token_raw: "test",
-            id_token: {
-              first_name: "first",
-              nonce: "nonUserClaim",
-            },
-            scope: undefined,
-            user: {
-              first_name: "first",
-            },
-          })
-          done()
-        })
-        .catch(done)
+
+      // @ts-expect-error
+      const resp = await oidc.handleTokenResult({ id_token: "test" }, {}, {})
+
+      expect(mockedValidator).toHaveBeenCalled()
+      expect(resp).toEqual({
+        authParams: {},
+        id_token_raw: "test",
+        id_token: {
+          first_name: "first",
+          nonce: "nonUserClaim",
+        },
+        scope: undefined,
+        user: {
+          first_name: "first",
+        },
+      })
     })
 
-    it('should call custom "idTokenValidator"', (done) => {
-      const customValidator = jest.fn(async () => Promise.resolve(false))
+    it('should call custom "idTokenValidator"', async () => {
+      const customValidator = vi.fn(async () => false)
       const oidc = new OIDCClient(dummyOpts)
-      oidc
+
+      await expect(
         // @ts-expect-error
-        .handleTokenResult({ id_token: "test" }, {}, { idTokenValidator: customValidator })
-        .then(() => done("should not succeed"))
-        .catch((err) => {
-          expect(mockedValidator).toBeCalled()
-          expect(customValidator).toBeCalled()
-          expect(err).toBeInstanceOf(InvalidIdTokenError)
-          expect(err.message).toBe("Id Token validation failed")
-          done()
-        })
-    })
-    it('should handle "access_token"', (done) => {
-      const oidc = new OIDCClient(dummyOpts)
-      oidc
-        // @ts-expect-error
-        .handleTokenResult({ access_token: "test" }, {}, {})
-        .then((resp) => {
-          expect(resp).toEqual({
-            authParams: {},
-            access_token: "test",
-            scope: undefined,
-            user: {},
-          })
-          done()
-        })
-        .catch(done)
+        oidc.handleTokenResult(
+          { id_token: "test" },
+          {},
+          // @ts-expect-error
+          { idTokenValidator: customValidator },
+        ),
+      ).rejects.toBeInstanceOf(InvalidIdTokenError)
+
+      expect(mockedValidator).toHaveBeenCalled()
+      expect(customValidator).toHaveBeenCalled()
     })
 
-    it('should fetch user info when "requestUserInfo" = true', (done) => {
+    it('should handle "access_token"', async () => {
+      const oidc = new OIDCClient(dummyOpts)
+
+      // @ts-expect-error
+      const resp = await oidc.handleTokenResult({ access_token: "test" }, {}, {})
+
+      expect(resp).toEqual({
+        authParams: {},
+        access_token: "test",
+        scope: undefined,
+        user: {},
+      })
+    })
+
+    it('should fetch user info when "requestUserInfo" = true', async () => {
       const oidc = new OIDCClient({
         ...dummyOpts,
         endpoints: {
@@ -1004,247 +921,258 @@ describe("oidc client", () => {
         },
       })
       // @ts-expect-error
-      oidc.fetchUserInfo = jest.fn().mockReturnValue({ sub: "test" })
-      oidc
+      oidc.fetchUserInfo = vi.fn().mockResolvedValue({ sub: "test" })
+
+      // @ts-expect-error
+      const resp = await oidc.handleTokenResult(
+        { access_token: "dummyToken" },
+        {},
         // @ts-expect-error
-        .handleTokenResult(
-          { access_token: "dummyToken" },
-          {},
-          // @ts-expect-error
-          {
-            requestUserInfo: true,
-          },
-        )
-        .then((resp) => {
-          // @ts-expect-error
-          expect(oidc.fetchUserInfo).toBeCalledWith("dummyToken")
-          expect(resp).toEqual({
-            authParams: {},
-            access_token: "dummyToken",
-            scope: undefined,
-            user: { sub: "test" },
-          })
-          done()
-        })
-        .catch(done)
+        {
+          requestUserInfo: true,
+        },
+      )
+
+      // @ts-expect-error
+      expect(oidc.fetchUserInfo).toHaveBeenCalledWith("dummyToken")
+      expect(resp).toEqual({
+        authParams: {},
+        access_token: "dummyToken",
+        scope: undefined,
+        user: { sub: "test" },
+      })
     })
 
-    it("should fail on error response", (done) => {
+    it("should fail on error response", async () => {
       const oidc = new OIDCClient(dummyOpts)
 
-      oidc
+      await expect(
         // @ts-expect-error
-        .handleTokenResult({ error: "error", error_description: "invalid_client" }, {}, {})
-        .then(() => done)
-        .catch((err) => {
-          expect(err).toBeInstanceOf(AuthenticationError)
-          expect(err).toMatchObject({ error: "error", error_description: "invalid_client" })
-          done()
-        })
+        oidc.handleTokenResult(
+          { error: "error", error_description: "invalid_client" },
+          {},
+          // @ts-expect-error
+          {},
+        ),
+      ).rejects.toMatchObject({
+        error: "error",
+        error_description: "invalid_client",
+      })
     })
   })
 
   describe(".login()", () => {
     beforeAll(() => {
-      // @ts-ignore
-      delete window.location
-      // @ts-ignore
-      window.location = { assign: jest.fn() }
-      jest.spyOn(window.location, "assign")
-    })
-    it("should navigate the window to auth request", (done) => {
-      const oidc = new OIDCClient(dummyOpts)
-      oidc.login().then(() => {
-        expect(window.location.assign).toBeCalled()
-        done()
+      Object.defineProperty(window, "location", {
+        writable: true,
+        configurable: true,
+        value: {
+          ...window.location,
+          assign: vi.fn(),
+        },
       })
+    })
+
+    it("should navigate the window to auth request", async () => {
+      const oidc = new OIDCClient(dummyOpts)
+      await oidc.login()
+
+      expect(window.location.assign).toHaveBeenCalled()
     })
   })
 
   describe(".loginWithPopup()", () => {
-    it("should execute popup and handle auth result", (done) => {
-      const mockedRunPopup = jest.fn(async () => {
-        return { response: { state: "test" }, state: { authParams: {}, localState: {} } }
+    it("should execute popup and handle auth result", async () => {
+      const mockedRunPopup = popupUtils.runPopup as Mock
+      mockedRunPopup.mockResolvedValue({
+        response: { state: "test" },
+        state: { authParams: {}, localState: {} },
       })
-      // @ts-expect-error
-      popupUtils["runPopup"] = mockedRunPopup
-      const oidc = new OIDCClient(dummyOpts)
 
+      const oidc = new OIDCClient(dummyOpts)
       const authResult = { user: "x" }
 
-      // @ts-ignore
-      oidc.exchangeAuthorizationCode = jest.fn(async () => ({}))
-      // @ts-ignore
-      oidc.handleTokenResult = jest.fn(async () => authResult)
+      // @ts-expect-error
+      oidc.exchangeAuthorizationCode = vi.fn(async () => ({}))
+      // @ts-expect-error
+      oidc.handleTokenResult = vi.fn(async () => authResult)
 
-      const onLogin = jest.fn()
+      const onLogin = vi.fn()
       oidc.on(Events.USER_LOGIN, onLogin)
-      oidc.loginWithPopup().then(() => {
-        expect(mockedRunPopup).toBeCalled()
-        expect(onLogin).toBeCalledWith(authResult)
-        done()
-      })
+
+      await oidc.loginWithPopup()
+
+      expect(mockedRunPopup).toHaveBeenCalled()
+      expect(onLogin).toHaveBeenCalledWith(authResult)
     })
 
-    it("should throw interaction error when user closes popup", (done) => {
-      const mockedRunPopup = jest.fn(async () => {
+    it("should throw interaction error when user closes popup", async () => {
+      const mockedRunPopup = popupUtils.runPopup as Mock
+      mockedRunPopup.mockImplementation(async () => {
         throw new InteractionCancelled("user closed")
       })
-      // @ts-expect-error
-      popupUtils["runPopup"] = mockedRunPopup
+
       const oidc = new OIDCClient(dummyOpts)
 
-      const authResult = { user: "x" }
+      // @ts-expect-error
+      oidc.exchangeAuthorizationCode = vi.fn(async () => ({}))
+      // @ts-expect-error
+      oidc.handleTokenResult = vi.fn()
 
-      // @ts-ignore
-      oidc.exchangeAuthorizationCode = jest.fn(async () => ({}))
-      // @ts-ignore
-      oidc.handleTokenResult = jest.fn(async () => authResult)
-
-      oidc
-        .loginWithPopup()
-        .catch((err) => {
-          expect(err).toBeInstanceOf(InteractionCancelled)
-          done()
-          return "passed"
-        })
-        .then((v) => v !== "passed" && done(new Error("login with popup should fail")))
+      await expect(oidc.loginWithPopup()).rejects.toBeInstanceOf(InteractionCancelled)
     })
   })
 
   describe(".monitorSession()", () => {
-    const originalFn = checkSessionUtils["createSessionCheckerFrame"]
-    const mockedChecker = jest.fn(() => {
-      return { start: mockedStart, stop: mockedStop }
-    })
-    const mockedStart = jest.fn()
-    const mockedStop = jest.fn()
-    const oidcOpts = {
-      ...dummyOpts,
-      endpoints: {
-        check_session_iframe: "http://example.com/example",
-      },
-    }
+    const mockedChecker = checkSessionUtils.createSessionCheckerFrame as Mock
+    const mockedStart = vi.fn()
+    const mockedStop = vi.fn()
+
     beforeEach(() => {
-      // @ts-expect-error
-      checkSessionUtils["createSessionCheckerFrame"] = mockedChecker
-    })
-    afterEach(() => {
-      // @ts-expect-error
-      checkSessionUtils["createSessionCheckerFrame"] = originalFn
+      mockedChecker.mockReset()
+      mockedChecker.mockReturnValue({
+        start: mockedStart,
+        stop: mockedStop,
+      })
+      mockedStart.mockClear()
+      mockedStop.mockClear()
     })
 
     it('should not run if "check_session_iframe" not exists', () => {
       const oidc = new OIDCClient(dummyOpts)
-      jest.spyOn(console, "warn")
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {})
 
       // @ts-expect-error
       oidc.monitorSession({})
-      expect(console.warn).toBeCalledWith(
+
+      expect(warnSpy).toHaveBeenCalledWith(
         '"check_session_iframe" endpoint missing or session management is not supported by provider',
       )
+
+      warnSpy.mockRestore()
     })
 
     it("should should create session checker if not exists", () => {
-      const oidc = new OIDCClient(oidcOpts)
+      const oidc = new OIDCClient({
+        ...dummyOpts,
+        endpoints: {
+          check_session_iframe: "http://example.com/example",
+        },
+      })
 
       const session_state = "state"
       // @ts-expect-error
       oidc.monitorSession({ sub: "s", session_state })
 
-      expect(checkSessionUtils["createSessionCheckerFrame"]).toBeCalled()
-      expect(mockedStart).toBeCalledWith(session_state)
+      expect(mockedChecker).toHaveBeenCalled()
+      expect(mockedStart).toHaveBeenCalledWith(session_state)
     })
   })
 
   describe(".loginCallback()", () => {
-    it("should fail if no url is passed", (done) => {
+    it("should fail if no url is passed", async () => {
       const oidc = new OIDCClient(dummyOpts)
-      const oldWindow = window.location
-      // @ts-ignore
-      delete window.location
-      oidc.loginCallback().catch((e) => {
-        expect(e).toBeInstanceOf(OIDCClientError)
-        expect(e.message).toBe("Url must be passed to handle login redirect")
-        done()
+      const oldWindowLocation = window.location
+
+      // force window.location to be undefined to simulate missing url param usage
+      // @ts-expect-error
+      delete (window as any).location
+
+      await expect(oidc.loginCallback()).rejects.toMatchObject({
+        message: "Url must be passed to handle login redirect",
       })
-      window.location = oldWindow as any
+
+      window.location = oldWindowLocation as any
     })
-    it("should fail if wrong url is passed", (done) => {
+
+    it("should fail if wrong url is passed", async () => {
       const oidc = new OIDCClient(dummyOpts)
-      oidc.loginCallback("wrongUrlformat#asdasdasd").catch((e) => {
-        expect(e).toBeInstanceOf(OIDCClientError)
-        expect(e.message).toBe('Invalid callback url passed: "wrongUrlformat#asdasdasd"')
-        done()
+
+      await expect(oidc.loginCallback("wrongUrlformat#asdasdasd")).rejects.toMatchObject({
+        message: 'Invalid callback url passed: "wrongUrlformat#asdasdasd"',
       })
     })
 
-    it("should exchange auth code ", (done) => {
+    it("should exchange auth code", async () => {
       const authObj = { user: { sub: "test" } }
 
       const oidc = new OIDCClient(dummyOpts)
 
       // @ts-expect-error
-      oidc.loadState = jest.fn(async () => ({ authParams: {}, localState: {}, request_type: "d" }))
+      oidc.loadState = vi.fn(async () => ({
+        authParams: {},
+        localState: {},
+        request_type: "d",
+      }))
       // @ts-expect-error
-      oidc.exchangeAuthorizationCode = jest.fn()
+      oidc.exchangeAuthorizationCode = vi.fn()
       // @ts-expect-error
-      oidc.handleTokenResult = jest.fn(async () => authObj)
+      oidc.handleTokenResult = vi.fn(async () => authObj)
 
-      const onLogin = jest.fn()
+      const onLogin = vi.fn()
       oidc.on(Events.USER_LOGIN, onLogin)
 
-      oidc.loginCallback("http://example.com?code=1q2w3e4r&state=123456").then(() => {
-        // @ts-expect-error
-        expect(oidc.loadState).toBeCalledWith("123456")
-        expect(onLogin).toBeCalledWith(authObj)
-        done()
-      })
+      await oidc.loginCallback("http://example.com?code=1q2w3e4r&state=123456")
+
+      // @ts-expect-error
+      expect(oidc.loadState).toHaveBeenCalledWith("123456")
+      expect(onLogin).toHaveBeenCalledWith(authObj)
     })
-    it("should fail if auth request failed", (done) => {
+
+    it("should fail if auth request failed", async () => {
       const oidc = new OIDCClient(dummyOpts)
 
       // @ts-expect-error
-      oidc.loadState = jest.fn(async () => ({ authParams: {}, localState: {}, request_type: "d" }))
+      oidc.loadState = vi.fn(async () => ({
+        authParams: {},
+        localState: {},
+        request_type: "d",
+      }))
 
-      oidc
-        .loginCallback("http://example.com?error=auth_error&error_description=failed&state=123456")
-        .catch((e) => {
-          // @ts-expect-error
-          expect(oidc.loadState).toBeCalledWith("123456")
-          expect(e).toBeInstanceOf(AuthenticationError)
-          done()
-        })
+      await expect(
+        oidc.loginCallback(
+          "http://example.com?error=auth_error&error_description=failed&state=123456",
+        ),
+      ).rejects.toBeInstanceOf(AuthenticationError)
+
+      // @ts-expect-error
+      expect(oidc.loadState).toHaveBeenCalledWith("123456")
     })
 
-    it("should notify parent if it is called from embedded document", (done) => {
+    it("should notify parent if it is called from embedded document", async () => {
       Object.defineProperty(window, "frameElement", {
+        configurable: true,
         value: "123",
       })
 
       const oidc = new OIDCClient(dummyOpts)
 
       // @ts-expect-error
-      oidc.loadState = jest.fn(async () => ({ authParams: {}, localState: {}, request_type: "s" }))
+      oidc.loadState = vi.fn(async () => ({
+        authParams: {},
+        localState: {},
+        request_type: "s",
+      }))
 
-      window.parent.postMessage = jest.fn()
-      oidc.loginCallback("http://example.com?code=1q2w3e4r&state=123456").then(() => {
-        // @ts-expect-error
-        expect(oidc.loadState).toBeCalledWith("123456")
-        expect(window.parent.postMessage).toBeCalledWith(
-          {
-            type: "authorization_response",
-            response: { code: "1q2w3e4r", state: "123456" },
-            state: { authParams: {}, localState: {}, request_type: "s" },
-          },
-          `${window.location.protocol}//${window.location.host}`,
-        )
-        done()
-      })
+      window.parent.postMessage = vi.fn()
+
+      await oidc.loginCallback("http://example.com?code=1q2w3e4r&state=123456")
+
+      // @ts-expect-error
+      expect(oidc.loadState).toHaveBeenCalledWith("123456")
+      expect(window.parent.postMessage).toHaveBeenCalledWith(
+        {
+          type: "authorization_response",
+          response: { code: "1q2w3e4r", state: "123456" },
+          state: { authParams: {}, localState: {}, request_type: "s" },
+        },
+        `${window.location.protocol}//${window.location.host}`,
+      )
     })
 
-    it("should notify parent if it is called from popup", (done) => {
+    it("should notify parent if it is called from popup", async () => {
       Object.defineProperty(window, "opener", {
+        configurable: true,
         value: {},
       })
 
@@ -1252,55 +1180,57 @@ describe("oidc client", () => {
 
       const state = { authParams: {}, localState: {}, request_type: "p" }
       // @ts-expect-error
-      oidc.loadState = jest.fn(async () => state)
+      oidc.loadState = vi.fn(async () => state)
 
-      window.opener!.postMessage = jest.fn()
-      oidc.loginCallback("http://example.com?code=1q2w3e4r&state=123456").then(() => {
-        // @ts-expect-error
-        expect(oidc.loadState).toBeCalledWith("123456")
-        expect(window.opener!.postMessage).toBeCalledWith(
-          {
-            type: "authorization_response",
-            response: { code: "1q2w3e4r", state: "123456" },
-            state,
-          },
-          `${window.location.protocol}//${window.location.host}`,
-        )
-        done()
-      })
+      // @ts-expect-error
+      window.opener.postMessage = vi.fn()
+
+      await oidc.loginCallback("http://example.com?code=1q2w3e4r&state=123456")
+
+      // @ts-expect-error
+      expect(oidc.loadState).toHaveBeenCalledWith("123456")
+      expect(window.opener!.postMessage).toHaveBeenCalledWith(
+        {
+          type: "authorization_response",
+          response: { code: "1q2w3e4r", state: "123456" },
+          state,
+        },
+        `${window.location.protocol}//${window.location.host}`,
+      )
     })
   })
 
   describe(".silentLogin()", () => {
-    it("should use refresh_token if there is one", (done) => {
+    it("should use refresh_token if there is one", async () => {
       const oidc = new OIDCClient({ ...dummyOpts, useRefreshToken: true })
 
       const authObj = { user: { sub: "test" } }
       // @ts-expect-error
-      oidc.exchangeRefreshToken = jest.fn()
+      oidc.exchangeRefreshToken = vi.fn()
       // @ts-expect-error
-      oidc.handleTokenResult = jest.fn(async () => authObj)
+      oidc.handleTokenResult = vi.fn(async () => authObj)
       // @ts-expect-error
-      oidc.authStore.set("auth", { refresh_token: "dummyToken" })
+      await oidc.authStore.set("auth", { refresh_token: "dummyToken" })
 
-      const onLogin = jest.fn()
+      const onLogin = vi.fn()
       oidc.on(Events.USER_LOGIN, onLogin)
-      oidc.silentLogin().then(() => {
-        // @ts-expect-error
-        expect(oidc.exchangeRefreshToken).toBeCalled()
-        // @ts-expect-error
-        expect(oidc.handleTokenResult).toBeCalled()
-        expect(onLogin).toBeCalledWith(authObj)
-        done()
-      })
+
+      await oidc.silentLogin()
+
+      // @ts-expect-error
+      expect(oidc.exchangeRefreshToken).toHaveBeenCalled()
+      // @ts-expect-error
+      expect(oidc.handleTokenResult).toHaveBeenCalled()
+      expect(onLogin).toHaveBeenCalledWith(authObj)
     })
 
-    it("should use silent_redirect_uri as redirect_uri if passed", (done) => {
-      const mockedRunIFrame = jest.fn(async () => {
-        return { response: { state: "test" }, state: {} }
+    it("should use silent_redirect_uri as redirect_uri if passed", async () => {
+      const mockedRunIframe = iframeUtils.runIframe as Mock
+      mockedRunIframe.mockResolvedValue({
+        response: { state: "test" },
+        state: {},
       })
-      // @ts-expect-error
-      iframeUtils["runIframe"] = mockedRunIFrame
+
       const oidc = new OIDCClient({
         ...dummyOpts,
         silent_redirect_uri: "silent_redirect_uri",
@@ -1309,121 +1239,98 @@ describe("oidc client", () => {
 
       const authObj = { user: { sub: "test" } }
       // @ts-expect-error
-      oidc.createAuthRequest = jest.fn((opts) => {
+      oidc.createAuthRequest = vi.fn((opts) => {
         expect(opts!.redirect_uri).toBe("silent_redirect_uri")
-        return
+        return ""
       })
       // @ts-expect-error
-      oidc.exchangeRefreshToken = jest.fn()
+      oidc.exchangeAuthorizationCode = vi.fn()
       // @ts-expect-error
-      oidc.handleTokenResult = jest.fn(async () => authObj)
+      oidc.handleTokenResult = vi.fn(async () => authObj)
 
       // @ts-expect-error
-      oidc.authStore.set("auth", {})
+      await oidc.authStore.set("auth", {})
 
-      const onLogin = jest.fn()
+      const onLogin = vi.fn()
       oidc.on(Events.USER_LOGIN, onLogin)
-      oidc
-        .silentLogin()
-        .then(() => {
-          // @ts-expect-error
-          expect(oidc.createAuthRequest).toBeCalled()
-          // @ts-expect-error
-          expect(oidc.handleTokenResult).toBeCalled()
-          expect(onLogin).toBeCalledWith(authObj)
-          done()
-        })
-        .catch(done)
+
+      await oidc.silentLogin()
+
+      // @ts-expect-error
+      expect(oidc.createAuthRequest).toHaveBeenCalled()
+      // @ts-expect-error
+      expect(oidc.handleTokenResult).toHaveBeenCalled()
+      expect(onLogin).toHaveBeenCalledWith(authObj)
     })
 
-    it("should make auth request if refresh tokens are not used", (done) => {
-      const mockedRunIFrame = jest.fn(async () => {
-        return { response: { state: "test" }, state: {} }
+    it("should make auth request if refresh tokens are not used", async () => {
+      const mockedRunIframe = iframeUtils.runIframe as Mock
+      mockedRunIframe.mockResolvedValue({
+        response: { state: "test" },
+        state: {},
       })
-      // @ts-expect-error
-      iframeUtils["runIframe"] = mockedRunIFrame
 
       const oidc = new OIDCClient(dummyOpts)
 
       const authObj = { user: { sub: "test" } }
       // @ts-expect-error
-      oidc.createAuthRequest = jest.fn()
+      oidc.createAuthRequest = vi.fn()
       // @ts-expect-error
-      oidc.handleAuthResponse = jest.fn()
+      oidc.handleAuthResponse = vi.fn()
       // @ts-expect-error
-      oidc.exchangeAuthorizationCode = jest.fn()
+      oidc.exchangeAuthorizationCode = vi.fn()
       // @ts-expect-error
-      oidc.handleTokenResult = jest.fn(async () => authObj)
+      oidc.handleTokenResult = vi.fn(async () => authObj)
       // @ts-expect-error
-      oidc.authStore.set("auth", {})
+      await oidc.authStore.set("auth", {})
 
-      const onLogin = jest.fn()
+      const onLogin = vi.fn()
       oidc.on(Events.USER_LOGIN, onLogin)
-      oidc.silentLogin().then(() => {
-        // @ts-expect-error
-        expect(oidc.handleAuthResponse).toBeCalled()
-        // @ts-expect-error
-        expect(oidc.handleTokenResult).toBeCalled()
-        expect(onLogin).toBeCalledWith(authObj)
-        done()
-      })
-    })
 
-    // it('should clear auth store on any error', function (done) {
-    //   const oidc = new OIDCClient({...dummyOpts, useRefreshToken: true})
-    //
-    //   const authObj = { user: { sub: 'test'}}
-    //   // @ts-expect-error
-    //   oidc.exchangeRefreshToken = jest.fn(async () => Promise.reject())
-    //   // @ts-expect-error
-    //   oidc.authStore.set('auth', { refresh_token: 'dummyToken'})
-    //
-    //   // @ts-ignore
-    //   jest.spyOn(oidc.authStore, "clear")
-    //   const onLogin = jest.fn()
-    //   oidc.on(Events.USER_LOGIN, onLogin )
-    //   oidc.silentLogin().then(function () {
-    //     // @ts-expect-error
-    //     expect(oidc.exchangeRefreshToken).toBeCalled()
-    //     // @ts-expect-error
-    //     expect(oidc.authStore.clear).toBeCalled()
-    //     done()
-    //   })
-    // });
+      await oidc.silentLogin()
+
+      // @ts-expect-error
+      expect(oidc.handleAuthResponse).toHaveBeenCalled()
+      // @ts-expect-error
+      expect(oidc.handleTokenResult).toHaveBeenCalled()
+      expect(onLogin).toHaveBeenCalledWith(authObj)
+    })
   })
 
   describe(".logout()", () => {
     const oldLocation = window.location
+
     beforeEach(() => {
-      // @ts-ignore
-      delete window.location
-      // @ts-ignore
-      window.location = { assign: jest.fn() }
-      jest.spyOn(window.location, "assign")
+      Object.defineProperty(window, "location", {
+        writable: true,
+        configurable: true,
+        value: {
+          ...oldLocation,
+          assign: vi.fn(),
+        },
+      })
     })
+
     afterEach(() => {
       window.location = oldLocation as any
     })
 
-    it("should redirect window to logout uri", (done) => {
+    it("should redirect window to logout uri", async () => {
       const oidc = new OIDCClient(dummyOpts)
-      oidc.logout().then(() => {
-        expect(window.location.assign).toBeCalled()
-        done()
-      })
+      await oidc.logout()
+
+      expect(window.location.assign).toHaveBeenCalled()
     })
 
-    it('should clear only from local if "localOnly" = true', (done) => {
+    it('should clear only from local if "localOnly" = true', async () => {
       const oidc = new OIDCClient(dummyOpts)
       // @ts-expect-error
-      jest.spyOn(oidc.authStore, "clear")
+      const clearSpy = vi.spyOn(oidc.authStore, "clear")
 
-      oidc.logout({ localOnly: true }).then(() => {
-        // @ts-expect-error
-        expect(oidc.authStore.clear).toBeCalled()
-        expect(window.location.assign).not.toBeCalled()
-        done()
-      })
+      await oidc.logout({ localOnly: true })
+
+      expect(clearSpy).toHaveBeenCalled()
+      expect(window.location.assign).not.toHaveBeenCalled()
     })
   })
 })

@@ -10,8 +10,16 @@
   "types": "./dist/types.d.ts",
   "jsdelivr": "./dist/oidc-client.min.js",
   "unpkg": "./dist/oidc-client.min.js",
-  "files": ["dist"],
-  "keywords": ["openid-connect", "oidc", "oidc client", "oauth2", "plusauth"],
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "openid-connect",
+    "oidc",
+    "oidc client",
+    "oauth2",
+    "plusauth"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/PlusAuth/oidc-client-js"
@@ -19,10 +27,10 @@
   "bugs": {
     "url": "https://github.com/PlusAuth/oidc-client-js/issues"
   },
-  "packageManager": "pnpm@10.8.0",
+  "packageManager": "pnpm@10.25.0",
   "scripts": {
-    "test": "jest --forceExit",
-    "test:coverage": "jest --coverage --forceExit",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage",
     "build": "rollup -c",
     "docs": "typedoc --tsconfig tsconfig-doc.json src/index.ts",
     "lint": "biome check --fix",
@@ -33,40 +41,38 @@
     "base64-js": "^1.5.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
-    "@commitlint/cli": "^19.8.0",
-    "@commitlint/config-conventional": "^19.8.0",
-    "@microsoft/api-extractor": "^7.52.3",
+    "@biomejs/biome": "^2.3.8",
+    "@commitlint/cli": "^20.2.0",
+    "@commitlint/config-conventional": "^20.2.0",
+    "@microsoft/api-extractor": "^7.55.2",
     "@peculiar/webcrypto": "^1.5.0",
-    "@release-it/conventional-changelog": "^10.0.0",
-    "@rollup/plugin-commonjs": "^28.0.3",
+    "@release-it/conventional-changelog": "^10.0.3",
+    "@rollup/plugin-commonjs": "^29.0.0",
     "@rollup/plugin-json": "^6.1.0",
-    "@rollup/plugin-node-resolve": "^16.0.1",
-    "@swc/core": "^1.11.18",
-    "@types/base64-js": "^1.5.0",
-    "@types/jest": "^29.5.14",
-    "@types/jsonwebtoken": "^9.0.9",
-    "@types/node": "^22.14.0",
-    "cross-env": "^7.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@swc/core": "^1.15.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^25.0.0",
+    "cross-env": "^10.1.0",
     "husky": "^9.1.7",
-    "jest": "^29.7.0",
-    "jest-environment-jsdom": "^29.7.0",
-    "jsonwebtoken": "^9.0.2",
-    "lint-staged": "^15.5.0",
+    "jsonwebtoken": "^9.0.3",
+    "lint-staged": "^16.2.7",
     "pem": "^1.14.8",
-    "release-it": "^18.1.2",
-    "rollup": "^4.39.0",
+    "release-it": "^19.1.0",
+    "rollup": "^4.53.3",
     "rollup-plugin-cleanup": "^3.2.1",
-    "rollup-plugin-dts": "^6.2.1",
+    "rollup-plugin-dts": "^6.3.0",
     "rollup-plugin-swc3": "^0.12.1",
-    "ts-jest": "^29.3.1",
-    "typedoc": "^0.28.2",
-    "typescript": "^5.8.3",
-    "vite": "^6.2.6",
+    "typedoc": "^0.28.15",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.7",
+    "vitest": "^4.0.15",
     "whatwg-fetch": "^3.6.20"
   },
   "commitlint": {
-    "extends": ["@commitlint/config-conventional"],
+    "extends": [
+      "@commitlint/config-conventional"
+    ],
     "rules": {
       "type-enum": [
         2,
@@ -86,8 +92,14 @@
           "types"
         ]
       ],
-      "header-max-length": [0, "always", 100],
-      "scope-case": [0]
+      "header-max-length": [
+        0,
+        "always",
+        100
+      ],
+      "scope-case": [
+        0
+      ]
     }
   },
   "lint-staged": {

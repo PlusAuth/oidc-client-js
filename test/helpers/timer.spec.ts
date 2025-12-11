@@ -1,3 +1,4 @@
+import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { Timer } from "../../src/helpers/timer"
 
 describe("timer", () => {
@@ -5,16 +6,16 @@ describe("timer", () => {
   const nowFn = () => now
 
   beforeEach(() => {
-    jest.useFakeTimers({ legacyFakeTimers: true })
+    vi.useFakeTimers()
   })
 
   afterEach(() => {
-    jest.clearAllTimers()
-    jest.resetAllMocks()
+    vi.clearAllTimers()
+    vi.resetAllMocks()
   })
 
   afterAll(() => {
-    jest.useRealTimers()
+    vi.useRealTimers()
   })
 
   describe("[constructor]", () => {
@@ -24,99 +25,106 @@ describe("timer", () => {
     })
 
     it("should use 1 second if duration is too low", () => {
-      const setIntervalSpy = jest.spyOn(global, "setInterval")
+      const setIntervalSpy = vi.spyOn(global, "setInterval")
       const timer = new Timer()
-      timer.start(-1, jest.fn())
-      expect(setIntervalSpy).toBeCalledWith(expect.any(Function), 1000)
+      timer.start(-1, vi.fn())
+      expect(setIntervalSpy).toHaveBeenCalledWith(expect.any(Function), 1000)
     })
 
     it("should use duration", () => {
-      const setIntervalSpy = jest.spyOn(global, "setInterval")
+      const setIntervalSpy = vi.spyOn(global, "setInterval")
       const timer = new Timer()
-      timer.start(4, jest.fn())
-      expect(setIntervalSpy).toBeCalledWith(expect.any(Function), 4000)
+      timer.start(4, vi.fn())
+      expect(setIntervalSpy).toHaveBeenCalledWith(expect.any(Function), 4000)
     })
-
     it("should stop previous timer if new time is not the same", () => {
-      const clearIntervalSpy = jest.spyOn(global, "clearInterval")
-      const setIntervalMock = setInterval as any as jest.Mock
-      setIntervalMock.mockImplementation(() => Math.random())
+      const clearIntervalSpy = vi.spyOn(globalThis, "clearInterval")
+
+      const setIntervalSpy = vi
+        .spyOn(globalThis, "setInterval")
+        .mockImplementation(() => Math.random() as any)
+
       const timer = new Timer(nowFn)
-      const cb = jest.fn()
+      const cb = vi.fn()
+
       timer.start(4, cb)
-      expect(clearIntervalSpy).not.toBeCalled()
+      expect(clearIntervalSpy).not.toHaveBeenCalled()
 
       now = now + 122
       timer.start(4, cb)
-      expect(clearIntervalSpy).toBeCalledTimes(1)
+
+      expect(clearIntervalSpy).toHaveBeenCalledTimes(1)
+
+      // cleanup
+      setIntervalSpy.mockRestore()
     })
 
     it("should not stop previous timer if new time is same", () => {
-      const clearIntervalSpy = jest.spyOn(global, "clearInterval")
+      const clearIntervalSpy = vi.spyOn(global, "clearInterval")
       const timer = new Timer(nowFn)
-      const cb = jest.fn()
+      const cb = vi.fn()
       timer.start(10, cb)
-      expect(clearIntervalSpy).not.toBeCalled()
+      expect(clearIntervalSpy).not.toHaveBeenCalled()
 
       timer.start(10, cb)
-      expect(clearIntervalSpy).not.toBeCalled()
+      expect(clearIntervalSpy).not.toHaveBeenCalled()
     })
   })
 
   describe("callback", () => {
     it("should fire when timer expires", () => {
       const timer = new Timer(nowFn)
-      const cb = jest.fn()
+      const cb = vi.fn()
       timer.start(1, cb)
-      expect(cb).toBeCalledTimes(0)
+      expect(cb).toHaveBeenCalledTimes(0)
       now += 1000
-      jest.advanceTimersByTime(1000)
-      expect(cb).toBeCalledTimes(1)
+      vi.advanceTimersByTime(1000)
+      expect(cb).toHaveBeenCalledTimes(1)
     })
 
     it("should fire if timer late", () => {
       const timer = new Timer(nowFn)
-      const cb = jest.fn()
+      const cb = vi.fn()
       timer.start(1, cb)
-      expect(cb).toBeCalledTimes(0)
+      expect(cb).toHaveBeenCalledTimes(0)
       now += 10000
-      jest.advanceTimersByTime(10000)
-      expect(cb).toBeCalledTimes(1)
+      vi.advanceTimersByTime(10000)
+      expect(cb).toHaveBeenCalledTimes(1)
     })
 
     it("should stop window timer", () => {
-      const clearIntervalSpy = jest.spyOn(global, "clearInterval")
+      const clearIntervalSpy = vi.spyOn(global, "clearInterval")
 
       const timer = new Timer(nowFn)
-      const cb = jest.fn()
+      const cb = vi.fn()
       timer.start(1, cb)
-      expect(cb).toBeCalledTimes(0)
+      expect(cb).toHaveBeenCalledTimes(0)
       now += 10000
-      jest.advanceTimersByTime(10000)
-      expect(cb).toBeCalledTimes(1)
-      expect(clearIntervalSpy).toBeCalledTimes(1)
+      vi.advanceTimersByTime(10000)
+      expect(cb).toHaveBeenCalledTimes(1)
+      expect(clearIntervalSpy).toHaveBeenCalledTimes(1)
     })
   })
 
   describe("cancel", () => {
     it("should stop timer", () => {
-      const clearIntervalSpy = jest.spyOn(global, "clearInterval")
+      const clearIntervalSpy = vi.spyOn(global, "clearInterval")
       const timer = new Timer(nowFn)
-      const cb = jest.fn()
+      const cb = vi.fn()
       timer.start(5, cb)
-      expect(clearIntervalSpy).not.toBeCalled()
+      expect(clearIntervalSpy).not.toHaveBeenCalled()
 
       timer.stop()
-      jest.advanceTimersByTime(10000)
-      expect(cb).not.toBeCalled()
+      vi.advanceTimersByTime(10000)
+      expect(cb).not.toHaveBeenCalled()
     })
 
     it("should do nothing if no existing timer", () => {
-      const clearIntervalSpy = jest.spyOn(global, "clearInterval")
+      const clearIntervalSpy = vi.spyOn(global, "clearInterval")
       const timer = new Timer()
 
       timer.stop()
-      expect(clearIntervalSpy).not.toBeCalled()
+      expect(clearIntervalSpy).not.toHaveBeenCalled()
     })
   })
 })
