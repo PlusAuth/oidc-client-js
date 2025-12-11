@@ -1,5 +1,12 @@
 # Changelog
 
+# [1.8.0](/compare/v1.7.1...v1.8.0) (2025-12-11)
+
+
+### Features
+
+* customizable iframe attributes dda1df9, closes #22
+
 ## [1.7.1](https://github.com/PlusAuth/oidc-client-js/compare/v1.7.0...v1.7.1) (2025-10-23)
 
 
