@@ -279,6 +279,42 @@ describe("oidc client", () => {
         oidc.synchronizer.CallOnce = origFn
       })
     })
+
+    it('should emit silent_renew error when "autoSilentRenew" = true', async () => {
+      const oidc = new OIDCClient({
+        ...dummyOpts,
+        autoSilentRenew: true,
+        secondsToRefreshAccessTokenBeforeExp: 120,
+      })
+      // @ts-expect-error internal
+      const origFn = oidc.synchronizer.CallOnce
+      // @ts-expect-error internal
+      oidc.synchronizer.CallOnce = vi.fn((_ss: any, fn: () => void) => fn())
+
+      oidc.silentLogin = vi.fn(async () => Promise.reject("my custom error"))
+      // @ts-expect-error override internal timer
+      oidc._accessTokenExpireTimer = {
+        start: vi.fn((_exp: number, cb: () => void) => {
+          cb()
+        }),
+      }
+
+      // @ts-expect-error internal
+      oidc.onUserLogin({ access_token: "dummyToken", expires_in: 120, user: {} })
+
+      setTimeout(() => {
+        // everything is synchronous now
+        // @ts-expect-error internal
+        expect(oidc._accessTokenExpireTimer.start).toHaveBeenCalled()
+        // @ts-expect-error internal
+        expect(oidc.synchronizer.CallOnce).toHaveBeenCalled()
+        expect(oidc.silentLogin).rejects.toThrow("my custom error")
+
+        // restore original
+        // @ts-expect-error internal
+        oidc.synchronizer.CallOnce = origFn
+      })
+    })
   })
 
   describe("[getters]", () => {
@@ -363,6 +399,24 @@ describe("oidc client", () => {
       expect(newClient).toBe(oidc)
       // @ts-expect-error internal
       expect(oidc.fetchFromIssuer).toHaveBeenCalledTimes(1)
+    })
+
+    it("should return initializing promise instance if it is initializing", async () => {
+      const oidc = new OIDCClient({ issuer: "http://test.com", client_id: "test" })
+      // @ts-expect-error internal
+      expect(oidc.initialized).toBeFalsy()
+      // @ts-expect-error internal
+      oidc.fetchFromIssuer = vi.fn(async () => {
+        return new Promise((resolve) => {
+          setTimeout(resolve, 1000)
+        })
+      })
+
+      oidc.initialize(false)
+      const client = await oidc.initialize(false)
+      // @ts-expect-error internal
+      expect(oidc.initialized).toBe(true)
+      expect(client).toBe(oidc)
     })
 
     it("should fetch issuer metadata when endpoints not provided", async () => {

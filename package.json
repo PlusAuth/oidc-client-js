@@ -53,6 +53,7 @@
     "@swc/core": "^1.15.3",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.0.0",
+    "@vitest/coverage-v8": "^4.0.15",
     "cross-env": "^10.1.0",
     "husky": "^9.1.7",
     "jsonwebtoken": "^9.0.3",

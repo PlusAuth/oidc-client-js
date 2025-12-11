@@ -162,4 +162,118 @@ describe("runIframe", () => {
     await expect(promise).rejects.toThrow(OIDCClientError)
     expect(window.document.body.removeChild).toHaveBeenCalledWith(iframe)
   })
+
+  it("clears onLoadTimeoutId when removing iframe", async () => {
+    const origin = "https://origin.com"
+
+    const { iframe, url } = (function setupOnLoadTimeout() {
+      const iframe: any = {
+        setAttribute: vi.fn(),
+        style: {},
+      }
+      window.document.createElement = vi.fn(() => iframe)
+      window.document.body.appendChild = vi.fn()
+      window.document.body.removeChild = vi.fn()
+      window.document.body.contains = () => true
+      window.addEventListener = vi.fn()
+      window.removeEventListener = vi.fn()
+
+      return { iframe, url: "https://auth.com" }
+    })()
+
+    vi.useFakeTimers()
+
+    const clearTimeoutSpy = vi.spyOn(global, "clearTimeout")
+
+    const promise = runIframe(url, { eventOrigin: origin })
+
+    iframe.onload!()
+
+    vi.runOnlyPendingTimers()
+
+    await expect(promise).rejects.toThrow(OIDCClientError)
+
+    expect(clearTimeoutSpy).toHaveBeenCalled()
+  })
+
+  it("onLoadTimeout rejects with correct error and removes iframe", async () => {
+    const origin = "https://origin.com"
+    const url = "https://auth.com"
+
+    const iframe: any = {
+      setAttribute: vi.fn(),
+      style: {},
+    }
+
+    window.document.createElement = vi.fn(() => iframe)
+    window.document.body.contains = () => true
+    window.document.body.appendChild = vi.fn()
+    window.document.body.removeChild = vi.fn()
+    window.addEventListener = vi.fn()
+    window.removeEventListener = vi.fn()
+
+    vi.useFakeTimers()
+
+    // Prevent outer timeout from ever being scheduled.
+    // detect outer timeout by its message argument.
+    const realSetTimeout = global.setTimeout
+    const setTimeoutSpy = vi
+      .spyOn(global, "setTimeout")
+      .mockImplementation((fn: any, delay?: number): any => {
+        const fnString = fn?.toString()
+
+        // Skip registering the outer "Timed out" handler
+        if (fnString?.includes("Timed out")) {
+          return 99999 // dummy ID
+        }
+
+        // Allow inner onLoadTimeout to register normally
+        return realSetTimeout(fn, delay)
+      })
+
+    const promise = runIframe(url, { eventOrigin: origin })
+
+    iframe.onload!()
+
+    vi.runOnlyPendingTimers()
+
+    await expect(promise).rejects.toThrowError(
+      new OIDCClientError("Could not complete silent authentication", url),
+    )
+    expect(window.document.body.removeChild).toHaveBeenCalledWith(iframe)
+
+    setTimeoutSpy.mockRestore()
+  })
+
+  it("stores onLoadTimeoutId when iframe.onload triggers onLoadTimeout()", async () => {
+    const origin = "https://origin.com"
+    const url = "https://auth.com"
+
+    const iframe: any = {
+      setAttribute: vi.fn(),
+      style: {},
+    }
+
+    window.document.createElement = vi.fn(() => iframe)
+    window.document.body.appendChild = vi.fn()
+    window.document.body.removeChild = vi.fn()
+    window.document.body.contains = () => true
+    window.addEventListener = vi.fn()
+    window.removeEventListener = vi.fn()
+
+    vi.useFakeTimers()
+
+    // Start runIframe but DO NOT await, and DO NOT run timers
+    runIframe(url, { eventOrigin: origin, timeout: 999999 })
+
+    const timeoutValue = 12345
+    const setTimeoutSpy = vi.spyOn(global, "setTimeout").mockReturnValue(timeoutValue as any)
+
+    iframe.onload!()
+
+    expect(setTimeoutSpy).toHaveBeenCalled()
+
+    // We cannot read `onLoadTimeoutId` directly, but this ensures correct behavior.
+    expect(setTimeoutSpy.mock.results[0].value).toBe(timeoutValue)
+  })
 })

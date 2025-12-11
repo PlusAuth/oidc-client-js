@@ -7,9 +7,6 @@ type RequiredAndNotNull<T> = {
  * @param object
  */
 export function cleanUndefined<T extends Record<string, any>>(object: T) {
-  if (!object || typeof object !== "object") {
-    return object
-  }
   return JSON.parse(JSON.stringify(object)) as RequiredAndNotNull<T>
 }
 
