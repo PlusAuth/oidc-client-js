@@ -40,6 +40,7 @@ OpenID Connect (OIDC) and OAuth2 library for browser based JavaScript applicatio
 - [Use Refresh Token](#use-refresh-tokens-for-access-token-renewal)
 - [Login with popup](#login-with-popup)
 - [Logout with popup](#logout-with-popup)
+- [Third-party cookies and Session Management](#third-party-cookies-and-session-management)
 - [Additional Methods](#additional-methods)
 - [Examples](/examples)
 
@@ -292,7 +293,7 @@ document.getElementById('logoutWithPopup').addEventListener('click', async () =>
 
 ### Callback page for popups
 
-When using popups for login or logout, you must call the corresponding callback method on the redirect page. 
+When using popups for login or logout, you must call the corresponding callback method on the redirect page.
 This is essential for the popup to communicate back to the main window and close itself.
 
 For **login**:
@@ -346,6 +347,21 @@ await oidc.silentLogin();
 
 // Hidden iframe now includes: <iframe data-myapp="example" ...>
 ```
+
+## Third-party cookies and Session Management
+
+Features like **Silent Renewal** and **Session Management** (`checkSession`) rely on hidden iframes
+that interact with the OIDC provider's domain to verify the user's session without a full page redirect.
+
+For these features to work, the browser must send the provider's session cookies within
+the iframe request. If the provider is on a different domain than your application,
+these are considered **third-party cookies**.
+
+### Impact of blocking third-party cookies
+
+Modern browsers (such as Chrome, Safari, and Firefox) are increasingly blocking third-party cookies by default to enhance privacy. When blocked:
+- `silentLogin` (using iframes) will fail to authenticate the user automatically.
+- `checkSession` will be unable to detect if the user has logged out from the provider.
 
 ## Additional methods
 You can access user, access token, refresh token, id token and scopes with followings. Using getter methods are always the
