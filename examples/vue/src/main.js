@@ -1,18 +1,15 @@
-import Vue from "vue"
+import { createApp } from "vue"
 import App from "./App.vue"
 import auth from "./auth"
-import router from "./router"
-import "./assets/main.css"
+import router from "./router.js"
 
-Vue.prototype.$auth = auth
-
+const app = createApp(App)
+app.config.globalProperties.$auth = auth
 auth
   .initialize()
-  .then(() => {
-    new Vue({
-      router,
-      render: (h) => h(App),
-    }).$mount("#app")
-  })
+  .then(() => {})
   .catch(console.error)
-Vue.config.productionTip = false
+  .finally(() => {
+    app.use(router)
+    app.mount("#app")
+  })

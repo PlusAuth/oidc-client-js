@@ -3,20 +3,27 @@
     <router-link style="cursor: pointer; padding: 8px" tag="span" to="/"><i class="fa fa-home fa-2x"></i></router-link>
 
     <div class="profile-box">
-      <template  v-if="!user" >
+      <template v-if="!user">
+        <button @click="$auth.login({extraParams: { invitePid: Math.random()}, prompt: 'signup'})" class="login-btn"
+                title="Login with Popup">Signup
+        </button>
         <button @click="$auth.loginWithPopup()" class="login-btn" title="Login with Popup">Login with
-          Popup</button>
-        <button @click="$auth.login()" class="login-btn" title="Login"> Login </button>
+          Popup
+        </button>
+        <button @click="$auth.login()" class="login-btn" title="Login"> Login</button>
       </template>
       <template v-else>
-        <router-link tag="a" to="/me">{{ userDisplayName }}</router-link>
+        <router-link to="/me">{{ userDisplayName }}</router-link>
+        <button @click="$auth.logoutWithPopup()">
+          Logout With Popup
+        </button>
         <i @click="$auth.logout()" title="logout" class="logout-btn fa fa-sign-out fa-2x"></i>
       </template>
     </div>
   </div>
 </template>
 
-<script >
+<script>
 export default {
   name: "AppHeader",
   data() {
@@ -26,18 +33,18 @@ export default {
   },
   computed: {
     userDisplayName() {
-      if(!this.user){
+      if (!this.user) {
         return null
-      }else{
-        if(!this.user.given_name || !this.user.family_name){
+      } else {
+        if (!this.user.given_name || !this.user.family_name) {
           return this.user.username || this.user.email || this.user.sub
         }
         return `${this.user.given_name} ${this.user.family_name}`
       }
     }
   },
-  async created(){
-    this.$auth.on('user_login', ({ user }) => {
+  async created() {
+    this.$auth.on('user_login', ({user}) => {
       this.user = user
     })
     this.$auth.on('user_logout', () => {
@@ -46,9 +53,9 @@ export default {
     this.user = await this.$auth.getUser()
   }
 }
-</script >
+</script>
 
-<style scoped >
+<style scoped>
 .app-header {
   position: fixed;
   display: flex;
@@ -58,7 +65,7 @@ export default {
   left: 0;
   right: 0;
   z-index: 1000;
-  box-shadow: 0px 1px 3px 0px rgba(0,0,0,0.75);
+  box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.75);
   background: #fff;
 }
 
@@ -76,6 +83,7 @@ export default {
   color: black;
   padding: 0 4px;
 }
+
 .login-btn {
   display: block;
   padding: 4px;
@@ -85,9 +93,10 @@ export default {
   color: black;
   margin: 2px;
 }
+
 .logout-btn {
   display: inline-block;
   cursor: pointer;
   color: #e53935;
 }
-</style >
+</style>

@@ -108,6 +108,13 @@ export interface LogoutRequestOptions {
   localOnly?: boolean
   /** Redirect URL after logout completes. */
   post_logout_redirect_uri?: string
+  /**
+   * Internal request type:
+   * - `"s"` → silent
+   * - `"p"` → popup
+   * - `"d"` → standard redirect
+   */
+  request_type?: "s" | "p" | "d"
 }
 
 /**
@@ -285,6 +292,8 @@ export interface PopupOptions {
    * @default 60000
    */
   timeout?: number
+  /** Expected message type from the popup. */
+  type?: string
 }
 
 /**

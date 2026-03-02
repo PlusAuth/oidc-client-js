@@ -11,8 +11,8 @@
 </template>
 
 <script>
-import AppHeader from "@/components/AppHeader"
-import AppSidebar from "@/components/AppSidebar"
+import AppHeader from "./components/AppHeader.vue"
+import AppSidebar from "./components/AppSidebar.vue"
 export default {
   name: "App",
   components: { AppSidebar, AppHeader },
@@ -28,30 +28,19 @@ export default {
     this.$auth.on("user_login", ({ user }) => {
       this.user = user
     })
+    this.$auth.on("silent_renew_error", console.error)
   },
 }
 </script>
 <style>
+html, body{
+  margin: 0;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-  padding: 8px;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
 }
 
 main{

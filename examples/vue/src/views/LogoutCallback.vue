@@ -3,10 +3,10 @@
 </template>
 <script>
 export default {
-  name: "AuthCallback",
+  name: "LogoutCallback",
   async mounted() {
     try {
-      const localState = await this.$auth.loginCallback(window.location.href)
+      const localState = await this.$auth.logoutCallback(window.location.href)
       if (localState?.location) {
         window.location.replace(localState.location)
       } else {

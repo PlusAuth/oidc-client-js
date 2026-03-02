@@ -1,15 +1,14 @@
-import Vue from "vue"
-import VueRouter from "vue-router"
-import NotFound from "@/views/NotFound"
-import Public from "@/views/Public"
-import Secured from "@/views/Secured"
-import Unauthorized from "@/views/Unauthorized"
-import UserProfile from "@/views/UserProfile"
-import auth from "./auth"
+import * as VueRouter from "vue-router"
+import auth from "./auth.js"
 import AuthCallback from "./views/AuthCallback.vue"
 import Home from "./views/Home.vue"
-
-Vue.use(VueRouter)
+import NotFound from "./views/NotFound.vue"
+import Public from "./views/Public.vue"
+import Secured from "./views/Secured.vue"
+import SilentRenew from "./views/SilentRenew.vue"
+import Unauthorized from "./views/Unauthorized.vue"
+import UserProfile from "./views/UserProfile.vue"
+import LogoutCallback from "./views/LogoutCallback.vue";
 
 const routes = [
   {
@@ -41,20 +40,29 @@ const routes = [
     component: AuthCallback,
   },
   {
+    path: "/logout-callback",
+    name: "LogoutCallback",
+    component: LogoutCallback,
+  },
+  {
+    path: "/silent-renew.html",
+    name: "SilentRenew",
+    component: SilentRenew,
+  },
+  {
     path: "/401",
     name: "Unauthorized",
     component: Unauthorized,
   },
   {
-    path: "*",
+    path: "/:pathMatch(.*)*",
     name: "NotFound",
     component: NotFound,
   },
 ]
 
-const router = new VueRouter({
-  mode: "history",
-  base: process.env.BASE_URL,
+const router = VueRouter.createRouter({
+  history: VueRouter.createWebHistory("/"),
   routes,
 })
 

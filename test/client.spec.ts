@@ -1343,40 +1343,72 @@ describe("oidc client", () => {
     })
   })
 
-  describe(".logout()", () => {
-    const oldLocation = window.location
+  describe(".logoutWithPopup()", () => {
+    it("should execute popup and clear auth store", async () => {
+      const mockedRunPopup = popupUtils.runPopup as Mock
+      mockedRunPopup.mockResolvedValue({})
 
-    beforeEach(() => {
-      Object.defineProperty(window, "location", {
-        writable: true,
-        configurable: true,
-        value: {
-          ...oldLocation,
-          assign: vi.fn(),
-        },
-      })
-    })
-
-    afterEach(() => {
-      window.location = oldLocation as any
-    })
-
-    it("should redirect window to logout uri", async () => {
-      const oidc = new OIDCClient(dummyOpts)
-      await oidc.logout()
-
-      expect(window.location.assign).toHaveBeenCalled()
-    })
-
-    it('should clear only from local if "localOnly" = true', async () => {
       const oidc = new OIDCClient(dummyOpts)
       // @ts-expect-error
       const clearSpy = vi.spyOn(oidc.authStore, "clear")
 
-      await oidc.logout({ localOnly: true })
+      await oidc.logoutWithPopup()
 
+      expect(mockedRunPopup).toHaveBeenCalled()
       expect(clearSpy).toHaveBeenCalled()
-      expect(window.location.assign).not.toHaveBeenCalled()
+    })
+
+    it('should only clear auth store if "localOnly" is true', async () => {
+      const mockedRunPopup = popupUtils.runPopup as Mock
+      mockedRunPopup.mockClear()
+
+      const oidc = new OIDCClient(dummyOpts)
+      // @ts-expect-error
+      const clearSpy = vi.spyOn(oidc.authStore, "clear")
+
+      await oidc.logoutWithPopup({ localOnly: true })
+
+      expect(mockedRunPopup).not.toHaveBeenCalled()
+      expect(clearSpy).toHaveBeenCalled()
+    })
+  })
+
+  describe(".logoutCallback()", () => {
+    it("should fail if no url is passed", async () => {
+      const oidc = new OIDCClient(dummyOpts)
+      const oldWindowLocation = window.location
+
+      // force window.location to be undefined to simulate missing url param usage
+      delete (window as any).location
+
+      await expect(oidc.logoutCallback()).rejects.toMatchObject({
+        message: "Url must be passed to handle logout redirect",
+      })
+
+      window.location = oldWindowLocation as any
+    })
+
+    it("should notify opener if it is called from popup", async () => {
+      Object.defineProperty(window, "opener", {
+        configurable: true,
+        value: {},
+      })
+
+      const oidc = new OIDCClient(dummyOpts)
+
+      window.opener.postMessage = vi.fn()
+
+      const url = "http://example.com?state=123456"
+      await oidc.logoutCallback(url)
+
+      expect(window.opener!.postMessage).toHaveBeenCalledWith(
+        {
+          type: "logout_response",
+          response: { state: "123456" },
+          state: "123456",
+        },
+        `${window.location.protocol}//${window.location.host}`,
+      )
     })
   })
 })

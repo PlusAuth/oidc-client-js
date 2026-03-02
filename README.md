@@ -38,7 +38,8 @@ OpenID Connect (OIDC) and OAuth2 library for browser based JavaScript applicatio
 - [Documentation](#documentation)
 - [Access Token Refreshing](#automatically-renew-access-token)
 - [Use Refresh Token](#use-refresh-tokens-for-access-token-renewal)
-- [Login with Popup](#login-with-popup)
+- [Login with popup](#login-with-popup)
+- [Logout with popup](#logout-with-popup)
 - [Additional Methods](#additional-methods)
 - [Examples](/examples)
 
@@ -272,6 +273,39 @@ login popup you must call `loginWithPopup` in an event handler listening for a u
     </p>
   </div>
 </div>
+
+## Logout with popup
+
+Create a button to trigger logout.
+
+```html
+<button id="logoutWithPopup">Logout</button>
+```
+
+Attach event listener and call `logoutWithPopup` method of your initialized oidc client.
+
+```js
+document.getElementById('logoutWithPopup').addEventListener('click', async () => {
+  await oidcClient.logoutWithPopup();
+});
+```
+
+### Callback page for popups
+
+When using popups for login or logout, you must call the corresponding callback method on the redirect page. 
+This is essential for the popup to communicate back to the main window and close itself.
+
+For **login**:
+```js
+// on your redirect_uri page
+oidcClient.loginCallback();
+```
+
+For **logout**:
+```js
+// on your post_logout_redirect_uri page
+oidcClient.logoutCallback();
+```
 
 ## Customizing Hidden IFrame Attributes
 

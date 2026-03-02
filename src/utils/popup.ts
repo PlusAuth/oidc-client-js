@@ -52,7 +52,7 @@ export function runPopup(url: string, options: PopupOptions) {
     window.addEventListener("message", messageListener)
 
     function messageListener(e: MessageEvent) {
-      if (!e.data || e.data.type !== "authorization_response") return
+      if (!e.data || e.data.type !== (options.type || "authorization_response")) return
       clearHandlers()
       popup!.close()
       const data = e.data.response || e.data

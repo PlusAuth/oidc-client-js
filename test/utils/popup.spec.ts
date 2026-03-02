@@ -54,14 +54,32 @@ describe("runPopup", () => {
     const message = {
       data: {
         type: "authorization_response",
-        response: { id_token: "id_token" },
+        response: { some: "data" },
+      },
+    }
+    const { popup, url } = setup(message)
+
+    // @ts-expect-error
+    await expect(runPopup(url, { popup })).resolves.toMatchObject(message.data)
+
+    expect(popup.location.href).toBe(url)
+    expect(popup.close).toHaveBeenCalled()
+  })
+
+  it("returns custom response message", async () => {
+    const message = {
+      data: {
+        type: "custom_response",
+        response: { some: "data" },
       },
     }
 
     const { popup, url } = setup(message)
 
     // @ts-expect-error
-    await expect(runPopup(url, { popup })).resolves.toMatchObject(message.data)
+    await expect(runPopup(url, { popup, type: "custom_response" })).resolves.toMatchObject(
+      message.data,
+    )
 
     expect(popup.location.href).toBe(url)
     expect(popup.close).toHaveBeenCalled()
