@@ -27,7 +27,7 @@
   "bugs": {
     "url": "https://github.com/PlusAuth/oidc-client-js/issues"
   },
-  "packageManager": "pnpm@10.25.0",
+  "packageManager": "pnpm@10.30.3",
   "scripts": {
     "test": "vitest",
     "test:coverage": "vitest --coverage",
@@ -41,23 +41,23 @@
     "base64-js": "^1.5.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.8",
-    "@commitlint/cli": "^20.2.0",
-    "@commitlint/config-conventional": "^20.2.0",
-    "@release-it/conventional-changelog": "^10.0.3",
+    "@biomejs/biome": "^2.4.4",
+    "@commitlint/cli": "^20.4.2",
+    "@commitlint/config-conventional": "^20.4.2",
+    "@release-it/conventional-changelog": "^10.0.5",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^25.0.0",
-    "@vitest/coverage-v8": "^4.0.15",
+    "@types/node": "^25.3.3",
+    "@vitest/coverage-v8": "^4.0.18",
     "cross-env": "^10.1.0",
     "husky": "^9.1.7",
     "jsonwebtoken": "^9.0.3",
-    "lint-staged": "^16.2.7",
-    "release-it": "^19.1.0",
+    "lint-staged": "^16.3.1",
+    "release-it": "^19.2.4",
     "tsdown": "^0.17.2",
-    "typedoc": "^0.28.15",
+    "typedoc": "^0.28.17",
     "typescript": "^5.9.3",
-    "vite": "^7.2.7",
-    "vitest": "^4.0.15",
+    "vite": "^7.3.1",
+    "vitest": "^4.0.18",
     "whatwg-fetch": "^3.6.20"
   },
   "commitlint": {
