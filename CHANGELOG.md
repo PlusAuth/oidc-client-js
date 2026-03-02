@@ -1,5 +1,12 @@
 # Changelog
 
+# [1.9.0](https://github.com/PlusAuth/oidc-client-js/compare/v1.8.0...v1.9.0) (2026-03-02)
+
+
+### Features
+
+* logout with popup methods ([295418c](https://github.com/PlusAuth/oidc-client-js/commit/295418cdc16d5436972adc91b4d5658a6d8bfe58))
+
 # [1.8.0](/compare/v1.7.1...v1.8.0) (2025-12-11)
 
 

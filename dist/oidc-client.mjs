@@ -1,7 +1,7 @@
 /*!
- * @plusauth/oidc-client-js v1.8.0
+ * @plusauth/oidc-client-js v1.9.0
  * https://github.com/PlusAuth/oidc-client-js
- * (c) 2025 @plusauth/oidc-client-js Contributors
+ * (c) 2026 @plusauth/oidc-client-js Contributors
  * Released under the MIT License
  */
 import { fromByteArray } from "base64-js";
@@ -671,7 +671,7 @@ function runPopup(url, options) {
 		}, timeoutMs);
 		window.addEventListener("message", messageListener);
 		function messageListener(e) {
-			if (!e.data || e.data.type !== "authorization_response") return;
+			if (!e.data || e.data.type !== (options.type || "authorization_response")) return;
 			clearHandlers();
 			popup.close();
 			const data = e.data.response || e.data;
@@ -901,7 +901,55 @@ var OIDCClient = class extends EventEmitter {
 				id_token_hint
 			}));
 		}
-		await this.authStore.clear();
+		this.emit(Events.USER_LOGOUT);
+	}
+	/**
+	* Open a popup with the provider's `end_session_endpoint`. After logout provider will redirect to
+	* provided `post_logout_redirect_uri` if it provided.
+	*
+	* NOTE: Most browsers block popups if they are not happened as a result of user actions. In order to display
+	* logout popup you must call this method in an event handler listening for a user action like button click.
+	*
+	* @param options
+	* @param popupOptions
+	*/
+	async logoutWithPopup(options = {}, popupOptions = {}) {
+		if (!options.localOnly) {
+			const storedAuth = await this.authStore.get("auth");
+			const id_token_hint = options.id_token_hint || storedAuth?.id_token_raw;
+			await runPopup(await this.createLogoutRequest({
+				...options,
+				id_token_hint,
+				request_type: "p"
+			}), {
+				...popupOptions,
+				type: "logout_response"
+			});
+		}
+		this.emit(Events.USER_LOGOUT);
+	}
+	/**
+	* After a user successfully logs out, the authorization server will redirect the user back to
+	* the application's `post_logout_redirect_uri`. In the logout callback page you should
+	* call this method.
+	*
+	* @param url Full url which contains logout request result parameters. Defaults to `window.location.href`
+	*/
+	async logoutCallback(url = window?.location?.href) {
+		if (!url) return Promise.reject(new OIDCClientError("Url must be passed to handle logout redirect"));
+		let parsedUrl;
+		try {
+			parsedUrl = new URL(url);
+		} catch {
+			return Promise.reject(new OIDCClientError(`Invalid callback url passed: "${url}"`));
+		}
+		const responseParams = parseQueryUrl(parsedUrl.search || parsedUrl.hash);
+		const state = responseParams.state;
+		if (window.opener && url) window.opener.postMessage({
+			type: "logout_response",
+			response: responseParams,
+			state
+		}, `${location.protocol}//${location.host}`);
 	}
 	/**
 	* OAuth2 token revocation implementation method. See more at [tools.ietf.org/html/rfc7009](https://tools.ietf.org/html/rfc7009)
@@ -1089,6 +1137,7 @@ var OIDCClient = class extends EventEmitter {
 		const logoutParams = {
 			id_token_hint: finalOptions.id_token_hint,
 			post_logout_redirect_uri: finalOptions.post_logout_redirect_uri,
+			state: finalOptions.state,
 			...finalOptions.extraLogoutParams || {}
 		};
 		return `${this.options.endpoints.end_session_endpoint}${buildEncodedQueryString(logoutParams)}`;

@@ -1,7 +1,7 @@
 /*!
- * @plusauth/oidc-client-js v1.8.0
+ * @plusauth/oidc-client-js v1.9.0
  * https://github.com/PlusAuth/oidc-client-js
- * (c) 2025 @plusauth/oidc-client-js Contributors
+ * (c) 2026 @plusauth/oidc-client-js Contributors
  * Released under the MIT License
  */
 //#region src/constants/events.d.ts
@@ -202,6 +202,13 @@ interface LogoutRequestOptions {
   localOnly?: boolean;
   /** Redirect URL after logout completes. */
   post_logout_redirect_uri?: string;
+  /**
+   * Internal request type:
+   * - `"s"` → silent
+   * - `"p"` → popup
+   * - `"d"` → standard redirect
+   */
+  request_type?: "s" | "p" | "d";
 }
 /**
  * OpenID Provider metadata (discovery document).
@@ -353,6 +360,8 @@ interface PopupOptions {
    * @default 60000
    */
   timeout?: number;
+  /** Expected message type from the popup. */
+  type?: string;
 }
 /**
  * Configuration for iframe-based silent authentication.
@@ -538,6 +547,25 @@ declare class OIDCClient extends EventEmitter<EventTypes> {
    * @param options
    */
   logout(options?: LogoutRequestOptions): Promise<void>;
+  /**
+   * Open a popup with the provider's `end_session_endpoint`. After logout provider will redirect to
+   * provided `post_logout_redirect_uri` if it provided.
+   *
+   * NOTE: Most browsers block popups if they are not happened as a result of user actions. In order to display
+   * logout popup you must call this method in an event handler listening for a user action like button click.
+   *
+   * @param options
+   * @param popupOptions
+   */
+  logoutWithPopup(options?: LogoutRequestOptions, popupOptions?: PopupOptions): Promise<void>;
+  /**
+   * After a user successfully logs out, the authorization server will redirect the user back to
+   * the application's `post_logout_redirect_uri`. In the logout callback page you should
+   * call this method.
+   *
+   * @param url Full url which contains logout request result parameters. Defaults to `window.location.href`
+   */
+  logoutCallback(url?: string): Promise<undefined>;
   /**
    * OAuth2 token revocation implementation method. See more at [tools.ietf.org/html/rfc7009](https://tools.ietf.org/html/rfc7009)
    * @param token Token to be revoked
